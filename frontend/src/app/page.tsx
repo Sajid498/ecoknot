@@ -1,69 +1,156 @@
-import Image from "next/image";
+import Navbar from "@/components/Navbar";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-white">
+      <Navbar />
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+        <div className="absolute -left-32 top-20 h-72 w-72 rounded-full bg-emerald-200/30 blur-3xl" />
+        <div className="absolute -right-32 bottom-10 h-80 w-80 rounded-full bg-teal-200/30 blur-3xl" />
+
+        <div className="relative mx-auto grid min-h-[calc(100vh-73px)] max-w-7xl items-center gap-14 px-6 py-16 lg:grid-cols-2 lg:py-24">
+          
+          {/* Left side */}
+          <div>
+            <div className="mb-6 inline-flex items-center rounded-full border border-emerald-200 bg-emerald-100/70 px-4 py-2 text-sm font-semibold text-emerald-800">
+              One Platform. Infinite Impact.
+            </div>
+
+            <h1 className="max-w-3xl text-5xl font-bold leading-tight tracking-tight text-slate-950 md:text-6xl">
+              Stronger communities
+              <span className="block text-emerald-700">
+                start with connection.
+              </span>
+            </h1>
+
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+              EcoKnot brings blood donation, transparent fundraising,
+              academic collaboration, resource sharing, and real-time
+              communication together in one trusted community platform.
+            </p>
+
+            <div className="mt-9 flex flex-wrap gap-4">
+              <button className="rounded-xl bg-emerald-700 px-7 py-3.5 font-semibold text-white shadow-lg shadow-emerald-700/20 transition hover:-translate-y-0.5 hover:bg-emerald-800">
+                Join EcoKnot
+              </button>
+
+              <button className="rounded-xl border border-slate-300 bg-white px-7 py-3.5 font-semibold text-slate-800 transition hover:border-emerald-600 hover:text-emerald-700">
+                Explore Community
+              </button>
+            </div>
+
+            {/* Statistics */}
+            <div className="mt-12 grid max-w-xl grid-cols-3 gap-6 border-t border-slate-200 pt-8">
+              <div>
+                <p className="text-2xl font-bold text-slate-900">500+</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Community Members
+                </p>
+              </div>
+
+              <div>
+                <p className="text-2xl font-bold text-slate-900">120+</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Resources Shared
+                </p>
+              </div>
+
+              <div>
+                <p className="text-2xl font-bold text-slate-900">50+</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Lives Supported
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right side */}
+          <div className="relative">
+            <div className="rounded-3xl border border-white bg-white/90 p-7 shadow-2xl shadow-slate-900/10 backdrop-blur">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-wider text-emerald-700">
+                    Community Hub
+                  </p>
+
+                  <h2 className="mt-2 text-3xl font-bold text-slate-900">
+                    How can you make an impact?
+                  </h2>
+                </div>
+
+                <div className="h-3 w-3 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50" />
+              </div>
+
+              <p className="mt-3 text-slate-600">
+                Find the service you need or choose how you want to help.
+              </p>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                
+                <div className="group rounded-2xl border border-red-100 bg-red-50 p-5 transition hover:-translate-y-1 hover:shadow-lg">
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-red-100 text-xl">
+                    🩸
+                  </div>
+
+                  <h3 className="font-bold text-slate-900">
+                    Blood Donation
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    Create urgent requests or connect with blood donors.
+                  </p>
+                </div>
+
+                <div className="group rounded-2xl border border-amber-100 bg-amber-50 p-5 transition hover:-translate-y-1 hover:shadow-lg">
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-amber-100 text-xl">
+                    🤝
+                  </div>
+
+                  <h3 className="font-bold text-slate-900">
+                    Fundraising
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    Create and support transparent donation campaigns.
+                  </p>
+                </div>
+
+                <div className="group rounded-2xl border border-blue-100 bg-blue-50 p-5 transition hover:-translate-y-1 hover:shadow-lg">
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-xl">
+                    📚
+                  </div>
+
+                  <h3 className="font-bold text-slate-900">
+                    Academic Hub
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    Share notes, materials, and academic knowledge.
+                  </p>
+                </div>
+
+                <div className="group rounded-2xl border border-emerald-100 bg-emerald-50 p-5 transition hover:-translate-y-1 hover:shadow-lg">
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-100 text-xl">
+                    ♻️
+                  </div>
+
+                  <h3 className="font-bold text-slate-900">
+                    Resource Sharing
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    Give useful community resources a second life.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
