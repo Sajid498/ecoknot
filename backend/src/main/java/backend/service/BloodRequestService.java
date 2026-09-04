@@ -60,6 +60,14 @@ public class BloodRequestService {
         return bloodRequestRepository.findAll();
 
     }
+    public List<BloodRequest> getRequestsByUser(
+        Long userId
+){
+
+    return bloodRequestRepository
+            .findByUserId(userId);
+
+}
 
 
 }
