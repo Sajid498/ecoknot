@@ -27,6 +27,67 @@ public class BloodRequestService {
         this.bloodRequestRepository = bloodRequestRepository;
         this.userRepository = userRepository;
     }
+    public BloodRequest updateBloodRequest(
+        Long requestId,
+        Long userId,
+        BloodRequest updatedRequest
+){
+
+    BloodRequest existingRequest =
+            bloodRequestRepository.findById(requestId)
+            .orElseThrow(
+                    () -> new RuntimeException("Request not found")
+            );
+
+
+    if(existingRequest.getUser() == null ||
+            !existingRequest.getUser().getId().equals(userId)){
+
+        throw new RuntimeException(
+                "You cannot edit another user's request"
+        );
+    }
+
+
+    existingRequest.setPatientName(
+            updatedRequest.getPatientName()
+    );
+
+    existingRequest.setBloodGroup(
+            updatedRequest.getBloodGroup()
+    );
+
+    existingRequest.setHospital(
+            updatedRequest.getHospital()
+    );
+
+    existingRequest.setLocation(
+            updatedRequest.getLocation()
+    );
+
+    existingRequest.setContactNumber(
+            updatedRequest.getContactNumber()
+    );
+
+    existingRequest.setRequiredDate(
+            updatedRequest.getRequiredDate()
+    );
+
+    existingRequest.setUnitsNeeded(
+            updatedRequest.getUnitsNeeded()
+    );
+
+    existingRequest.setUrgency(
+            updatedRequest.getUrgency()
+    );
+
+    existingRequest.setDescription(
+            updatedRequest.getDescription()
+    );
+
+
+    return bloodRequestRepository.save(existingRequest);
+}
 
 public BloodRequest cancelBloodRequest(Long requestId, Long userId){
 

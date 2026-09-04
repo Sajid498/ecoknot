@@ -1,12 +1,20 @@
 package backend.controller;
 
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import backend.entity.BloodRequest;
 import backend.service.BloodRequestService;
-
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 
@@ -29,7 +37,20 @@ public class BloodRequestController {
                 bloodRequestService;
 
     }
+@PutMapping("/{requestId}/user/{userId}")
+public BloodRequest updateRequest(
+        @PathVariable Long requestId,
+        @PathVariable Long userId,
+        @RequestBody BloodRequest bloodRequest
+){
 
+    return bloodRequestService.updateBloodRequest(
+            requestId,
+            userId,
+            bloodRequest
+    );
+
+}
 @DeleteMapping("/{requestId}/user/{userId}")
 public BloodRequest cancelRequest(
         @PathVariable Long requestId,
