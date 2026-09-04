@@ -30,7 +30,19 @@ public class BloodRequestController {
 
     }
 
+@DeleteMapping("/{requestId}/user/{userId}")
+public BloodRequest cancelRequest(
+        @PathVariable Long requestId,
+        @PathVariable Long userId
+){
 
+    return bloodRequestService
+            .cancelBloodRequest(
+                    requestId,
+                    userId
+            );
+
+}
 
     // Create request for specific user
     @PostMapping("/user/{userId}")

@@ -121,9 +121,9 @@ export default function BloodDonationPage() {
     try {
       const isEditing = editingId !== null;
 
-      const url = isEditing
-        ? `${API_URL}/api/blood-requests/${editingId}`
-        : `${API_URL}/api/blood-requests`;
+const url = isEditing
+? `${API_URL}/api/blood-requests/${1}`
+: `${API_URL}/api/blood-requests/user/1`;
 
       const response = await fetch(url, {
         method: isEditing ? "PUT" : "POST",
@@ -367,7 +367,7 @@ export default function BloodDonationPage() {
 
     try {
       const response = await fetch(
-        `${API_URL}/api/blood-requests/${id}`,
+        `${API_URL}/api/blood-requests/${id}/user/1`,
         {
           method: "DELETE",
         }

@@ -1,13 +1,14 @@
 package backend.service;
 
-import backend.entity.BloodRequest;
-import backend.entity.User;
-import backend.repository.BloodRequestRepository;
-import backend.repository.UserRepository;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import backend.entity.BloodRequest;
+import backend.entity.RequestStatus;
+import backend.entity.User;
+import backend.repository.BloodRequestRepository;
+import backend.repository.UserRepository;
 
 
 @Service
@@ -27,7 +28,31 @@ public class BloodRequestService {
         this.userRepository = userRepository;
     }
 
+public BloodRequest cancelBloodRequest(Long requestId, Long userId){
 
+    BloodRequest request = bloodRequestRepository
+            .findById(requestId)
+            .orElseThrow(
+                    () -> new RuntimeException("Request not found")
+            );
+
+
+    if(request.getUser().getId().equals(userId)){
+
+        request.setStatus(RequestStatus.CANCELLED);
+
+        return bloodRequestRepository.save(request);
+
+    }
+    else{
+
+        throw new RuntimeException(
+                "You cannot cancel another user's request"
+        );
+
+    }
+
+}
 
     // Create blood request for a user
     public BloodRequest createBloodRequest(
