@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 @Table(name = "blood_requests")
 public class BloodRequest {
 
+@ManyToOne
+@JoinColumn(name = "user_id")
+private User user;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
