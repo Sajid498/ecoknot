@@ -21,7 +21,13 @@ export default function SignupPage() {
 
         e.preventDefault();
 
+if(!name || !email || !password){
 
+    alert("Please fill all fields");
+
+    return;
+
+}
         try {
 
 

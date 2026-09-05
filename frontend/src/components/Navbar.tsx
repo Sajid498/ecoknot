@@ -171,15 +171,15 @@ export default function Navbar() {
 
 
 
-                <Link href="/blood-donation">
+               <Link href="/profile">
 
-                  <button className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+  <button className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">
 
-                    Dashboard
+    Profile
 
-                  </button>
+  </button>
 
-                </Link>
+</Link>
 
 
 

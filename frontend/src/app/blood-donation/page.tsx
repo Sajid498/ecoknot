@@ -1,4 +1,6 @@
 "use client";
+import ProtectedRoute from "@/components/ProtectedRoute";
+
 
 import { useEffect, useState } from "react";
 
@@ -34,7 +36,11 @@ const emptyForm = {
 
 export default function BloodDonationPage() {
   const [formData, setFormData] = useState(emptyForm);
-
+const [currentUser, setCurrentUser] = useState<{
+  id:number;
+  name:string;
+  email:string;
+} | null>(null);
   const [requests, setRequests] = useState<BloodRequest[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -95,9 +101,20 @@ export default function BloodDonationPage() {
   // =========================
   // INITIAL LOAD
   // =========================
-  useEffect(() => {
-    loadBloodRequests();
-  }, []);
+useEffect(() => {
+
+  const savedUser = localStorage.getItem("user");
+
+  if(savedUser){
+
+    setCurrentUser(JSON.parse(savedUser));
+
+  }
+
+
+  loadBloodRequests();
+
+}, []);
 
   // =========================
   // RESET FORM
@@ -110,10 +127,17 @@ export default function BloodDonationPage() {
   // =========================
   // CREATE / UPDATE
   // =========================
-  async function handleSubmit(
+async function handleSubmit(
     e: React.FormEvent<HTMLFormElement>
   ) {
     e.preventDefault();
+
+
+    if (!currentUser) {
+      alert("Please login first");
+      return;
+    }
+
 
     setIsSubmitting(true);
     setMessage("");
@@ -122,8 +146,8 @@ export default function BloodDonationPage() {
       const isEditing = editingId !== null;
 
 const url = isEditing
-    ? `${API_URL}/api/blood-requests/${editingId}/user/1`
-    : `${API_URL}/api/blood-requests/user/1`;
+    ? `${API_URL}/api/blood-requests/${editingId}/user/${currentUser.id}`
+    : `${API_URL}/api/blood-requests/user/${currentUser.id}`
 
       const response = await fetch(url, {
         method: isEditing ? "PUT" : "POST",
@@ -356,7 +380,15 @@ const url = isEditing
   // =========================
   // DELETE
   // =========================
-  async function deleteBloodRequest(id: number) {
+ async function deleteBloodRequest(id: number) {
+
+
+    if (!currentUser) {
+      alert("Please login first");
+      return;
+    }
+
+
     const confirmed = window.confirm(
       "Are you sure you want to delete this blood request?"
     );
@@ -367,7 +399,7 @@ const url = isEditing
 
     try {
       const response = await fetch(
-        `${API_URL}/api/blood-requests/${id}/user/1`,
+        `${API_URL}/api/blood-requests/${id}/user/${currentUser.id}`,
         {
           method: "DELETE",
         }
@@ -415,8 +447,11 @@ const url = isEditing
       .replace("_NEGATIVE", "-");
   }
 
-  return (
-    <main className="min-h-screen bg-slate-50">
+return (
+  
+    <ProtectedRoute>
+
+      <main className="min-h-screen bg-slate-50">
 
       {/* HEADER */}
       <section className="border-b border-red-100 bg-white">
@@ -725,7 +760,7 @@ const url = isEditing
             {/* Submit */}
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !currentUser}
               className="w-full rounded-xl bg-red-600 px-5 py-3.5 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
 
@@ -1060,5 +1095,6 @@ const url = isEditing
       </section>
 
     </main>
+     </ProtectedRoute>
   );
 }
