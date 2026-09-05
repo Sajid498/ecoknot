@@ -20,7 +20,23 @@ type BloodRequest = {
   description: string;
   status: string;
 };
+type DonationResponse = {
 
+  id:number;
+
+  requestId:number;
+
+  donorId:number;
+
+  donorName:string;
+
+  donorEmail:string;
+
+  donorPhone:string;
+
+  status:string;
+
+};
 const emptyForm = {
   patientName: "",
   bloodGroup: "",
@@ -40,8 +56,13 @@ const [currentUser, setCurrentUser] = useState<{
   id:number;
   name:string;
   email:string;
+  phone?:string;
 } | null>(null);
   const [requests, setRequests] = useState<BloodRequest[]>([]);
+  const [donors, setDonors] = useState<DonationResponse[]>([]);
+
+const [selectedRequestId,setSelectedRequestId] =
+useState<number | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,6 +75,50 @@ const [currentUser, setCurrentUser] = useState<{
 
   const [editingId, setEditingId] = useState<number | null>(null);
 
+  async function viewDonors(requestId:number){
+
+
+  try{
+
+
+    const response = await fetch(
+      `${API_URL}/api/donation-response/request/${requestId}`
+    );
+
+
+    if(!response.ok){
+
+      throw new Error(
+        "Failed to load donors"
+      );
+
+    }
+
+
+    const data:DonationResponse[] =
+        await response.json();
+
+
+
+    setDonors(data);
+
+    setSelectedRequestId(requestId);
+
+
+
+  }
+  catch(error){
+
+    console.log(error);
+
+    alert(
+      "Unable to load donors"
+    );
+
+  }
+
+
+}
   // =========================
   // FORM CHANGE
   // =========================
@@ -377,6 +442,75 @@ const url = isEditing
     await loadBloodRequests();
   }
 
+  const handleDonate = async (requestId:number) => {
+
+
+    if(!currentUser){
+
+        alert("Please login first");
+
+        return;
+
+    }
+
+
+
+    try{
+
+
+        const response = await fetch(
+            "http://localhost:8080/api/donation-response",
+            {
+
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+
+                body:JSON.stringify({
+
+                    requestId: requestId,
+
+                    donorId: currentUser.id,
+
+                    donorName: currentUser.name,
+
+                    donorEmail: currentUser.email,
+
+                    donorPhone: currentUser.phone || "Not provided"
+
+                })
+
+            }
+        );
+
+
+
+        if(!response.ok){
+
+            throw new Error("Donation request failed");
+
+        }
+
+
+
+        alert("Thank you! Your donation interest has been sent.");
+
+
+
+    }
+    catch(error){
+
+        console.log(error);
+
+        alert("Something went wrong");
+
+    }
+
+
+};
   // =========================
   // DELETE
   // =========================
@@ -1050,9 +1184,35 @@ return (
                       </span>
 
                     </div>
+{
+ currentUser &&
+ request.id &&
+ (
+ <button
 
+ onClick={() =>
+    viewDonors(request.id)
+ }
+
+ className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+
+ >
+
+ 👥 View Donors
+
+ </button>
+ )
+}
                     {/* BUTTONS */}
                     <div className="mt-5 flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
+                      {/* Donate Button */}
+<button
+  type="button"
+  onClick={() => handleDonate(request.id)}
+  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+>
+  🩸 I Want To Donate
+</button>
 
                       {/* Edit */}
                       <button
@@ -1091,6 +1251,90 @@ return (
           </div>
 
         </div>
+        {
+selectedRequestId && (
+
+<div className="mt-8 rounded-2xl border bg-white p-6">
+
+
+<h2 className="text-xl font-bold">
+
+Interested Donors
+
+</h2>
+
+
+
+{
+donors.length === 0 ? (
+
+<p className="mt-4 text-slate-500">
+
+No donors yet.
+
+</p>
+
+)
+
+:
+
+(
+
+<div className="mt-5 space-y-3">
+
+
+{
+donors.map((donor)=>(
+
+<div
+key={donor.id}
+className="rounded-xl border p-4"
+>
+
+
+<h3 className="font-bold">
+
+{donor.donorName}
+
+</h3>
+
+
+<p>
+Email: {donor.donorEmail}
+</p>
+
+
+<p>
+Phone: {donor.donorPhone}
+</p>
+
+
+<span className="text-sm text-green-600">
+
+{donor.status}
+
+</span>
+
+
+</div>
+
+))
+
+}
+
+
+</div>
+
+)
+
+}
+
+
+
+</div>
+
+)
+}
 
       </section>
 
