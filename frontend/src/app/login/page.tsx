@@ -75,44 +75,162 @@ export default function LoginPage() {
 
     return (
 
-        <div>
-
-            <h1>
-                Login
-            </h1>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-6">
 
 
-            <form onSubmit={handleLogin}>
+            <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl border border-slate-200">
 
 
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e)=>setEmail(e.target.value)}
-                />
+                {/* Logo */}
+
+                <div className="text-center mb-8">
 
 
-                <br/>
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-700 text-2xl font-bold text-white">
+
+                        E
+
+                    </div>
 
 
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e)=>setPassword(e.target.value)}
-                />
+                    <h1 className="mt-4 text-3xl font-bold text-slate-900">
+
+                        Welcome Back
+
+                    </h1>
 
 
-                <br/>
+                    <p className="mt-2 text-slate-500">
+
+                        Login to your EcoKnot account
+
+                    </p>
 
 
-                <button type="submit">
-                    Login
-                </button>
+                </div>
 
 
-            </form>
+
+
+                <form 
+                    onSubmit={handleLogin}
+                    className="space-y-5"
+                >
+
+
+                    {/* Email */}
+
+                    <div>
+
+
+                        <label className="text-sm font-medium text-slate-700">
+
+                            Email
+
+                        </label>
+
+
+                        <input
+
+                            type="email"
+
+                            placeholder="Enter your email"
+
+                            value={email}
+
+                            onChange={(e)=>setEmail(e.target.value)}
+
+                            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-emerald-600"
+
+                        />
+
+
+                    </div>
+
+
+
+
+
+                    {/* Password */}
+
+                    <div>
+
+
+                        <label className="text-sm font-medium text-slate-700">
+
+                            Password
+
+                        </label>
+
+
+                        <input
+
+                            type="password"
+
+                            placeholder="Enter your password"
+
+                            value={password}
+
+                            onChange={(e)=>setPassword(e.target.value)}
+
+                            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-emerald-600"
+
+                        />
+
+
+                    </div>
+
+
+
+
+
+                    {/* Button */}
+
+                    <button
+
+                        type="submit"
+
+                        className="w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white transition hover:bg-emerald-800"
+
+                    >
+
+                        Login
+
+                    </button>
+
+
+
+                </form>
+
+
+
+
+
+                <p className="mt-6 text-center text-sm text-slate-600">
+
+
+                    Don't have an account?
+
+
+                    <a
+
+                        href="/signup"
+
+                        className="ml-2 font-semibold text-emerald-700 hover:underline"
+
+                    >
+
+                        Signup
+
+                    </a>
+
+
+                </p>
+
+
+
+
+            </div>
 
 
         </div>
