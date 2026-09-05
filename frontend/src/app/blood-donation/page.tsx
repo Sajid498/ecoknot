@@ -19,6 +19,7 @@ type BloodRequest = {
   urgency: string;
   description: string;
   status: string;
+  userId: number;
 };
 type DonationResponse = {
 
@@ -74,7 +75,16 @@ export default function BloodDonationPage() {
   const [statusFilter, setStatusFilter] = useState("");
 
   const [editingId, setEditingId] = useState<number | null>(null);
+  const myRequests = requests.filter(
+    (request) =>
+      request.userId === currentUser?.id
+  );
 
+
+  const availableRequests = requests.filter(
+    (request) =>
+      request.userId !== currentUser?.id
+  );
   async function viewDonors(requestId: number) {
 
 
@@ -541,11 +551,12 @@ export default function BloodDonationPage() {
 
       if (!response.ok) {
 
-    const errorText = await response.text();
+        const errorText = await response.text();
 
-    throw new Error(errorText);
+        throw new Error(errorText);
 
-}
+      }
+
 
       setRequests((previousRequests) =>
         previousRequests.filter(
@@ -560,22 +571,22 @@ export default function BloodDonationPage() {
       setMessage(
         "Blood request deleted successfully."
       );
-    } 
-   catch (error) {
+    }
+    catch (error) {
 
-    console.error(
+      console.error(
         "Delete blood request error:",
         error
-    );
+      );
 
 
-    alert(
+      alert(
         error instanceof Error
-            ? error.message
-            : "Unable to cancel request"
-    );
+          ? error.message
+          : "Unable to cancel request"
+      );
 
-}
+    }
   }
 
   // =========================
@@ -939,13 +950,13 @@ export default function BloodDonationPage() {
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
               <h2 className="text-2xl font-bold text-slate-900">
-                Active Blood Requests
+                My Blood Requests
               </h2>
 
               <p className="mt-1 text-sm text-slate-500">
-                Emergency blood requests from the EcoKnot community.
+                Your personal blood requests that you created.
               </p>
-
+            
               {/* FILTERS */}
               <div className="mt-6 grid gap-3 md:grid-cols-3">
 
@@ -1067,7 +1078,7 @@ export default function BloodDonationPage() {
 
                 ) : (
 
-                  requests.map((request) => (
+                  myRequests.map((request) => (
 
                     <div
                       key={request.id}
@@ -1093,10 +1104,10 @@ export default function BloodDonationPage() {
                             {/* Urgency */}
                             <span
                               className={`rounded-lg px-3 py-1 text-xs font-bold ${request.urgency === "CRITICAL"
-                                  ? "bg-red-100 text-red-700"
-                                  : request.urgency === "URGENT"
-                                    ? "bg-amber-100 text-amber-700"
-                                    : "bg-green-100 text-green-700"
+                                ? "bg-red-100 text-red-700"
+                                : request.urgency === "URGENT"
+                                  ? "bg-amber-100 text-amber-700"
+                                  : "bg-green-100 text-green-700"
                                 }`}
                             >
 
@@ -1178,10 +1189,10 @@ export default function BloodDonationPage() {
 
                         <span
                           className={`rounded-full px-3 py-1 text-xs font-semibold ${request.status === "OPEN"
-                              ? "bg-green-100 text-green-700"
-                              : request.status === "FULFILLED"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-slate-200 text-slate-700"
+                            ? "bg-green-100 text-green-700"
+                            : request.status === "FULFILLED"
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-slate-200 text-slate-700"
                             }`}
                         >
 
@@ -1190,61 +1201,39 @@ export default function BloodDonationPage() {
                         </span>
 
                       </div>
-                      {
-                        currentUser &&
-                        request.id &&
-                        (
-                          <button
 
-                            onClick={() =>
-                              viewDonors(request.id)
-                            }
+                 {
+request.userId === currentUser?.id && (
 
-                            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+<div className="mt-5 flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
 
-                          >
+<button
+onClick={() => viewDonors(request.id)}
+className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
+>
+👥 View Donors
+</button>
 
-                            👥 View Donors
 
-                          </button>
-                        )
-                      }
-                      {/* BUTTONS */}
-                      <div className="mt-5 flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
-                        {/* Donate Button */}
-                        <button
-                          type="button"
-                          onClick={() => handleDonate(request.id)}
-                          className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
-                        >
-                          🩸 I Want To Donate
-                        </button>
+<button
+onClick={() => editBloodRequest(request)}
+className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold"
+>
+Edit Request
+</button>
 
-                        {/* Edit */}
-                        <button
-                          type="button"
-                          onClick={() =>
-                            editBloodRequest(request)
-                          }
-                          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                        >
-                          Edit Request
-                        </button>
 
-                        {/* Delete */}
-                        <button
-                          type="button"
-                          onClick={() =>
-                            deleteBloodRequest(
-                              request.id
-                            )
-                          }
-                          className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
-                        >
-                          Delete Request
-                        </button>
+<button
+onClick={() => deleteBloodRequest(request.id)}
+className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600"
+>
+Cancel Request
+</button>
 
-                      </div>
+</div>
+
+)
+}
 
                     </div>
 
@@ -1253,6 +1242,92 @@ export default function BloodDonationPage() {
                 )}
 
               </div>
+
+            </div>
+            <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
+
+              <h2 className="text-2xl font-bold text-slate-900">
+
+                Available Blood Requests
+
+              </h2>
+
+
+              <p className="mt-1 text-sm text-slate-500">
+
+                Help other users by donating blood.
+
+              </p>
+
+
+
+              <div className="mt-6 space-y-4">
+
+
+                {
+                  availableRequests.map((request) => (
+
+                    <div
+                      key={request.id}
+                      className="rounded-2xl border border-slate-200 p-5"
+                    >
+
+
+                      <div>
+
+                        <span className="rounded-lg bg-red-100 px-3 py-1 text-sm font-bold text-red-700">
+
+                          {formatBloodGroup(request.bloodGroup)}
+
+                        </span>
+
+
+                        <h3 className="mt-4 text-lg font-bold">
+
+                          {request.patientName}
+
+                        </h3>
+
+
+                        <p>
+                          {request.hospital}
+                        </p>
+
+
+                        <p>
+                          {request.location}
+                        </p>
+
+
+                      </div>
+
+
+
+                      <button
+
+                        onClick={() =>
+                          handleDonate(request.id)
+                        }
+
+                        className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white"
+
+                      >
+
+                        🩸 I Want To Donate
+
+                      </button>
+
+
+                    </div>
+
+                  ))
+
+                }
+
+
+              </div>
+
 
             </div>
 

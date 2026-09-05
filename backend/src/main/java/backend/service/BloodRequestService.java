@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import backend.dto.BloodRequestResponseDTO;
 import backend.entity.BloodRequest;
 import backend.entity.RequestStatus;
 import backend.entity.User;
@@ -233,8 +234,52 @@ public class BloodRequestService {
 
 
 
+public List<BloodRequestResponseDTO> getAllRequestDTO(){
 
 
+    return bloodRequestRepository
+            .findAll()
+            .stream()
+            .map(request -> 
+                new BloodRequestResponseDTO(
+
+                    request.getId(),
+
+                    request.getPatientName(),
+
+                    request.getBloodGroup() != null 
+                        ? request.getBloodGroup().toString()
+                        : null,
+
+                    request.getHospital(),
+
+                    request.getLocation(),
+
+                    request.getContactNumber(),
+
+                    request.getRequiredDate(),
+
+                    request.getUnitsNeeded(),
+
+                   request.getUrgency() != null
+        ? request.getUrgency().toString()
+        : null,
+
+                    request.getDescription(),
+
+                    request.getStatus() != null
+                        ? request.getStatus().toString()
+                        : null,
+
+                    request.getUser() != null
+                        ? request.getUser().getId()
+                        : null
+
+                )
+            )
+            .toList();
+
+}
 
     // =========================
     // GET ALL REQUESTS
