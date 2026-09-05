@@ -22,19 +22,19 @@ type BloodRequest = {
 };
 type DonationResponse = {
 
-  id:number;
+  id: number;
 
-  requestId:number;
+  requestId: number;
 
-  donorId:number;
+  donorId: number;
 
-  donorName:string;
+  donorName: string;
 
-  donorEmail:string;
+  donorEmail: string;
 
-  donorPhone:string;
+  donorPhone: string;
 
-  status:string;
+  status: string;
 
 };
 const emptyForm = {
@@ -52,17 +52,17 @@ const emptyForm = {
 
 export default function BloodDonationPage() {
   const [formData, setFormData] = useState(emptyForm);
-const [currentUser, setCurrentUser] = useState<{
-  id:number;
-  name:string;
-  email:string;
-  phone?:string;
-} | null>(null);
+  const [currentUser, setCurrentUser] = useState<{
+    id: number;
+    name: string;
+    email: string;
+    phone?: string;
+  } | null>(null);
   const [requests, setRequests] = useState<BloodRequest[]>([]);
   const [donors, setDonors] = useState<DonationResponse[]>([]);
 
-const [selectedRequestId,setSelectedRequestId] =
-useState<number | null>(null);
+  const [selectedRequestId, setSelectedRequestId] =
+    useState<number | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,50 +75,50 @@ useState<number | null>(null);
 
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  async function viewDonors(requestId:number){
+  async function viewDonors(requestId: number) {
 
 
-  try{
+    try {
 
 
-    const response = await fetch(
-      `${API_URL}/api/donation-response/request/${requestId}`
-    );
+      const response = await fetch(
+        `${API_URL}/api/donation-response/request/${requestId}`
+      );
 
 
-    if(!response.ok){
+      if (!response.ok) {
 
-      throw new Error(
-        "Failed to load donors"
+        throw new Error(
+          "Failed to load donors"
+        );
+
+      }
+
+
+      const data: DonationResponse[] =
+        await response.json();
+
+
+
+      setDonors(data);
+
+      setSelectedRequestId(requestId);
+
+
+
+    }
+    catch (error) {
+
+      console.log(error);
+
+      alert(
+        "Unable to load donors"
       );
 
     }
 
 
-    const data:DonationResponse[] =
-        await response.json();
-
-
-
-    setDonors(data);
-
-    setSelectedRequestId(requestId);
-
-
-
   }
-  catch(error){
-
-    console.log(error);
-
-    alert(
-      "Unable to load donors"
-    );
-
-  }
-
-
-}
   // =========================
   // FORM CHANGE
   // =========================
@@ -166,20 +166,20 @@ useState<number | null>(null);
   // =========================
   // INITIAL LOAD
   // =========================
-useEffect(() => {
+  useEffect(() => {
 
-  const savedUser = localStorage.getItem("user");
+    const savedUser = localStorage.getItem("user");
 
-  if(savedUser){
+    if (savedUser) {
 
-    setCurrentUser(JSON.parse(savedUser));
+      setCurrentUser(JSON.parse(savedUser));
 
-  }
+    }
 
 
-  loadBloodRequests();
+    loadBloodRequests();
 
-}, []);
+  }, []);
 
   // =========================
   // RESET FORM
@@ -192,7 +192,7 @@ useEffect(() => {
   // =========================
   // CREATE / UPDATE
   // =========================
-async function handleSubmit(
+  async function handleSubmit(
     e: React.FormEvent<HTMLFormElement>
   ) {
     e.preventDefault();
@@ -210,9 +210,9 @@ async function handleSubmit(
     try {
       const isEditing = editingId !== null;
 
-const url = isEditing
-    ? `${API_URL}/api/blood-requests/${editingId}/user/${currentUser.id}`
-    : `${API_URL}/api/blood-requests/user/${currentUser.id}`
+      const url = isEditing
+        ? `${API_URL}/api/blood-requests/${editingId}/user/${currentUser.id}`
+        : `${API_URL}/api/blood-requests/user/${currentUser.id}`
 
       const response = await fetch(url, {
         method: isEditing ? "PUT" : "POST",
@@ -442,79 +442,79 @@ const url = isEditing
     await loadBloodRequests();
   }
 
-  const handleDonate = async (requestId:number) => {
+  const handleDonate = async (requestId: number) => {
 
 
-    if(!currentUser){
+    if (!currentUser) {
 
-        alert("Please login first");
+      alert("Please login first");
 
-        return;
+      return;
 
     }
 
 
 
-    try{
+    try {
 
 
-        const response = await fetch(
-            "http://localhost:8080/api/donation-response",
-            {
+      const response = await fetch(
+        "http://localhost:8080/api/donation-response",
+        {
 
-                method:"POST",
+          method: "POST",
 
-                headers:{
-                    "Content-Type":"application/json"
-                },
-
-
-                body:JSON.stringify({
-
-                    requestId: requestId,
-
-                    donorId: currentUser.id,
-
-                    donorName: currentUser.name,
-
-                    donorEmail: currentUser.email,
-
-                    donorPhone: currentUser.phone || "Not provided"
-
-                })
-
-            }
-        );
+          headers: {
+            "Content-Type": "application/json"
+          },
 
 
+          body: JSON.stringify({
 
-        if(!response.ok){
+            requestId: requestId,
 
-            throw new Error("Donation request failed");
+            donorId: currentUser.id,
+
+            donorName: currentUser.name,
+
+            donorEmail: currentUser.email,
+
+            donorPhone: currentUser.phone || "Not provided"
+
+          })
 
         }
+      );
 
 
 
-        alert("Thank you! Your donation interest has been sent.");
+      if (!response.ok) {
+
+        throw new Error("Donation request failed");
+
+      }
+
+
+
+      alert("Thank you! Your donation interest has been sent.");
 
 
 
     }
-    catch(error){
+    catch (error) {
 
-        console.log(error);
+      console.log(error);
 
-        alert("Something went wrong");
+      alert("Something went wrong");
 
     }
 
 
-};
+  };
   // =========================
   // DELETE
   // =========================
- async function deleteBloodRequest(id: number) {
+  async function deleteBloodRequest(id: number) {
 
 
     if (!currentUser) {
@@ -540,10 +540,12 @@ const url = isEditing
       );
 
       if (!response.ok) {
-        throw new Error(
-          "Failed to delete blood request"
-        );
-      }
+
+    const errorText = await response.text();
+
+    throw new Error(errorText);
+
+}
 
       setRequests((previousRequests) =>
         previousRequests.filter(
@@ -558,16 +560,22 @@ const url = isEditing
       setMessage(
         "Blood request deleted successfully."
       );
-    } catch (error) {
-      console.error(
+    } 
+   catch (error) {
+
+    console.error(
         "Delete blood request error:",
         error
-      );
+    );
 
-      alert(
-        "Unable to delete blood request."
-      );
-    }
+
+    alert(
+        error instanceof Error
+            ? error.message
+            : "Unable to cancel request"
+    );
+
+}
   }
 
   // =========================
@@ -581,270 +589,433 @@ const url = isEditing
       .replace("_NEGATIVE", "-");
   }
 
-return (
-  
+  return (
+
     <ProtectedRoute>
 
       <main className="min-h-screen bg-slate-50">
 
-      {/* HEADER */}
-      <section className="border-b border-red-100 bg-white">
+        {/* HEADER */}
+        <section className="border-b border-red-100 bg-white">
 
-        <div className="mx-auto max-w-7xl px-6 py-10">
+          <div className="mx-auto max-w-7xl px-6 py-10">
 
-          <div className="inline-flex rounded-full bg-red-50 px-4 py-2 text-sm font-semibold text-red-700">
-            Emergency Blood Support
-          </div>
-
-          <h1 className="mt-4 text-4xl font-bold text-slate-900">
-            Blood Donation
-          </h1>
-
-          <p className="mt-3 max-w-2xl leading-7 text-slate-600">
-            Create an emergency blood request and connect
-            with community members who may be able to help.
-          </p>
-
-        </div>
-
-      </section>
-
-      {/* MAIN CONTENT */}
-      <section className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[420px_1fr]">
-
-        {/* ================= FORM ================= */}
-        <div className="h-fit rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-
-          <div className="flex items-start justify-between gap-4">
-
-            <div>
-              <h2 className="text-2xl font-bold text-slate-900">
-
-                {editingId !== null
-                  ? "Update Blood Request"
-                  : "Create Blood Request"}
-
-              </h2>
-
-              <p className="mt-2 text-sm text-slate-500">
-
-                {editingId !== null
-                  ? "Edit the information and save your changes."
-                  : "Please provide accurate information for the patient."}
-
-              </p>
+            <div className="inline-flex rounded-full bg-red-50 px-4 py-2 text-sm font-semibold text-red-700">
+              Emergency Blood Support
             </div>
 
-            {editingId !== null && (
-              <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">
-                Editing
-              </span>
-            )}
+            <h1 className="mt-4 text-4xl font-bold text-slate-900">
+              Blood Donation
+            </h1>
+
+            <p className="mt-3 max-w-2xl leading-7 text-slate-600">
+              Create an emergency blood request and connect
+              with community members who may be able to help.
+            </p>
 
           </div>
 
-          <form
-            onSubmit={handleSubmit}
-            className="mt-7 space-y-5"
-          >
+        </section>
 
-            {/* Patient */}
-            <div>
+        {/* MAIN CONTENT */}
+        <section className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[420px_1fr]">
 
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Patient Name
-              </label>
+          {/* ================= FORM ================= */}
+          <div className="h-fit rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
-              <input
-                type="text"
-                name="patientName"
-                value={formData.patientName}
-                onChange={handleChange}
-                required
-                placeholder="Enter patient name"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
-              />
+            <div className="flex items-start justify-between gap-4">
 
-            </div>
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900">
 
-            {/* Blood Group */}
-            <div>
+                  {editingId !== null
+                    ? "Update Blood Request"
+                    : "Create Blood Request"}
 
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Blood Group
-              </label>
+                </h2>
 
-              <select
-                name="bloodGroup"
-                value={formData.bloodGroup}
-                onChange={handleChange}
-                required
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-red-500"
-              >
+                <p className="mt-2 text-sm text-slate-500">
 
-                <option value="">
-                  Select blood group
-                </option>
+                  {editingId !== null
+                    ? "Edit the information and save your changes."
+                    : "Please provide accurate information for the patient."}
 
-                <option value="A_POSITIVE">A+</option>
-                <option value="A_NEGATIVE">A-</option>
+                </p>
+              </div>
 
-                <option value="B_POSITIVE">B+</option>
-                <option value="B_NEGATIVE">B-</option>
-
-                <option value="AB_POSITIVE">AB+</option>
-                <option value="AB_NEGATIVE">AB-</option>
-
-                <option value="O_POSITIVE">O+</option>
-                <option value="O_NEGATIVE">O-</option>
-
-              </select>
+              {editingId !== null && (
+                <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">
+                  Editing
+                </span>
+              )}
 
             </div>
 
-            {/* Hospital */}
-            <div>
+            <form
+              onSubmit={handleSubmit}
+              className="mt-7 space-y-5"
+            >
 
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Hospital
-              </label>
-
-              <input
-                type="text"
-                name="hospital"
-                value={formData.hospital}
-                onChange={handleChange}
-                required
-                placeholder="Hospital name"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-red-500"
-              />
-
-            </div>
-
-            {/* Location */}
-            <div>
-
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Location
-              </label>
-
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                required
-                placeholder="e.g. Dhanmondi, Dhaka"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-red-500"
-              />
-
-            </div>
-
-            {/* Contact */}
-            <div>
-
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Contact Number
-              </label>
-
-              <input
-                type="tel"
-                name="contactNumber"
-                value={formData.contactNumber}
-                onChange={handleChange}
-                required
-                placeholder="01XXXXXXXXX"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-red-500"
-              />
-
-            </div>
-
-            {/* Date + Units */}
-            <div className="grid grid-cols-2 gap-4">
-
+              {/* Patient */}
               <div>
 
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
-                  Required Date
+                  Patient Name
                 </label>
 
                 <input
-                  type="date"
-                  name="requiredDate"
-                  value={formData.requiredDate}
+                  type="text"
+                  name="patientName"
+                  value={formData.patientName}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-xl border border-slate-300 px-3 py-3 outline-none focus:border-red-500"
+                  placeholder="Enter patient name"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
                 />
 
               </div>
 
+              {/* Blood Group */}
               <div>
 
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
-                  Units
+                  Blood Group
+                </label>
+
+                <select
+                  name="bloodGroup"
+                  value={formData.bloodGroup}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-red-500"
+                >
+
+                  <option value="">
+                    Select blood group
+                  </option>
+
+                  <option value="A_POSITIVE">A+</option>
+                  <option value="A_NEGATIVE">A-</option>
+
+                  <option value="B_POSITIVE">B+</option>
+                  <option value="B_NEGATIVE">B-</option>
+
+                  <option value="AB_POSITIVE">AB+</option>
+                  <option value="AB_NEGATIVE">AB-</option>
+
+                  <option value="O_POSITIVE">O+</option>
+                  <option value="O_NEGATIVE">O-</option>
+
+                </select>
+
+              </div>
+
+              {/* Hospital */}
+              <div>
+
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Hospital
                 </label>
 
                 <input
-                  type="number"
-                  min="1"
-                  name="unitsNeeded"
-                  value={formData.unitsNeeded}
+                  type="text"
+                  name="hospital"
+                  value={formData.hospital}
                   onChange={handleChange}
                   required
-                  placeholder="2"
+                  placeholder="Hospital name"
                   className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-red-500"
                 />
 
               </div>
 
-            </div>
-
-            {/* Urgency */}
-            <div>
-
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Urgency
-              </label>
-
-              <select
-                name="urgency"
-                value={formData.urgency}
-                onChange={handleChange}
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-red-500"
-              >
-
-                <option value="NORMAL">
-                  Normal
-                </option>
-
-                <option value="URGENT">
-                  Urgent
-                </option>
-
-                <option value="CRITICAL">
-                  Critical
-                </option>
-
-              </select>
-
-            </div>
-
-            {/* Status only during Edit */}
-            {editingId !== null && (
-
+              {/* Location */}
               <div>
 
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
-                  Status
+                  Location
+                </label>
+
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  required
+                  placeholder="e.g. Dhanmondi, Dhaka"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-red-500"
+                />
+
+              </div>
+
+              {/* Contact */}
+              <div>
+
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Contact Number
+                </label>
+
+                <input
+                  type="tel"
+                  name="contactNumber"
+                  value={formData.contactNumber}
+                  onChange={handleChange}
+                  required
+                  placeholder="01XXXXXXXXX"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-red-500"
+                />
+
+              </div>
+
+              {/* Date + Units */}
+              <div className="grid grid-cols-2 gap-4">
+
+                <div>
+
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Required Date
+                  </label>
+
+                  <input
+                    type="date"
+                    name="requiredDate"
+                    value={formData.requiredDate}
+                    onChange={handleChange}
+                    required
+                    className="w-full rounded-xl border border-slate-300 px-3 py-3 outline-none focus:border-red-500"
+                  />
+
+                </div>
+
+                <div>
+
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Units
+                  </label>
+
+                  <input
+                    type="number"
+                    min="1"
+                    name="unitsNeeded"
+                    value={formData.unitsNeeded}
+                    onChange={handleChange}
+                    required
+                    placeholder="2"
+                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-red-500"
+                  />
+
+                </div>
+
+              </div>
+
+              {/* Urgency */}
+              <div>
+
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Urgency
                 </label>
 
                 <select
-                  name="status"
-                  value={formData.status}
+                  name="urgency"
+                  value={formData.urgency}
                   onChange={handleChange}
                   className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-red-500"
                 >
+
+                  <option value="NORMAL">
+                    Normal
+                  </option>
+
+                  <option value="URGENT">
+                    Urgent
+                  </option>
+
+                  <option value="CRITICAL">
+                    Critical
+                  </option>
+
+                </select>
+
+              </div>
+
+              {/* Status only during Edit */}
+              {editingId !== null && (
+
+                <div>
+
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Status
+                  </label>
+
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-red-500"
+                  >
+
+                    <option value="OPEN">
+                      Open
+                    </option>
+
+                    <option value="FULFILLED">
+                      Fulfilled
+                    </option>
+
+                    <option value="CANCELLED">
+                      Cancelled
+                    </option>
+
+                  </select>
+
+                </div>
+
+              )}
+
+              {/* Description */}
+              <div>
+
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Additional Information
+                </label>
+
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows={4}
+                  placeholder="Add important information..."
+                  className="w-full resize-none rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-red-500"
+                />
+
+              </div>
+
+              {/* Message */}
+              {message && (
+
+                <div className="rounded-xl bg-slate-100 px-4 py-3 text-sm font-medium text-slate-700">
+                  {message}
+                </div>
+
+              )}
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={isSubmitting || !currentUser}
+                className="w-full rounded-xl bg-red-600 px-5 py-3.5 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+
+                {isSubmitting
+                  ? editingId !== null
+                    ? "Updating Request..."
+                    : "Creating Request..."
+                  : editingId !== null
+                    ? "Save Changes"
+                    : "Create Blood Request"}
+
+              </button>
+
+              {/* Cancel Edit */}
+              {editingId !== null && (
+
+                <button
+                  type="button"
+                  onClick={cancelEdit}
+                  className="w-full rounded-xl border border-slate-300 px-5 py-3 font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  Cancel Edit
+                </button>
+
+              )}
+
+            </form>
+
+          </div>
+
+          {/* ================= REQUESTS ================= */}
+          <div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
+              <h2 className="text-2xl font-bold text-slate-900">
+                Active Blood Requests
+              </h2>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Emergency blood requests from the EcoKnot community.
+              </p>
+
+              {/* FILTERS */}
+              <div className="mt-6 grid gap-3 md:grid-cols-3">
+
+                {/* Search */}
+                <div className="flex">
+
+                  <input
+                    type="text"
+                    value={searchLocation}
+                    onChange={(e) =>
+                      setSearchLocation(e.target.value)
+                    }
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        searchByLocation();
+                      }
+                    }}
+                    placeholder="Search location"
+                    className="min-w-0 flex-1 rounded-l-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-red-500"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={searchByLocation}
+                    className="rounded-r-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+                  >
+                    Search
+                  </button>
+
+                </div>
+
+                {/* Blood Group */}
+                <select
+                  value={bloodGroupFilter}
+                  onChange={(e) =>
+                    filterByBloodGroup(e.target.value)
+                  }
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none"
+                >
+
+                  <option value="">
+                    All Blood Groups
+                  </option>
+
+                  <option value="A_POSITIVE">A+</option>
+                  <option value="A_NEGATIVE">A-</option>
+
+                  <option value="B_POSITIVE">B+</option>
+                  <option value="B_NEGATIVE">B-</option>
+
+                  <option value="AB_POSITIVE">AB+</option>
+                  <option value="AB_NEGATIVE">AB-</option>
+
+                  <option value="O_POSITIVE">O+</option>
+                  <option value="O_NEGATIVE">O-</option>
+
+                </select>
+
+                {/* Status */}
+                <select
+                  value={statusFilter}
+                  onChange={(e) =>
+                    filterByStatus(e.target.value)
+                  }
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none"
+                >
+
+                  <option value="">
+                    All Status
+                  </option>
 
                   <option value="OPEN">
                     Open
@@ -862,483 +1033,318 @@ return (
 
               </div>
 
-            )}
-
-            {/* Description */}
-            <div>
-
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Additional Information
-              </label>
-
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={4}
-                placeholder="Add important information..."
-                className="w-full resize-none rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-red-500"
-              />
-
-            </div>
-
-            {/* Message */}
-            {message && (
-
-              <div className="rounded-xl bg-slate-100 px-4 py-3 text-sm font-medium text-slate-700">
-                {message}
-              </div>
-
-            )}
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isSubmitting || !currentUser}
-              className="w-full rounded-xl bg-red-600 px-5 py-3.5 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-
-              {isSubmitting
-                ? editingId !== null
-                  ? "Updating Request..."
-                  : "Creating Request..."
-                : editingId !== null
-                ? "Save Changes"
-                : "Create Blood Request"}
-
-            </button>
-
-            {/* Cancel Edit */}
-            {editingId !== null && (
-
+              {/* Reset filters */}
               <button
                 type="button"
-                onClick={cancelEdit}
-                className="w-full rounded-xl border border-slate-300 px-5 py-3 font-semibold text-slate-700 transition hover:bg-slate-50"
+                onClick={resetFilters}
+                className="mt-3 text-sm font-semibold text-red-600 hover:text-red-700"
               >
-                Cancel Edit
+                Reset Filters
               </button>
 
-            )}
+              {/* LIST */}
+              <div className="mt-8 space-y-4">
 
-          </form>
+                {isLoading ? (
 
-        </div>
-
-        {/* ================= REQUESTS ================= */}
-        <div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-
-            <h2 className="text-2xl font-bold text-slate-900">
-              Active Blood Requests
-            </h2>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Emergency blood requests from the EcoKnot community.
-            </p>
-
-            {/* FILTERS */}
-            <div className="mt-6 grid gap-3 md:grid-cols-3">
-
-              {/* Search */}
-              <div className="flex">
-
-                <input
-                  type="text"
-                  value={searchLocation}
-                  onChange={(e) =>
-                    setSearchLocation(e.target.value)
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      searchByLocation();
-                    }
-                  }}
-                  placeholder="Search location"
-                  className="min-w-0 flex-1 rounded-l-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-red-500"
-                />
-
-                <button
-                  type="button"
-                  onClick={searchByLocation}
-                  className="rounded-r-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
-                >
-                  Search
-                </button>
-
-              </div>
-
-              {/* Blood Group */}
-              <select
-                value={bloodGroupFilter}
-                onChange={(e) =>
-                  filterByBloodGroup(e.target.value)
-                }
-                className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none"
-              >
-
-                <option value="">
-                  All Blood Groups
-                </option>
-
-                <option value="A_POSITIVE">A+</option>
-                <option value="A_NEGATIVE">A-</option>
-
-                <option value="B_POSITIVE">B+</option>
-                <option value="B_NEGATIVE">B-</option>
-
-                <option value="AB_POSITIVE">AB+</option>
-                <option value="AB_NEGATIVE">AB-</option>
-
-                <option value="O_POSITIVE">O+</option>
-                <option value="O_NEGATIVE">O-</option>
-
-              </select>
-
-              {/* Status */}
-              <select
-                value={statusFilter}
-                onChange={(e) =>
-                  filterByStatus(e.target.value)
-                }
-                className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none"
-              >
-
-                <option value="">
-                  All Status
-                </option>
-
-                <option value="OPEN">
-                  Open
-                </option>
-
-                <option value="FULFILLED">
-                  Fulfilled
-                </option>
-
-                <option value="CANCELLED">
-                  Cancelled
-                </option>
-
-              </select>
-
-            </div>
-
-            {/* Reset filters */}
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="mt-3 text-sm font-semibold text-red-600 hover:text-red-700"
-            >
-              Reset Filters
-            </button>
-
-            {/* LIST */}
-            <div className="mt-8 space-y-4">
-
-              {isLoading ? (
-
-                <div className="rounded-2xl border border-slate-200 p-8 text-center text-slate-500">
-                  Loading blood requests...
-                </div>
-
-              ) : requests.length === 0 ? (
-
-                <div className="rounded-2xl border-2 border-dashed border-slate-200 px-6 py-14 text-center">
-
-                  <div className="text-4xl">
-                    🩸
+                  <div className="rounded-2xl border border-slate-200 p-8 text-center text-slate-500">
+                    Loading blood requests...
                   </div>
 
-                  <h3 className="mt-4 font-bold text-slate-800">
-                    No blood requests found
-                  </h3>
+                ) : requests.length === 0 ? (
 
-                </div>
+                  <div className="rounded-2xl border-2 border-dashed border-slate-200 px-6 py-14 text-center">
 
-              ) : (
+                    <div className="text-4xl">
+                      🩸
+                    </div>
 
-                requests.map((request) => (
+                    <h3 className="mt-4 font-bold text-slate-800">
+                      No blood requests found
+                    </h3>
 
-                  <div
-                    key={request.id}
-                    className="rounded-2xl border border-slate-200 bg-white p-5 transition hover:shadow-md"
-                  >
+                  </div>
 
-                    {/* Top */}
-                    <div className="flex items-start justify-between gap-4">
+                ) : (
 
-                      <div>
+                  requests.map((request) => (
 
-                        <div className="flex flex-wrap items-center gap-2">
+                    <div
+                      key={request.id}
+                      className="rounded-2xl border border-slate-200 bg-white p-5 transition hover:shadow-md"
+                    >
 
-                          {/* Blood */}
-                          <span className="rounded-lg bg-red-100 px-3 py-1 text-sm font-bold text-red-700">
+                      {/* Top */}
+                      <div className="flex items-start justify-between gap-4">
 
-                            {formatBloodGroup(
-                              request.bloodGroup
-                            )}
+                        <div>
 
-                          </span>
+                          <div className="flex flex-wrap items-center gap-2">
 
-                          {/* Urgency */}
-                          <span
-                            className={`rounded-lg px-3 py-1 text-xs font-bold ${
-                              request.urgency === "CRITICAL"
-                                ? "bg-red-100 text-red-700"
-                                : request.urgency === "URGENT"
-                                ? "bg-amber-100 text-amber-700"
-                                : "bg-green-100 text-green-700"
-                            }`}
-                          >
+                            {/* Blood */}
+                            <span className="rounded-lg bg-red-100 px-3 py-1 text-sm font-bold text-red-700">
 
-                            {request.urgency}
+                              {formatBloodGroup(
+                                request.bloodGroup
+                              )}
 
-                          </span>
+                            </span>
+
+                            {/* Urgency */}
+                            <span
+                              className={`rounded-lg px-3 py-1 text-xs font-bold ${request.urgency === "CRITICAL"
+                                  ? "bg-red-100 text-red-700"
+                                  : request.urgency === "URGENT"
+                                    ? "bg-amber-100 text-amber-700"
+                                    : "bg-green-100 text-green-700"
+                                }`}
+                            >
+
+                              {request.urgency}
+
+                            </span>
+
+                          </div>
+
+                          <h3 className="mt-4 text-lg font-bold text-slate-900">
+                            {request.patientName}
+                          </h3>
+
+                          <p className="mt-1 text-sm font-medium text-slate-600">
+                            {request.hospital}
+                          </p>
+
+                          <p className="mt-1 text-sm text-slate-500">
+                            {request.location}
+                          </p>
 
                         </div>
 
-                        <h3 className="mt-4 text-lg font-bold text-slate-900">
-                          {request.patientName}
-                        </h3>
+                        {/* Units */}
+                        <div className="text-right">
 
-                        <p className="mt-1 text-sm font-medium text-slate-600">
-                          {request.hospital}
-                        </p>
+                          <p className="text-xs font-semibold uppercase text-slate-400">
+                            Units Needed
+                          </p>
 
-                        <p className="mt-1 text-sm text-slate-500">
-                          {request.location}
-                        </p>
+                          <p className="mt-1 text-2xl font-bold text-slate-900">
+                            {request.unitsNeeded}
+                          </p>
+
+                        </div>
 
                       </div>
 
-                      {/* Units */}
-                      <div className="text-right">
+                      {/* Details */}
+                      <div className="mt-5 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-2">
 
-                        <p className="text-xs font-semibold uppercase text-slate-400">
-                          Units Needed
+                        <div>
+
+                          <p className="text-xs font-semibold uppercase text-slate-400">
+                            Required Date
+                          </p>
+
+                          <p className="mt-1 text-sm font-medium text-slate-700">
+                            {request.requiredDate}
+                          </p>
+
+                        </div>
+
+                        <div>
+
+                          <p className="text-xs font-semibold uppercase text-slate-400">
+                            Contact
+                          </p>
+
+                          <p className="mt-1 text-sm font-medium text-slate-700">
+                            {request.contactNumber}
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                      {/* Description */}
+                      {request.description && (
+
+                        <p className="mt-4 text-sm leading-6 text-slate-600">
+                          {request.description}
                         </p>
 
-                        <p className="mt-1 text-2xl font-bold text-slate-900">
-                          {request.unitsNeeded}
-                        </p>
+                      )}
+
+                      {/* Status */}
+                      <div className="mt-5">
+
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-semibold ${request.status === "OPEN"
+                              ? "bg-green-100 text-green-700"
+                              : request.status === "FULFILLED"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-slate-200 text-slate-700"
+                            }`}
+                        >
+
+                          {request.status}
+
+                        </span>
+
+                      </div>
+                      {
+                        currentUser &&
+                        request.id &&
+                        (
+                          <button
+
+                            onClick={() =>
+                              viewDonors(request.id)
+                            }
+
+                            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+
+                          >
+
+                            👥 View Donors
+
+                          </button>
+                        )
+                      }
+                      {/* BUTTONS */}
+                      <div className="mt-5 flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
+                        {/* Donate Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleDonate(request.id)}
+                          className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+                        >
+                          🩸 I Want To Donate
+                        </button>
+
+                        {/* Edit */}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            editBloodRequest(request)
+                          }
+                          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                        >
+                          Edit Request
+                        </button>
+
+                        {/* Delete */}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            deleteBloodRequest(
+                              request.id
+                            )
+                          }
+                          className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                        >
+                          Delete Request
+                        </button>
 
                       </div>
 
                     </div>
 
-                    {/* Details */}
-                    <div className="mt-5 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-2">
+                  ))
 
-                      <div>
+                )}
 
-                        <p className="text-xs font-semibold uppercase text-slate-400">
-                          Required Date
-                        </p>
-
-                        <p className="mt-1 text-sm font-medium text-slate-700">
-                          {request.requiredDate}
-                        </p>
-
-                      </div>
-
-                      <div>
-
-                        <p className="text-xs font-semibold uppercase text-slate-400">
-                          Contact
-                        </p>
-
-                        <p className="mt-1 text-sm font-medium text-slate-700">
-                          {request.contactNumber}
-                        </p>
-
-                      </div>
-
-                    </div>
-
-                    {/* Description */}
-                    {request.description && (
-
-                      <p className="mt-4 text-sm leading-6 text-slate-600">
-                        {request.description}
-                      </p>
-
-                    )}
-
-                    {/* Status */}
-                    <div className="mt-5">
-
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                          request.status === "OPEN"
-                            ? "bg-green-100 text-green-700"
-                            : request.status === "FULFILLED"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-slate-200 text-slate-700"
-                        }`}
-                      >
-
-                        {request.status}
-
-                      </span>
-
-                    </div>
-{
- currentUser &&
- request.id &&
- (
- <button
-
- onClick={() =>
-    viewDonors(request.id)
- }
-
- className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-
- >
-
- 👥 View Donors
-
- </button>
- )
-}
-                    {/* BUTTONS */}
-                    <div className="mt-5 flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
-                      {/* Donate Button */}
-<button
-  type="button"
-  onClick={() => handleDonate(request.id)}
-  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
->
-  🩸 I Want To Donate
-</button>
-
-                      {/* Edit */}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          editBloodRequest(request)
-                        }
-                        className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                      >
-                        Edit Request
-                      </button>
-
-                      {/* Delete */}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          deleteBloodRequest(
-                            request.id
-                          )
-                        }
-                        className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
-                      >
-                        Delete Request
-                      </button>
-
-                    </div>
-
-                  </div>
-
-                ))
-
-              )}
+              </div>
 
             </div>
 
           </div>
+          {
+            selectedRequestId && (
 
-        </div>
-        {
-selectedRequestId && (
-
-<div className="mt-8 rounded-2xl border bg-white p-6">
+              <div className="mt-8 rounded-2xl border bg-white p-6">
 
 
-<h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold">
 
-Interested Donors
+                  Interested Donors
 
-</h2>
+                </h2>
 
 
 
-{
-donors.length === 0 ? (
+                {
+                  donors.length === 0 ? (
 
-<p className="mt-4 text-slate-500">
+                    <p className="mt-4 text-slate-500">
 
-No donors yet.
+                      No donors yet.
 
-</p>
+                    </p>
 
-)
+                  )
 
-:
+                    :
 
-(
+                    (
 
-<div className="mt-5 space-y-3">
-
-
-{
-donors.map((donor)=>(
-
-<div
-key={donor.id}
-className="rounded-xl border p-4"
->
+                      <div className="mt-5 space-y-3">
 
 
-<h3 className="font-bold">
+                        {
+                          donors.map((donor) => (
 
-{donor.donorName}
-
-</h3>
-
-
-<p>
-Email: {donor.donorEmail}
-</p>
+                            <div
+                              key={donor.id}
+                              className="rounded-xl border p-4"
+                            >
 
 
-<p>
-Phone: {donor.donorPhone}
-</p>
+                              <h3 className="font-bold">
+
+                                {donor.donorName}
+
+                              </h3>
 
 
-<span className="text-sm text-green-600">
-
-{donor.status}
-
-</span>
+                              <p>
+                                Email: {donor.donorEmail}
+                              </p>
 
 
-</div>
-
-))
-
-}
+                              <p>
+                                Phone: {donor.donorPhone}
+                              </p>
 
 
-</div>
+                              <span className="text-sm text-green-600">
 
-)
+                                {donor.status}
 
-}
+                              </span>
+
+
+                            </div>
+
+                          ))
+
+                        }
+
+
+                      </div>
+
+                    )
+
+                }
 
 
 
-</div>
+              </div>
 
-)
-}
+            )
+          }
 
-      </section>
+        </section>
 
-    </main>
-     </ProtectedRoute>
+      </main>
+    </ProtectedRoute>
   );
 }
