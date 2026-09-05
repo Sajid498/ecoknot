@@ -3,6 +3,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
@@ -52,6 +53,8 @@ const emptyForm = {
 };
 
 export default function BloodDonationPage() {
+
+  const router = useRouter();
   const [formData, setFormData] = useState(emptyForm);
   const [currentUser, setCurrentUser] = useState<{
     id: number;
@@ -1235,6 +1238,7 @@ Cancel Request
 )
 }
 
+
                     </div>
 
                   ))
@@ -1390,11 +1394,23 @@ Cancel Request
                               </p>
 
 
-                              <span className="text-sm text-green-600">
+                             <span className="text-sm text-green-600">
 
-                                {donor.status}
+    {donor.status}
 
-                              </span>
+</span>
+
+
+<button
+    onClick={() =>
+        router.push(
+            `/chat/${selectedRequestId}/${donor.donorId}`
+        )
+    }
+    className="mt-3 rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white"
+>
+    💬 Chat
+</button>
 
 
                             </div>

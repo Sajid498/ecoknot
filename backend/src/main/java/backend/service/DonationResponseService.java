@@ -30,17 +30,20 @@ public class DonationResponseService {
 
 
 
+
     // Create donor response
 
     public DonationResponse createResponse(
             DonationResponse response
     ){
 
-        response.setStatus("Interested");
+        response.setStatus("PENDING");
 
         return donationResponseRepository.save(response);
 
     }
+
+
 
 
 
@@ -53,13 +56,7 @@ public class DonationResponseService {
     ){
 
         return donationResponseRepository
-                .findAll()
-                .stream()
-                .filter(
-                    response -> 
-                    response.getRequestId().equals(requestId)
-                )
-                .toList();
+                .findByRequestId(requestId);
 
     }
 
@@ -67,7 +64,9 @@ public class DonationResponseService {
 
 
 
-    // Update donor response status
+
+
+    // Accept or Reject donor response
 
     public DonationResponse updateStatus(
             Long id,
@@ -90,6 +89,8 @@ public class DonationResponseService {
         return donationResponseRepository.save(response);
 
     }
+
+
 
 
 

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import backend.dto.BloodRequestResponseDTO;
+import backend.entity.BloodGroup;
 import backend.entity.BloodRequest;
 import backend.entity.RequestStatus;
 import backend.entity.User;
@@ -25,7 +26,6 @@ public class BloodRequestService {
 
 
 
-
     public BloodRequestService(
             BloodRequestRepository bloodRequestRepository,
             UserRepository userRepository
@@ -39,10 +39,7 @@ public class BloodRequestService {
 
 
 
-
-    // =========================
     // CREATE BLOOD REQUEST
-    // =========================
 
     public BloodRequest createBloodRequest(
             Long userId,
@@ -71,10 +68,7 @@ public class BloodRequestService {
 
 
 
-
-    // =========================
     // UPDATE BLOOD REQUEST
-    // =========================
 
     public BloodRequest updateBloodRequest(
             Long requestId,
@@ -100,14 +94,11 @@ public class BloodRequestService {
                         .equals(userId)
         ) {
 
-
             throw new RuntimeException(
                     "You cannot edit another user's request"
             );
 
-
         }
-
 
 
 
@@ -115,46 +106,37 @@ public class BloodRequestService {
                 updatedRequest.getPatientName()
         );
 
-
         existingRequest.setBloodGroup(
                 updatedRequest.getBloodGroup()
         );
-
 
         existingRequest.setHospital(
                 updatedRequest.getHospital()
         );
 
-
         existingRequest.setLocation(
                 updatedRequest.getLocation()
         );
-
 
         existingRequest.setContactNumber(
                 updatedRequest.getContactNumber()
         );
 
-
         existingRequest.setRequiredDate(
                 updatedRequest.getRequiredDate()
         );
-
 
         existingRequest.setUnitsNeeded(
                 updatedRequest.getUnitsNeeded()
         );
 
-
         existingRequest.setUrgency(
                 updatedRequest.getUrgency()
         );
 
-
         existingRequest.setDescription(
                 updatedRequest.getDescription()
         );
-
 
 
         return bloodRequestRepository.save(existingRequest);
@@ -167,11 +149,7 @@ public class BloodRequestService {
 
 
 
-
-
-    // =========================
     // CANCEL BLOOD REQUEST
-    // =========================
 
     public BloodRequest cancelBloodRequest(
             Long requestId,
@@ -192,14 +170,11 @@ public class BloodRequestService {
 
         if(request.getUser() == null){
 
-
             throw new RuntimeException(
                     "Request has no owner"
             );
 
-
         }
-
 
 
 
@@ -208,21 +183,17 @@ public class BloodRequestService {
                 .equals(userId)
         ) {
 
-
             throw new RuntimeException(
                     "You cannot cancel another user's request"
             );
 
-
         }
-
 
 
 
         request.setStatus(
                 RequestStatus.CANCELLED
         );
-
 
 
         return bloodRequestRepository.save(request);
@@ -234,62 +205,55 @@ public class BloodRequestService {
 
 
 
-public List<BloodRequestResponseDTO> getAllRequestDTO(){
 
 
-    return bloodRequestRepository
-            .findAll()
-            .stream()
-            .map(request -> 
-                new BloodRequestResponseDTO(
+    // GET ALL REQUESTS WITH USER ID
 
-                    request.getId(),
+    public List<BloodRequestResponseDTO> getAllRequestDTO(){
 
-                    request.getPatientName(),
 
-                    request.getBloodGroup() != null 
-                        ? request.getBloodGroup().toString()
-                        : null,
+        return bloodRequestRepository
+                .findAll()
+                .stream()
+                .map(request ->
 
-                    request.getHospital(),
+                    new BloodRequestResponseDTO(
 
-                    request.getLocation(),
+                            request.getId(),
 
-                    request.getContactNumber(),
+                            request.getPatientName(),
 
-                    request.getRequiredDate(),
+                            request.getBloodGroup() != null
+                                    ? request.getBloodGroup().toString()
+                                    : null,
 
-                    request.getUnitsNeeded(),
+                            request.getHospital(),
 
-                   request.getUrgency() != null
-        ? request.getUrgency().toString()
-        : null,
+                            request.getLocation(),
 
-                    request.getDescription(),
+                            request.getContactNumber(),
 
-                    request.getStatus() != null
-                        ? request.getStatus().toString()
-                        : null,
+                            request.getRequiredDate(),
 
-                    request.getUser() != null
-                        ? request.getUser().getId()
-                        : null
+                            request.getUnitsNeeded(),
 
+                            request.getUrgency() != null
+                                    ? request.getUrgency().toString()
+                                    : null,
+
+                            request.getDescription(),
+
+                            request.getStatus() != null
+                                    ? request.getStatus().toString()
+                                    : null,
+
+                            request.getUser() != null
+                                    ? request.getUser().getId()
+                                    : null
+
+                    )
                 )
-            )
-            .toList();
-
-}
-
-    // =========================
-    // GET ALL REQUESTS
-    // =========================
-
-    public List<BloodRequest> getAllRequests(){
-
-
-        return bloodRequestRepository.findAll();
-
+                .toList();
 
     }
 
@@ -299,18 +263,47 @@ public List<BloodRequestResponseDTO> getAllRequestDTO(){
 
 
 
-    // =========================
+
+    // GET ALL REQUESTS
+
+    public List<BloodRequest> getAllRequests(){
+
+        return bloodRequestRepository.findAll();
+
+    }
+
+
+
+
+
+
+
+    // GET REQUESTS BY BLOOD GROUP
+
+    public List<BloodRequest> getRequestsByBloodGroup(
+            BloodGroup bloodGroup
+    ){
+
+        return bloodRequestRepository
+                .findByBloodGroup(bloodGroup);
+
+    }
+
+
+
+
+
+
+
+
     // GET USER REQUESTS
-    // =========================
 
     public List<BloodRequest> getRequestsByUser(
             Long userId
     ){
 
-
         return bloodRequestRepository
                 .findByUserId(userId);
-
 
     }
 

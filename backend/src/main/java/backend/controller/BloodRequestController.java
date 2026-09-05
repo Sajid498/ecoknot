@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import backend.dto.BloodRequestResponseDTO;
+import backend.entity.BloodGroup;
 import backend.entity.BloodRequest;
 import backend.service.BloodRequestService;
 
@@ -40,6 +41,10 @@ public class BloodRequestController {
 
 
 
+
+
+
+    // Update blood request (only owner)
     @PutMapping("/{requestId}/user/{userId}")
     public BloodRequest updateRequest(
             @PathVariable Long requestId,
@@ -59,6 +64,10 @@ public class BloodRequestController {
 
 
 
+
+
+
+    // Cancel blood request (only owner)
     @DeleteMapping("/{requestId}/user/{userId}")
     public BloodRequest cancelRequest(
             @PathVariable Long requestId,
@@ -71,6 +80,8 @@ public class BloodRequestController {
         );
 
     }
+
+
 
 
 
@@ -96,6 +107,8 @@ public class BloodRequestController {
 
 
 
+
+
     // Get all requests with owner information
     @GetMapping
     public List<BloodRequestResponseDTO> getAllRequests(){
@@ -103,6 +116,25 @@ public class BloodRequestController {
         return bloodRequestService.getAllRequestDTO();
 
     }
+
+
+
+
+
+
+
+
+    // Filter requests by blood group
+    @GetMapping("/blood-group/{bloodGroup}")
+    public List<BloodRequest> getByBloodGroup(
+            @PathVariable BloodGroup bloodGroup
+    ){
+
+        return bloodRequestService
+                .getRequestsByBloodGroup(bloodGroup);
+
+    }
+
 
 
 }

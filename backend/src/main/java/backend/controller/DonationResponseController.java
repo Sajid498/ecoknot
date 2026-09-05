@@ -25,9 +25,7 @@ import backend.service.DonationResponseService;
 public class DonationResponseController {
 
 
-
     private final DonationResponseService donationResponseService;
-
 
 
     public DonationResponseController(
@@ -40,11 +38,7 @@ public class DonationResponseController {
 
 
 
-
-
-
     // Donor clicks "I Want To Donate"
-
     @PostMapping
     public DonationResponse createResponse(
             @RequestBody DonationResponse response
@@ -56,12 +50,7 @@ public class DonationResponseController {
 
 
 
-
-
-
-
     // Get donors for a specific blood request
-
     @GetMapping("/request/{requestId}")
     public List<DonationResponse> getDonorsByRequest(
             @PathVariable Long requestId
@@ -74,12 +63,7 @@ public class DonationResponseController {
 
 
 
-
-
-
-
-    // Update donation status
-
+    // Accept or Reject donor
     @PutMapping("/{id}")
     public DonationResponse updateStatus(
             @PathVariable Long id,
@@ -93,12 +77,7 @@ public class DonationResponseController {
 
 
 
-
-
-
-
     // Delete donation response
-
     @DeleteMapping("/{id}")
     public String deleteResponse(
             @PathVariable Long id
@@ -109,6 +88,5 @@ public class DonationResponseController {
         return "Donation response deleted successfully";
 
     }
-
 
 }
