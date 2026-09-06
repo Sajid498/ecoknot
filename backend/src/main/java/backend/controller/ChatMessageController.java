@@ -54,7 +54,15 @@ public class ChatMessageController {
 
 
 
+@GetMapping("/inbox/{userId}")
+public List<ChatMessage> getInbox(
+        @PathVariable Long userId
+){
 
+    return chatMessageService
+            .getInbox(userId);
+
+}
 
 
 

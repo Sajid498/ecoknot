@@ -49,21 +49,28 @@ public class ChatMessageService {
 
 
 
+public List<ChatMessage> getConversation(
+        Long senderId,
+        Long receiverId,
+        Long requestId
+){
 
-    public List<ChatMessage> getConversation(
-            Long senderId,
-            Long receiverId,
-            Long requestId
-    ){
+    return chatMessageRepository
+            .findByRequestIdAndSenderIdAndReceiverIdOrRequestIdAndReceiverIdAndSenderId(
+                    requestId,
+                    senderId,
+                    receiverId,
+                    requestId,
+                    receiverId,
+                    senderId
+            );
 
-        return chatMessageRepository
-                .findBySenderIdAndReceiverIdAndRequestId(
-                        senderId,
-                        receiverId,
-                        requestId
-                );
+}
+public List<ChatMessage> getInbox(Long userId){
 
-    }
+    return chatMessageRepository
+            .findByReceiverId(userId);
 
+}
 
 }
