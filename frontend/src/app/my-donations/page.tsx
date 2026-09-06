@@ -101,12 +101,46 @@ export default function MyDonationsPage(){
 
 
 
-            const data =
-                await response.json();
+          async function loadDonations(userId:number){
+
+    try{
+
+        const response = await fetch(
+            `${API_URL}/api/donation-response/donor/${userId}`
+        );
 
 
+        const data = await response.json();
+
+
+        console.log("DONATION RESPONSE:", data);
+
+
+
+        if(Array.isArray(data)){
 
             setDonations(data);
+
+        }
+        else{
+
+            console.log("Backend did not return array");
+
+            setDonations([]);
+
+        }
+
+
+    }
+    catch(error){
+
+        console.log(error);
+
+        setDonations([]);
+
+    }
+
+}
 
 
 

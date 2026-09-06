@@ -2,7 +2,7 @@ package backend.controller;
 
 
 import java.util.List;
-import backend.dto.DonationResponseDTO;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import backend.dto.DonationResponseDTO;
 import backend.entity.DonationResponse;
 import backend.service.DonationResponseService;
 
@@ -25,7 +26,9 @@ import backend.service.DonationResponseService;
 public class DonationResponseController {
 
 
+
     private final DonationResponseService donationResponseService;
+
 
 
     public DonationResponseController(
@@ -38,25 +41,37 @@ public class DonationResponseController {
 
 
 
+
+
     // Donor clicks "I Want To Donate"
     @PostMapping
     public DonationResponse createResponse(
             @RequestBody DonationResponse response
     ){
 
-        return donationResponseService.createResponse(response);
+        return donationResponseService
+                .createResponse(response);
 
     }
 
-@GetMapping("/donor/{donorId}")
-public List<DonationResponseDTO> getDonationsByDonor(
-        @PathVariable Long donorId
-){
 
-    return donationResponseService
-            .getDonationsByDonor(donorId);
 
-}
+
+
+    // Get donations made by a donor
+    @GetMapping("/donor/{donorId}")
+    public List<DonationResponseDTO> getDonationsByDonor(
+            @PathVariable Long donorId
+    ){
+
+        return donationResponseService
+                .getDonationsByDonor(donorId);
+
+    }
+
+
+
+
 
     // Get donors for a specific blood request
     @GetMapping("/request/{requestId}")
@@ -68,6 +83,8 @@ public List<DonationResponseDTO> getDonationsByDonor(
                 .getDonorsByRequestId(requestId);
 
     }
+
+
 
 
 
@@ -85,6 +102,8 @@ public List<DonationResponseDTO> getDonationsByDonor(
 
 
 
+
+
     // Delete donation response
     @DeleteMapping("/{id}")
     public String deleteResponse(
@@ -96,5 +115,6 @@ public List<DonationResponseDTO> getDonationsByDonor(
         return "Donation response deleted successfully";
 
     }
+
 
 }

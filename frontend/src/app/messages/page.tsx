@@ -67,7 +67,10 @@ export default function MessagesPage(){
 
 
 
-    async function loadMessages(userId:number){
+   async function loadMessages(userId:number){
+
+
+    try{
 
 
         const response =
@@ -80,10 +83,47 @@ export default function MessagesPage(){
             await response.json();
 
 
-        setMessages(data);
+
+        console.log("MESSAGES RESPONSE:", data);
+
+
+
+        if(Array.isArray(data)){
+
+
+            setMessages(data);
+
+
+        }
+        else{
+
+
+            console.log(
+                "Backend returned non-array:",
+                data
+            );
+
+
+            setMessages([]);
+
+
+        }
+
 
 
     }
+    catch(error){
+
+
+        console.log(error);
+
+        setMessages([]);
+
+
+    }
+
+
+}
 
 
 
