@@ -18,7 +18,9 @@ import backend.service.ChatMessageService;
 
 @RestController
 @RequestMapping("/api/chat")
-@CrossOrigin("*")
+@CrossOrigin(
+        origins = "http://localhost:3000"
+)
 public class ChatMessageController {
 
 
