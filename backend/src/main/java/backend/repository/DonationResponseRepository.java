@@ -14,5 +14,5 @@ public interface DonationResponseRepository
 
     List<DonationResponse> findByDonorId(Long donorId);
 
-
+List<DonationResponse> findByRequestId(Long requestId);
 }
