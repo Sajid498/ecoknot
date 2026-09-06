@@ -144,9 +144,9 @@ export default function MessagesPage(){
 
                             onClick={()=>{
 
-                                router.push(
-                                `/chat/${msg.requestId}/${msg.senderId}`
-                                );
+                               router.push(
+ `/chat/${msg.requestId}/${msg.senderId}`
+);
 
                             }}
 

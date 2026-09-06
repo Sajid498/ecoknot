@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 import backend.entity.DonationResponse;
 import backend.repository.DonationResponseRepository;
 
-
+import backend.dto.DonationResponseDTO;
+import backend.entity.BloodRequest;
 
 @Service
 public class DonationResponseService {
@@ -45,7 +46,44 @@ public class DonationResponseService {
 
 
 
+public List<DonationResponseDTO> getDonationsByDonor(
+        Long donorId
+){
 
+
+    return donationResponseRepository
+            .findByDonorId(donorId)
+            .stream()
+            .map(response -> {
+
+
+                BloodRequest request =
+                        response.getBloodRequest();
+
+
+
+                return new DonationResponseDTO(
+
+                        response.getId(),
+
+                        request.getId(),
+
+                        response.getDonorId(),
+
+                        response.getStatus(),
+
+                        request.getUser().getId(),
+
+                        request.getUser().getName()
+
+                );
+
+
+            })
+            .toList();
+
+
+}
 
 
 

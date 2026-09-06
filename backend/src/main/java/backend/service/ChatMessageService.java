@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import backend.dto.ChatMessageDTO;
 import backend.entity.ChatMessage;
 import backend.repository.ChatMessageRepository;
 
@@ -29,6 +30,9 @@ public class ChatMessageService {
 
 
 
+
+    // Send message
+
     public ChatMessage sendMessage(
             ChatMessage message
     ){
@@ -47,38 +51,67 @@ public class ChatMessageService {
 
 
 
-    public List<ChatMessage> getConversation(
-            Long senderId,
-            Long receiverId,
-            Long requestId
+
+    // Get conversation between two users
+
+   public List<ChatMessageDTO> getConversation(
+        Long senderId,
+        Long receiverId,
+        Long requestId
+){
+
+
+    return chatMessageRepository
+            .findByRequestIdAndSenderIdAndReceiverIdOrRequestIdAndReceiverIdAndSenderId(
+                    requestId,
+                    senderId,
+                    receiverId,
+
+                    requestId,
+                    receiverId,
+                    senderId
+            )
+            .stream()
+            .map(message ->
+
+                new ChatMessageDTO(
+
+                    message.getId(),
+
+                    message.getSenderId(),
+
+                    message.getReceiverId(),
+
+                    message.getRequestId(),
+
+                    message.getMessage(),
+
+                    message.getTimestamp()
+
+                )
+
+            )
+            .toList();
+
+}
+
+
+
+
+
+
+
+    // Inbox messages
+
+    public List<ChatMessage> getInbox(
+            Long userId
     ){
-
-        return chatMessageRepository
-                .findByRequestIdAndSenderIdAndReceiverIdOrRequestIdAndReceiverIdAndSenderId(
-                        requestId,
-                        senderId,
-                        receiverId,
-
-                        requestId,
-                        receiverId,
-                        senderId
-                );
-
-    }
-
-
-
-
-
-    public List<ChatMessage> getInbox(Long userId){
-
 
         return chatMessageRepository
                 .findByReceiverIdOrSenderId(
                         userId,
                         userId
                 );
-
 
     }
 

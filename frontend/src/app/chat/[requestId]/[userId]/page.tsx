@@ -8,6 +8,7 @@ const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 
+
 type Message = {
 
   id: number;
@@ -26,6 +27,7 @@ type Message = {
 
 
 
+
 export default function ChatPage() {
 
 
@@ -38,8 +40,10 @@ export default function ChatPage() {
 
 
 
+
   const [messages, setMessages] =
     useState<Message[]>([]);
+
 
 
   const [newMessage, setNewMessage] =
@@ -53,22 +57,25 @@ export default function ChatPage() {
 
 
 
+
   useEffect(() => {
 
-    const user =
+
+    const savedUser =
       localStorage.getItem("user");
 
 
-    if(user){
+    if(savedUser){
 
       setCurrentUser(
-        JSON.parse(user)
+        JSON.parse(savedUser)
       );
 
     }
 
 
   }, []);
+
 
 
 
@@ -107,6 +114,7 @@ export default function ChatPage() {
         await response.json();
 
 
+
       setMessages(data);
 
 
@@ -124,17 +132,37 @@ export default function ChatPage() {
 
 
 
+
+
+  // Initial load + auto refresh
+
   useEffect(()=>{
 
 
     if(currentUser){
 
+
       loadMessages();
+
+
+
+      const interval =
+        setInterval(()=>{
+
+          loadMessages();
+
+        },3000);
+
+
+
+      return ()=>clearInterval(interval);
+
 
     }
 
 
   },[currentUser]);
+
 
 
 
@@ -150,9 +178,9 @@ export default function ChatPage() {
       return;
 
 
-
     if(!currentUser)
       return;
+
 
 
 
@@ -164,14 +192,19 @@ export default function ChatPage() {
           `${API_URL}/api/chat/send`,
           {
 
+
             method:"POST",
 
+
             headers:{
+
               "Content-Type":"application/json"
+
             },
 
 
             body:JSON.stringify({
+
 
               senderId:
                 currentUser.id,
@@ -191,18 +224,22 @@ export default function ChatPage() {
 
             })
 
+
           }
+
         );
+
 
 
 
       if(!response.ok){
 
         throw new Error(
-          "Message sending failed"
+          "Failed to send message"
         );
 
       }
+
 
 
 
@@ -227,7 +264,9 @@ export default function ChatPage() {
 
 
 
+
   return (
+
 
     <main className="min-h-screen bg-slate-50 p-6">
 
@@ -235,82 +274,25 @@ export default function ChatPage() {
       <div className="mx-auto max-w-3xl rounded-2xl bg-white p-6 shadow">
 
 
-        <h1 className="text-2xl font-bold text-slate-900">
 
-          💬 Blood Donation Chat
+        {/* Header */}
 
-        </h1>
-
+        <div>
 
 
-        <p className="mt-2 text-sm text-slate-500">
+          <h1 className="text-2xl font-bold text-slate-900">
 
-          Request ID: {requestId}
+            💬 Blood Donation Chat
 
-        </p>
+          </h1>
 
 
 
+          <p className="mt-1 text-sm text-slate-500">
 
+            Request ID: {requestId}
 
-        <div className="mt-6 h-[450px] space-y-3 overflow-y-auto rounded-xl border p-4">
-
-
-          {
-            messages.length === 0 ? (
-
-              <p className="text-center text-slate-400">
-
-                No messages yet.
-
-              </p>
-
-            )
-            :
-            (
-
-              messages.map((msg)=>(
-
-
-                <div
-
-                  key={msg.id}
-
-                  className={
-                    msg.senderId === currentUser?.id
-                    ?
-                    "text-right"
-                    :
-                    "text-left"
-                  }
-
-                >
-
-
-                  <span
-
-                    className={
-                      msg.senderId === currentUser?.id
-                      ?
-                      "inline-block rounded-xl bg-emerald-600 px-4 py-2 text-white"
-                      :
-                      "inline-block rounded-xl bg-slate-200 px-4 py-2 text-slate-800"
-                    }
-
-                  >
-
-                    {msg.message}
-
-                  </span>
-
-
-                </div>
-
-
-              ))
-
-            )
-          }
+          </p>
 
 
         </div>
@@ -319,32 +301,218 @@ export default function ChatPage() {
 
 
 
+
+
+        {/* Messages */}
+
+
+        <div className="mt-6 h-[450px] space-y-4 overflow-y-auto rounded-xl border p-4">
+
+
+
+          {
+            messages.length === 0 ?
+
+
+            (
+
+              <p className="text-center text-slate-400">
+
+                No messages yet.
+
+              </p>
+
+            )
+
+
+            :
+
+
+            (
+
+
+              messages.map((msg)=>(
+
+
+
+                <div
+
+                  key={msg.id}
+
+                  className={`flex ${
+                    
+                    msg.senderId === currentUser?.id
+
+                    ?
+
+                    "justify-end"
+
+                    :
+
+                    "justify-start"
+
+                  }`}
+
+                >
+
+
+
+
+
+                  <div
+
+
+                    className={`max-w-xs rounded-2xl px-4 py-3 ${
+
+
+                      msg.senderId === currentUser?.id
+
+
+                      ?
+
+
+                      "bg-emerald-700 text-white"
+
+
+                      :
+
+
+                      "bg-slate-200 text-slate-900"
+
+
+                    }`}
+
+
+                  >
+
+
+
+                    <p>
+
+                      {msg.message}
+
+                    </p>
+
+
+
+                    <p
+
+                    className="mt-1 text-xs opacity-70"
+
+                    >
+
+                      {
+                        new Date(
+                          msg.timestamp
+                        )
+                        .toLocaleTimeString()
+                      }
+
+
+                    </p>
+
+
+
+                  </div>
+
+
+
+
+                </div>
+
+
+
+              ))
+
+
+            )
+
+          }
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+        {/* Send Message */}
+
+
         <div className="mt-5 flex gap-3">
+
 
 
           <input
 
+
             type="text"
+
 
             value={newMessage}
 
+
             onChange={
-              (e)=>setNewMessage(e.target.value)
+              (e)=>
+              setNewMessage(e.target.value)
             }
+
+
+            onKeyDown={
+              (e)=>{
+
+                if(e.key==="Enter"){
+
+                  sendMessage();
+
+                }
+
+              }
+            }
+
 
             placeholder="Write a message..."
 
-            className="flex-1 rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-emerald-600"
+
+            className="
+            flex-1
+            rounded-xl
+            border
+            border-slate-300
+            px-4
+            py-3
+            outline-none
+            focus:border-emerald-600
+            "
+
 
           />
 
 
 
+
+
+
           <button
+
 
             onClick={sendMessage}
 
-            className="rounded-xl bg-emerald-700 px-6 font-semibold text-white hover:bg-emerald-800"
+
+            className="
+            rounded-xl
+            bg-emerald-700
+            px-6
+            font-semibold
+            text-white
+            hover:bg-emerald-800
+            "
+
 
           >
 
@@ -358,11 +526,15 @@ export default function ChatPage() {
 
 
 
+
+
       </div>
 
 
     </main>
 
+
   );
+
 
 }

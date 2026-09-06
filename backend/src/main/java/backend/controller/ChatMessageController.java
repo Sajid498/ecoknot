@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import backend.dto.ChatMessageDTO;
 import backend.entity.ChatMessage;
 import backend.service.ChatMessageService;
 
@@ -67,7 +67,7 @@ public List<ChatMessage> getInbox(
 
 
     @GetMapping("/{senderId}/{receiverId}/request/{requestId}")
-    public List<ChatMessage> getConversation(
+    public List<ChatMessageDTO> getConversation(
             @PathVariable Long senderId,
             @PathVariable Long receiverId,
             @PathVariable Long requestId

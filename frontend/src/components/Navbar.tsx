@@ -122,7 +122,18 @@ export default function Navbar() {
             Blood Donation
           </Link>
 
+{
+  user && (
 
+    <Link
+      href="/my-donations"
+      className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
+    >
+      ❤️ My Donations
+    </Link>
+
+  )
+}
 
 
 

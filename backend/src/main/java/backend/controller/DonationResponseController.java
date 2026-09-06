@@ -2,7 +2,7 @@ package backend.controller;
 
 
 import java.util.List;
-
+import backend.dto.DonationResponseDTO;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,7 +48,15 @@ public class DonationResponseController {
 
     }
 
+@GetMapping("/donor/{donorId}")
+public List<DonationResponseDTO> getDonationsByDonor(
+        @PathVariable Long donorId
+){
 
+    return donationResponseService
+            .getDonationsByDonor(donorId);
+
+}
 
     // Get donors for a specific blood request
     @GetMapping("/request/{requestId}")
