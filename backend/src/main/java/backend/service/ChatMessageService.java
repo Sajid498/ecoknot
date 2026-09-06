@@ -15,9 +15,7 @@ import backend.repository.ChatMessageRepository;
 public class ChatMessageService {
 
 
-
     private final ChatMessageRepository chatMessageRepository;
-
 
 
     public ChatMessageService(
@@ -49,28 +47,40 @@ public class ChatMessageService {
 
 
 
-public List<ChatMessage> getConversation(
-        Long senderId,
-        Long receiverId,
-        Long requestId
-){
+    public List<ChatMessage> getConversation(
+            Long senderId,
+            Long receiverId,
+            Long requestId
+    ){
 
-    return chatMessageRepository
-            .findByRequestIdAndSenderIdAndReceiverIdOrRequestIdAndReceiverIdAndSenderId(
-                    requestId,
-                    senderId,
-                    receiverId,
-                    requestId,
-                    receiverId,
-                    senderId
-            );
+        return chatMessageRepository
+                .findByRequestIdAndSenderIdAndReceiverIdOrRequestIdAndReceiverIdAndSenderId(
+                        requestId,
+                        senderId,
+                        receiverId,
 
-}
-public List<ChatMessage> getInbox(Long userId){
+                        requestId,
+                        receiverId,
+                        senderId
+                );
 
-    return chatMessageRepository
-            .findByReceiverId(userId);
+    }
 
-}
+
+
+
+
+    public List<ChatMessage> getInbox(Long userId){
+
+
+        return chatMessageRepository
+                .findByReceiverIdOrSenderId(
+                        userId,
+                        userId
+                );
+
+
+    }
+
 
 }

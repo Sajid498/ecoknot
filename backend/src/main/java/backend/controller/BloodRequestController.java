@@ -135,6 +135,15 @@ public class BloodRequestController {
 
     }
 
+// Get requests created by a specific user
+@GetMapping("/user/{userId}")
+public List<BloodRequest> getUserRequests(
+        @PathVariable Long userId
+){
 
+    return bloodRequestService
+            .getRequestsByUser(userId);
+
+}
 
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import backend.entity.ChatMessage;
 
 
+
 public interface ChatMessageRepository 
         extends JpaRepository<ChatMessage, Long> {
 
@@ -21,6 +22,13 @@ public interface ChatMessageRepository
             Long receiverId2,
             Long senderId2
     );
-    List<ChatMessage> findByReceiverId(Long receiverId);
+
+
+
+    List<ChatMessage> findByReceiverIdOrSenderId(
+            Long receiverId,
+            Long senderId
+    );
+
 
 }
