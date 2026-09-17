@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-
+import toast from "react-hot-toast";
 
 
 const API_URL =
@@ -332,10 +332,9 @@ export default function BloodRequestDetailsPage(){
         if(!user){
 
 
-            alert(
-                "Please login first"
-            );
-
+         toast.error(
+"Please login first"
+);
 
             return;
 
@@ -416,11 +415,9 @@ export default function BloodRequestDetailsPage(){
             setMyDonation(data);
 
 
-
-            alert(
-                "Donation request sent"
-            );
-
+toast.success(
+"Donation request sent"
+);
 
 
             loadDonors();
@@ -431,10 +428,9 @@ export default function BloodRequestDetailsPage(){
         catch(error:any){
 
 
-            alert(
-                error.message ||
-                "Already applied"
-            );
+         toast.error(
+"You already applied for this request"
+);
 
 
         }
@@ -504,10 +500,9 @@ export default function BloodRequestDetailsPage(){
             console.log(error);
 
 
-            alert(
-                "Something went wrong"
-            );
-
+          toast.error(
+"Something went wrong"
+);
 
         }
 

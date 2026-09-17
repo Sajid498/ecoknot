@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-
+import toast from "react-hot-toast";
 
 
 const API_URL =
@@ -210,10 +210,9 @@ export default function MyRequestsPage(){
 
 
 
-            alert(
-                "Blood request cancelled"
-            );
-
+           toast.success(
+    "Blood request cancelled"
+);
 
 
             loadRequests(user.id);
@@ -227,9 +226,9 @@ export default function MyRequestsPage(){
             console.log(error);
 
 
-            alert(
-                "Something went wrong"
-            );
+          toast.error(
+    "Something went wrong"
+);
 
 
         }

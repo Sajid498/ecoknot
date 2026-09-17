@@ -4,7 +4,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import toast from "react-hot-toast";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -368,7 +368,7 @@ requestId:number
 
 if(!currentUser){
 
-alert(
+toast.error(
 "Please login first"
 );
 
@@ -439,7 +439,7 @@ error.message ||
 
 
 
-alert(
+toast.success(
 "Donation interest sent successfully"
 );
 
@@ -458,8 +458,7 @@ console.log(error);
 
 
 
-alert(
-error.message ||
+toast.error(
 "Something went wrong"
 );
 
