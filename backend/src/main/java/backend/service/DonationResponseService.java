@@ -58,12 +58,40 @@ public class DonationResponseService {
             DonationResponse response
     ){
 
+
+
+        boolean alreadyApplied =
+                donationResponseRepository
+                        .existsByRequestIdAndDonorId(
+                                response.getRequestId(),
+                                response.getDonorId()
+                        );
+
+
+
+        if(alreadyApplied){
+
+
+            throw new RuntimeException(
+                    "You already applied for this blood request"
+            );
+
+
+        }
+
+
+
+
+
+
         response.setStatus(
                 DonationStatus.PENDING
         );
 
 
+
         return donationResponseRepository.save(response);
+
 
     }
 
