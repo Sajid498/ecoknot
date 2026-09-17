@@ -42,6 +42,8 @@ public class BloodRequestService {
 
 
 
+
+
     // CREATE BLOOD REQUEST
 
     public BloodRequest createBloodRequest(
@@ -65,6 +67,7 @@ public class BloodRequestService {
         return bloodRequestRepository.save(bloodRequest);
 
     }
+
 
 
 
@@ -198,6 +201,14 @@ public class BloodRequestService {
 
 
 
+
+        validateStatusTransition(
+                request.getStatus(),
+                RequestStatus.CANCELLED
+        );
+
+
+
         request.setStatus(
                 RequestStatus.CANCELLED
         );
@@ -288,6 +299,7 @@ public class BloodRequestService {
 
 
 
+
     // GET REQUESTS BY BLOOD GROUP
 
     public List<BloodRequest> getRequestsByBloodGroup(
@@ -332,6 +344,7 @@ public class BloodRequestService {
             Long requestId
     ){
 
+
         BloodRequest request =
                 bloodRequestRepository
                         .findById(requestId)
@@ -342,6 +355,15 @@ public class BloodRequestService {
                         );
 
 
+
+
+        validateStatusTransition(
+                request.getStatus(),
+                RequestStatus.DONOR_FOUND
+        );
+
+
+
         request.setStatus(
                 RequestStatus.DONOR_FOUND
         );
@@ -350,7 +372,6 @@ public class BloodRequestService {
         return bloodRequestRepository.save(request);
 
     }
-
 
 
 
@@ -400,12 +421,94 @@ public class BloodRequestService {
                         );
 
 
+
+
+        validateStatusTransition(
+                request.getStatus(),
+                RequestStatus.FULFILLED
+        );
+
+
+
         request.setStatus(
                 RequestStatus.FULFILLED
         );
 
 
         return bloodRequestRepository.save(request);
+
+    }
+
+
+
+
+
+
+
+
+
+    // STATUS TRANSITION VALIDATION
+
+    private void validateStatusTransition(
+            RequestStatus currentStatus,
+            RequestStatus newStatus
+    ){
+
+
+        boolean allowed = false;
+
+
+
+        if(currentStatus == RequestStatus.OPEN
+                && newStatus == RequestStatus.DONOR_FOUND){
+
+            allowed = true;
+
+        }
+
+
+
+        if(currentStatus == RequestStatus.OPEN
+                && newStatus == RequestStatus.CANCELLED){
+
+            allowed = true;
+
+        }
+
+
+
+        if(currentStatus == RequestStatus.DONOR_FOUND
+                && newStatus == RequestStatus.FULFILLED){
+
+            allowed = true;
+
+        }
+
+
+
+        if(currentStatus == RequestStatus.DONOR_FOUND
+                && newStatus == RequestStatus.CANCELLED){
+
+            allowed = true;
+
+        }
+
+
+
+
+        if(!allowed){
+
+            throw new RuntimeException(
+
+                    "Invalid status transition from "
+                    + currentStatus
+                    + " to "
+                    + newStatus
+
+            );
+
+        }
+
 
     }
 
