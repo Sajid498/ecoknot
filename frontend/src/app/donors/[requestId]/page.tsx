@@ -56,6 +56,7 @@ type BloodRequest = {
 
 
 
+
 export default function DonorPage(){
 
 
@@ -66,6 +67,7 @@ export default function DonorPage(){
 
     const requestId =
         String(params.requestId);
+
 
 
 
@@ -215,8 +217,14 @@ export default function DonorPage(){
 
             if(!response.ok){
 
+
+                const errorText =
+                    await response.text();
+
+
+
                 throw new Error(
-                    "Status update failed"
+                    errorText
                 );
 
             }
@@ -229,13 +237,16 @@ export default function DonorPage(){
 
 
         }
-        catch(error){
+        catch(error:any){
 
             console.log(error);
 
+
             alert(
+                error.message ||
                 "Unable to update status"
             );
+
 
         }
 
@@ -474,16 +485,15 @@ export default function DonorPage(){
 
 
 
-
                                 {
-                                    donor.status==="PENDING" &&
+                                    donor.status==="PENDING"
+                                    &&
 
-                                    <>
+                                    !acceptedExists
 
+                                    &&
 
                                     <button
-
-                                    disabled={acceptedExists}
 
                                     onClick={()=>{
 
@@ -500,7 +510,6 @@ export default function DonorPage(){
                                     px-4
                                     py-2
                                     text-white
-                                    disabled:opacity-40
                                     "
 
                                     >
@@ -509,8 +518,45 @@ export default function DonorPage(){
 
                                     </button>
 
+                                }
 
 
+
+
+
+
+
+
+                                {
+                                    donor.status==="PENDING"
+                                    &&
+                                    acceptedExists
+                                    &&
+
+                                    <span className="
+                                    rounded-lg
+                                    bg-gray-200
+                                    px-4
+                                    py-2
+                                    text-gray-600
+                                    ">
+
+                                        Another donor already selected
+
+                                    </span>
+
+                                }
+
+
+
+
+
+
+
+
+
+                                {
+                                    donor.status==="PENDING" &&
 
 
                                     <button
@@ -538,8 +584,6 @@ export default function DonorPage(){
 
                                     </button>
 
-
-                                    </>
 
                                 }
 

@@ -1,8 +1,10 @@
 "use client";
 
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+
 
 
 export default function Navbar() {
@@ -10,24 +12,61 @@ export default function Navbar() {
 
   const router = useRouter();
 
-
-  const [user, setUser] = useState<any>(null);
-
+  const pathname = usePathname();
 
 
-  useEffect(() => {
+
+  const [user, setUser] =
+    useState<any>(null);
+
+
+  const [activeModule,setActiveModule] =
+    useState("");
+
+
+
+
+
+  useEffect(()=>{
+
 
     const savedUser =
       localStorage.getItem("user");
 
 
-    if (savedUser) {
+    if(savedUser){
 
-      setUser(JSON.parse(savedUser));
+      setUser(
+        JSON.parse(savedUser)
+      );
 
     }
 
-  }, []);
+
+
+    const savedModule =
+      localStorage.getItem("activeModule");
+
+
+    if(savedModule){
+
+      setActiveModule(savedModule);
+
+    }
+
+
+  },[]);
+
+
+
+
+
+
+
+  const isBloodSection =
+      activeModule === "blood";
+
+
 
 
 
@@ -38,8 +77,12 @@ export default function Navbar() {
 
     localStorage.removeItem("user");
 
+    localStorage.removeItem("activeModule");
+
 
     setUser(null);
+
+    setActiveModule("");
 
 
     router.push("/login");
@@ -52,198 +95,226 @@ export default function Navbar() {
 
 
 
-  return (
 
+  const handleBackToMain = () => {
 
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
 
+    localStorage.removeItem(
+      "activeModule"
+    );
 
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
 
+    setActiveModule("");
 
 
-        {/* Logo */}
+    router.push("/");
 
-        <Link href="/" className="flex items-center gap-2">
 
+  };
 
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-700 text-lg font-bold text-white">
 
-            E
 
-          </div>
 
 
 
-          <div>
 
-            <h1 className="text-xl font-bold text-slate-900">
 
-              EcoKnot
 
-            </h1>
+  const handleLogoClick = () => {
 
 
-            <p className="text-xs text-slate-500">
+    localStorage.removeItem(
+      "activeModule"
+    );
 
-              Community Connected
 
-            </p>
+    setActiveModule("");
 
 
-          </div>
+  };
 
 
-        </Link>
 
 
 
 
 
 
+return (
 
-        {/* Navigation */}
 
-        <nav className="hidden items-center gap-7 lg:flex">
+<header className="
+sticky
+top-0
+z-50
+border-b
+border-slate-200
+bg-white/95
+backdrop-blur
+">
 
 
+<div className="
+mx-auto
+flex
+max-w-7xl
+items-center
+justify-between
+px-6
+py-4
+">
 
-          <Link
-            href="/"
-            className="text-sm font-semibold text-emerald-700"
-          >
 
-            Home
 
-          </Link>
 
 
 
 
+<Link
 
+href="/"
 
-          <Link
-            href="/blood-donation"
-            className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
-          >
+onClick={handleLogoClick}
 
-            Blood Donation
+className="flex items-center gap-2"
 
-          </Link>
+>
 
 
+<div className="
+flex
+h-10
+w-10
+items-center
+justify-center
+rounded-xl
+bg-emerald-700
+text-lg
+font-bold
+text-white
+">
 
+E
 
+</div>
 
 
 
-          {
-            user && (
 
-              <>
+<div>
 
-                <Link
-                  href="/my-donations"
-                  className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
-                >
+<h1 className="
+text-xl
+font-bold
+text-slate-900
+">
 
-                  ❤️ My Donations
+EcoKnot
 
-                </Link>
+</h1>
 
 
+<p className="
+text-xs
+text-slate-500
+">
 
+Community Connected
 
-                <Link
-                  href="/donation-history"
-                  className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
-                >
+</p>
 
-                  🩸 Donation History
 
-                </Link>
+</div>
 
 
+</Link>
 
 
 
-                <Link
-                  href="/my-requests"
-                  className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
-                >
 
-                  🩸 My Requests
 
-                </Link>
 
 
 
 
 
-                <Link
-                  href="/messages"
-                  className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
-                >
+<nav className="
+hidden
+items-center
+gap-7
+lg:flex
+">
 
-                  💬 Messages
 
-                </Link>
 
 
-              </>
 
-            )
-          }
+{
 
+isBloodSection ?
 
 
+<>
 
 
+<button
 
+onClick={handleBackToMain}
 
+className="
+text-sm
+font-semibold
+text-slate-600
+hover:text-emerald-700
+"
 
-          <Link
-            href="#"
-            className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
-          >
+>
 
-            Campaigns
+← Main Menu
 
-          </Link>
+</button>
 
 
 
 
 
+<Link
 
-          <Link
-            href="#"
-            className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
-          >
+href="/blood-donation"
 
-            Resources
+className="
+text-sm
+font-semibold
+text-emerald-700
+"
 
-          </Link>
+>
 
+🩸 Blood Donation
 
+</Link>
 
 
 
 
-          <Link
-            href="#"
-            className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
-          >
 
-            Academic Hub
 
-          </Link>
+<Link
 
+href="/my-requests"
 
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
 
-        </nav>
+>
 
+📋 My Requests
 
+</Link>
 
 
 
@@ -251,137 +322,367 @@ export default function Navbar() {
 
 
 
-        {/* Authentication */}
+<Link
 
-        <div className="flex items-center gap-3">
+href="/my-donations"
 
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
 
-          {
-            user ? (
+>
 
+❤️ My Donations
 
-              <>
+</Link>
 
 
-                <span className="hidden text-sm font-semibold text-slate-700 sm:block">
 
-                  {user.name}
 
-                </span>
 
 
 
+<Link
 
+href="/donation-history"
 
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
 
-                <Link href="/profile">
+>
 
-                  <button
+🩸 Donation History
 
-                    className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+</Link>
 
-                  >
 
-                    Profile
 
-                  </button>
 
 
-                </Link>
 
 
+<Link
 
+href="/messages"
 
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
 
+>
 
+💬 Messages
 
-                <button
+</Link>
 
-                  onClick={handleLogout}
 
-                  className="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800"
+</>
 
-                >
 
-                  Logout
 
-                </button>
+:
 
 
 
-              </>
+<>
 
 
+<Link
 
-            )
+href="/"
 
-              :
+className="
+text-sm
+font-semibold
+text-emerald-700
+"
 
+>
 
-              (
+Home
 
+</Link>
 
-                <>
 
 
-                  <Link href="/login">
 
-                    <button
 
-                      className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 sm:block"
+<Link
 
-                    >
+href="/blood-donation"
 
-                      Log In
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
 
-                    </button>
+>
 
+Blood Donation
 
-                  </Link>
+</Link>
 
 
 
 
 
 
+<Link
 
-                  <Link href="/signup">
+href="#"
 
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
 
-                    <button
+>
 
-                      className="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800"
+Campaigns
 
-                    >
+</Link>
 
-                      Sign Up
 
-                    </button>
 
 
-                  </Link>
 
 
 
-                </>
+<Link
 
+href="#"
 
-              )
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
 
-          }
+>
 
+Resources
 
-        </div>
+</Link>
 
 
 
-      </div>
 
 
-    </header>
 
 
-  );
+<Link
+
+href="#"
+
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
+
+>
+
+Academic Hub
+
+</Link>
+
+
+</>
+
+
+}
+
+
+
+</nav>
+
+
+
+
+
+
+
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+
+{
+
+user ?
+
+
+<>
+
+
+<span className="
+hidden
+text-sm
+font-semibold
+text-slate-700
+sm:block
+">
+
+{user.name}
+
+</span>
+
+
+
+
+
+<Link href="/profile">
+
+<button
+
+className="
+rounded-lg
+px-4
+py-2
+text-sm
+font-semibold
+text-slate-700
+hover:bg-slate-100
+"
+
+>
+
+Profile
+
+</button>
+
+</Link>
+
+
+
+
+
+
+
+<button
+
+onClick={handleLogout}
+
+className="
+rounded-lg
+bg-emerald-700
+px-5
+py-2.5
+text-sm
+font-semibold
+text-white
+hover:bg-emerald-800
+"
+
+>
+
+Logout
+
+</button>
+
+
+</>
+
+
+
+:
+
+
+<>
+
+
+<Link href="/login">
+
+<button
+
+className="
+hidden
+rounded-lg
+px-4
+py-2
+text-sm
+font-semibold
+text-slate-700
+hover:bg-slate-100
+sm:block
+"
+
+>
+
+Log In
+
+</button>
+
+
+</Link>
+
+
+
+
+
+<Link href="/signup">
+
+<button
+
+className="
+rounded-lg
+bg-emerald-700
+px-5
+py-2.5
+text-sm
+font-semibold
+text-white
+"
+
+>
+
+Sign Up
+
+</button>
+
+
+</Link>
+
+
+</>
+
+
+}
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</header>
+
+
+);
 
 
 }

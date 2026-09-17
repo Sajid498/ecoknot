@@ -128,19 +128,25 @@ public class DonationResponseController {
 
     // Accept / Reject / Complete donation
 
-    @PutMapping("/{id}")
-    public DonationResponse updateStatus(
-            @PathVariable Long id,
-            @RequestParam DonationStatus status
-    ){
+   @PutMapping("/{id}")
+public DonationResponse updateStatus(
+        @PathVariable Long id,
+        @RequestParam DonationStatus status
+){
 
-        return donationResponseService
-                .updateStatus(
-                        id,
-                        status
-                );
+    System.out.println(
+            "Donation ID: " + id
+            + " Status: " + status
+    );
 
-    }
+
+    return donationResponseService
+            .updateStatus(
+                    id,
+                    status
+            );
+
+}
 
 
 

@@ -1,7 +1,7 @@
 "use client";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
-
+import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -110,12 +110,12 @@ request.userId === currentUser?.id
 
 
 
-
-
 const availableRequests =
 requests.filter(
 (request)=>
-request.userId !== currentUser?.id
+request.userId !== currentUser?.id &&
+request.status !== "CANCELLED" &&
+request.status !== "FULFILLED"
 );
 
 
@@ -189,6 +189,13 @@ setIsLoading(false);
 
 
 useEffect(()=>{
+
+
+localStorage.setItem(
+    "activeModule",
+    "blood"
+);
+
 
 
 const savedUser =
@@ -602,8 +609,11 @@ return "text-green-600 font-semibold";
 
 return (
 
-
 <ProtectedRoute>
+
+<>
+
+<Navbar />
 
 
 <main className="
@@ -649,7 +659,30 @@ text-slate-600
 Find blood requests and help your community.
 
 </p>
+<button
 
+onClick={()=>{
+
+router.push("/blood-donation/create")
+
+}}
+
+className="
+mt-5
+rounded-xl
+bg-red-600
+px-5
+py-3
+font-semibold
+text-white
+hover:bg-red-700
+"
+
+>
+
+🩸 Request Blood
+
+</button>
 
 
 
@@ -1412,6 +1445,7 @@ Donate
 </main>
 
 
+</>
 
 </ProtectedRoute>
 
