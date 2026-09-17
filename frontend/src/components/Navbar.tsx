@@ -17,7 +17,8 @@ export default function Navbar() {
 
   useEffect(() => {
 
-    const savedUser = localStorage.getItem("user");
+    const savedUser =
+      localStorage.getItem("user");
 
 
     if(savedUser){
@@ -27,6 +28,7 @@ export default function Navbar() {
     }
 
   }, []);
+
 
 
 
@@ -51,6 +53,7 @@ export default function Navbar() {
 
 
   return (
+
 
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
 
@@ -98,6 +101,7 @@ export default function Navbar() {
 
 
 
+
         {/* Navigation */}
 
         <nav className="hidden items-center gap-7 lg:flex">
@@ -108,8 +112,11 @@ export default function Navbar() {
             href="/"
             className="text-sm font-semibold text-emerald-700"
           >
+
             Home
+
           </Link>
+
 
 
 
@@ -119,36 +126,58 @@ export default function Navbar() {
             href="/blood-donation"
             className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
           >
+
             Blood Donation
+
           </Link>
 
-{
-  user && (
-
-    <Link
-      href="/my-donations"
-      className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
-    >
-      ❤️ My Donations
-    </Link>
-
-  )
-}
 
 
 
 
-          {/* Messages */}
+
 
           {
             user && (
 
-              <Link
-                href="/messages"
-                className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
-              >
-                💬 Messages
-              </Link>
+              <>
+
+                <Link
+                  href="/my-donations"
+                  className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
+                >
+
+                  ❤️ My Donations
+
+                </Link>
+
+
+
+
+                <Link
+                  href="/donation-history"
+                  className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
+                >
+
+                  🩸 Donation History
+
+                </Link>
+
+
+
+
+
+                <Link
+                  href="/messages"
+                  className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
+                >
+
+                  💬 Messages
+
+                </Link>
+
+
+              </>
 
             )
           }
@@ -159,12 +188,16 @@ export default function Navbar() {
 
 
 
+
           <Link
             href="#"
             className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
           >
+
             Campaigns
+
           </Link>
+
 
 
 
@@ -174,8 +207,11 @@ export default function Navbar() {
             href="#"
             className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
           >
+
             Resources
+
           </Link>
+
 
 
 
@@ -185,12 +221,15 @@ export default function Navbar() {
             href="#"
             className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
           >
+
             Academic Hub
+
           </Link>
 
 
 
         </nav>
+
 
 
 
@@ -207,6 +246,7 @@ export default function Navbar() {
           {
             user ? (
 
+
               <>
 
 
@@ -220,8 +260,8 @@ export default function Navbar() {
 
 
 
-                <Link href="/profile">
 
+                <Link href="/profile">
 
                   <button
 
@@ -241,19 +281,16 @@ export default function Navbar() {
 
 
 
-                <button
 
+                <button
 
                   onClick={handleLogout}
 
-
                   className="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800"
-
 
                 >
 
                   Logout
-
 
                 </button>
 
@@ -262,14 +299,19 @@ export default function Navbar() {
               </>
 
 
-            ) : (
+
+            )
+
+            :
+
+
+            (
 
 
               <>
 
 
                 <Link href="/login">
-
 
                   <button
 
@@ -289,6 +331,7 @@ export default function Navbar() {
 
 
 
+
                 <Link href="/signup">
 
 
@@ -299,7 +342,6 @@ export default function Navbar() {
                   >
 
                     Sign Up
-
 
                   </button>
 
@@ -325,6 +367,8 @@ export default function Navbar() {
 
     </header>
 
+
   );
+
 
 }

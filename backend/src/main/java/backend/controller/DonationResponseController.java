@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import backend.dto.DonationHistoryDTO;
 import backend.dto.DonationResponseDTO;
 import backend.entity.DonationResponse;
 import backend.entity.DonationStatus;
@@ -45,7 +46,9 @@ public class DonationResponseController {
 
 
 
+
     // Donor clicks "I Want To Donate"
+
     @PostMapping
     public DonationResponse createResponse(
             @RequestBody DonationResponse response
@@ -63,7 +66,9 @@ public class DonationResponseController {
 
 
 
+
     // Get donations made by a donor
+
     @GetMapping("/donor/{donorId}")
     public List<DonationResponseDTO> getDonationsByDonor(
             @PathVariable Long donorId
@@ -81,7 +86,28 @@ public class DonationResponseController {
 
 
 
+    // Get completed donation history
+
+    @GetMapping("/history/{donorId}")
+    public List<DonationHistoryDTO> getDonationHistory(
+            @PathVariable Long donorId
+    ){
+
+        return donationResponseService
+                .getDonationHistory(donorId);
+
+    }
+
+
+
+
+
+
+
+
+
     // Get donors for a specific blood request
+
     @GetMapping("/request/{requestId}")
     public List<DonationResponse> getDonorsByRequest(
             @PathVariable Long requestId
@@ -99,7 +125,9 @@ public class DonationResponseController {
 
 
 
-    // Accept or Reject donor
+
+    // Accept / Reject / Complete donation
+
     @PutMapping("/{id}")
     public DonationResponse updateStatus(
             @PathVariable Long id,
@@ -121,7 +149,9 @@ public class DonationResponseController {
 
 
 
+
     // Delete donation response
+
     @DeleteMapping("/{id}")
     public String deleteResponse(
             @PathVariable Long id

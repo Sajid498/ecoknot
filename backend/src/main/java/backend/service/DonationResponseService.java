@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import backend.dto.DonationHistoryDTO;
 import backend.dto.DonationResponseDTO;
 import backend.entity.BloodRequest;
 import backend.entity.DonationResponse;
@@ -90,12 +91,12 @@ public class DonationResponseService {
                     BloodRequest request =
                             bloodRequestRepository
                                     .findById(
-                                        response.getRequestId()
+                                            response.getRequestId()
                                     )
                                     .orElseThrow(
-                                        () -> new RuntimeException(
-                                            "Blood request not found"
-                                        )
+                                            () -> new RuntimeException(
+                                                    "Blood request not found"
+                                            )
                                     );
 
 
@@ -116,6 +117,75 @@ public class DonationResponseService {
                             request.getUser().getId(),
 
                             request.getUser().getName()
+
+                    );
+
+
+                })
+                .toList();
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // Get donation history of donor
+
+    public List<DonationHistoryDTO> getDonationHistory(
+            Long donorId
+    ){
+
+
+        return donationResponseRepository
+                .findByDonorId(donorId)
+                .stream()
+                .filter(
+                        response ->
+                                response.getStatus()
+                                        == DonationStatus.COMPLETED
+                )
+                .map(response -> {
+
+
+                    BloodRequest request =
+                            bloodRequestRepository
+                                    .findById(
+                                            response.getRequestId()
+                                    )
+                                    .orElseThrow(
+                                            () -> new RuntimeException(
+                                                    "Blood request not found"
+                                            )
+                                    );
+
+
+
+                    return new DonationHistoryDTO(
+
+                            response.getId(),
+
+                            request.getId(),
+
+                            request.getPatientName(),
+
+                            request.getBloodGroup() != null
+                                    ? request.getBloodGroup().toString()
+                                    : null,
+
+
+                            request.getHospital(),
+
+                            request.getLocation(),
+
+                            response.getStatus().toString(),
+
+                            request.getCreatedAt()
 
                     );
 
@@ -184,8 +254,6 @@ public class DonationResponseService {
 
 
 
-        // When donor accepts request
-
         if(status == DonationStatus.ACCEPTED){
 
 
@@ -200,9 +268,6 @@ public class DonationResponseService {
 
 
 
-
-        // When donation is completed
-
         if(status == DonationStatus.COMPLETED){
 
 
@@ -212,7 +277,6 @@ public class DonationResponseService {
                     );
 
         }
-
 
 
 
