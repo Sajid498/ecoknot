@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backend.dto.DonationResponseDTO;
 import backend.entity.DonationResponse;
+import backend.entity.DonationStatus;
 import backend.service.DonationResponseService;
 
 
@@ -43,6 +44,7 @@ public class DonationResponseController {
 
 
 
+
     // Donor clicks "I Want To Donate"
     @PostMapping
     public DonationResponse createResponse(
@@ -53,6 +55,9 @@ public class DonationResponseController {
                 .createResponse(response);
 
     }
+
+
+
 
 
 
@@ -73,6 +78,9 @@ public class DonationResponseController {
 
 
 
+
+
+
     // Get donors for a specific blood request
     @GetMapping("/request/{requestId}")
     public List<DonationResponse> getDonorsByRequest(
@@ -88,17 +96,26 @@ public class DonationResponseController {
 
 
 
+
+
+
     // Accept or Reject donor
     @PutMapping("/{id}")
     public DonationResponse updateStatus(
             @PathVariable Long id,
-            @RequestParam String status
+            @RequestParam DonationStatus status
     ){
 
         return donationResponseService
-                .updateStatus(id,status);
+                .updateStatus(
+                        id,
+                        status
+                );
 
     }
+
+
+
 
 
 

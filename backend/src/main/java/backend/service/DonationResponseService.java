@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import backend.dto.DonationResponseDTO;
 import backend.entity.BloodRequest;
 import backend.entity.DonationResponse;
+import backend.entity.DonationStatus;
 import backend.repository.BloodRequestRepository;
 import backend.repository.DonationResponseRepository;
 
@@ -42,13 +43,17 @@ public class DonationResponseService {
 
 
 
+
     // Create donor response
 
     public DonationResponse createResponse(
             DonationResponse response
     ){
 
-        response.setStatus("PENDING");
+        response.setStatus(
+                DonationStatus.PENDING
+        );
+
 
         return donationResponseRepository.save(response);
 
@@ -96,7 +101,10 @@ public class DonationResponseService {
 
                             response.getDonorId(),
 
-                            response.getStatus(),
+                            response.getStatus() != null
+                                    ? response.getStatus().toString()
+                                    : null,
+
 
                             request.getUser().getId(),
 
@@ -142,7 +150,7 @@ public class DonationResponseService {
 
     public DonationResponse updateStatus(
             Long id,
-            String status
+            DonationStatus status
     ){
 
 
@@ -156,7 +164,9 @@ public class DonationResponseService {
                         );
 
 
+
         response.setStatus(status);
+
 
 
         return donationResponseRepository.save(response);
