@@ -1,12 +1,19 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+
+import Navbar from "@/components/Navbar";
+import ProtectedRoute from "@/components/ProtectedRoute";
+
 
 
 const API_URL =
     process.env.NEXT_PUBLIC_API_URL ||
     "http://localhost:8080";
+
+
 
 
 
@@ -30,6 +37,25 @@ type DonationResponse = {
 
 
 
+type BloodRequest = {
+
+    patientName:string;
+
+    bloodGroup:string;
+
+    hospital:string;
+
+    location:string;
+
+    status:string;
+
+};
+
+
+
+
+
+
 export default function DonorPage(){
 
 
@@ -38,7 +64,8 @@ export default function DonorPage(){
     const router = useRouter();
 
 
-    const requestId = String(params.requestId);
+    const requestId =
+        String(params.requestId);
 
 
 
@@ -47,18 +74,69 @@ export default function DonorPage(){
 
 
 
+    const [request,setRequest] =
+        useState<BloodRequest | null>(null);
+
+
+
+
 
 
 
     useEffect(()=>{
 
+
         if(requestId){
 
             loadDonors();
 
+            loadRequest();
+
         }
 
+
     },[requestId]);
+
+
+
+
+
+
+
+
+
+    async function loadRequest(){
+
+
+        try{
+
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/blood-requests/${requestId}`
+                );
+
+
+            const data =
+                await response.json();
+
+
+
+            setRequest(data);
+
+
+
+        }
+        catch(error){
+
+            console.log(error);
+
+        }
+
+
+    }
+
+
 
 
 
@@ -113,6 +191,7 @@ export default function DonorPage(){
 
 
 
+
     async function updateDonationStatus(
         id:number,
         status:string
@@ -144,14 +223,19 @@ export default function DonorPage(){
 
 
 
-            loadDonors();
+            await loadDonors();
 
+            await loadRequest();
 
 
         }
         catch(error){
 
             console.log(error);
+
+            alert(
+                "Unable to update status"
+            );
 
         }
 
@@ -165,105 +249,108 @@ export default function DonorPage(){
 
 
 
+
+    const acceptedExists =
+        donors.some(
+            donor =>
+            donor.status === "ACCEPTED"
+        );
+
+
+
+
+
+
+
+
+
     return(
 
 
-        <main className="min-h-screen bg-slate-50 p-10">
+    <ProtectedRoute>
+
+
+        <main className="min-h-screen bg-slate-50">
+
+
+            <Navbar />
 
 
 
-            <div className="mx-auto max-w-3xl rounded-2xl bg-white p-6 shadow">
+            <div className="mx-auto max-w-4xl px-6 py-10">
 
-
-
-                <h1 className="text-3xl font-bold">
-
-                    Interested Donors
-
-                </h1>
 
 
 
 
 
                 {
-                    donors.length===0 ?
+                    request &&
+
+                    <div className="
+                    rounded-2xl
+                    bg-white
+                    p-6
+                    shadow
+                    ">
 
 
-                    (
+                        <h1 className="text-3xl font-bold">
 
-                        <p className="mt-5 text-gray-500">
+                            🩸 Blood Request
 
-                            No donors yet.
-
-                        </p>
-
-                    )
-
-
-                    :
-
-
-                    donors.map((donor)=>(
-
-
-                        <div
-
-                        key={donor.id}
-
-                        className="mt-5 rounded-xl border p-5"
-
-                        >
+                        </h1>
 
 
 
-
-                            <h2 className="text-xl font-bold">
-
-                                {donor.donorName}
-
-                            </h2>
-
-
-
+                        <div className="mt-5 grid gap-3 md:grid-cols-2">
 
 
                             <p>
-
-                                Email:
-                                {donor.donorEmail}
-
+                                Patient:
+                                <b> {request.patientName}</b>
                             </p>
 
 
 
-
                             <p>
-
-                                Phone:
-                                {donor.donorPhone}
-
+                                Blood Group:
+                                <b> {request.bloodGroup}</b>
                             </p>
 
 
 
+                            <p>
+                                Hospital:
+                                <b> {request.hospital}</b>
+                            </p>
 
 
 
-                            <p className="mt-2 font-semibold">
+                            <p>
+                                Location:
+                                <b> {request.location}</b>
+                            </p>
 
+
+
+                            <p>
                                 Status:
-
-                                <span className="ml-2 text-emerald-600">
-
-                                    {donor.status}
-
-                                </span>
-
-
+                                <b className="text-green-600">
+                                    {" "}
+                                    {request.status}
+                                </b>
                             </p>
 
 
+                        </div>
+
+
+
+                    </div>
+
+
+                }
 
 
 
@@ -271,7 +358,116 @@ export default function DonorPage(){
 
 
 
-                            <div className="mt-4 flex flex-wrap gap-3">
+
+
+                <div className="
+                mt-8
+                rounded-2xl
+                bg-white
+                p-6
+                shadow
+                ">
+
+
+
+                    <h1 className="text-3xl font-bold">
+
+                        Interested Donors
+
+                    </h1>
+
+
+
+
+
+
+
+
+                    {
+                        donors.length===0 ?
+
+
+                        (
+
+                            <p className="mt-5 text-gray-500">
+
+                                No donors yet.
+
+                            </p>
+
+                        )
+
+
+                        :
+
+
+                        donors.map((donor)=>(
+
+
+
+                            <div
+
+                            key={donor.id}
+
+                            className="
+                            mt-5
+                            rounded-xl
+                            border
+                            p-5
+                            "
+
+                            >
+
+
+
+
+
+                                <h2 className="text-xl font-bold">
+
+                                    {donor.donorName}
+
+                                </h2>
+
+
+
+
+                                <p>
+                                    Email:
+                                    {donor.donorEmail}
+                                </p>
+
+
+
+                                <p>
+                                    Phone:
+                                    {donor.donorPhone}
+                                </p>
+
+
+
+
+
+                                <p className="mt-2 font-semibold">
+
+                                    Status:
+
+                                    <span className="ml-2 text-emerald-600">
+
+                                        {donor.status}
+
+                                    </span>
+
+                                </p>
+
+
+
+
+
+
+
+
+
+                                <div className="mt-4 flex flex-wrap gap-3">
 
 
 
@@ -286,6 +482,8 @@ export default function DonorPage(){
 
 
                                     <button
+
+                                    disabled={acceptedExists}
 
                                     onClick={()=>{
 
@@ -302,6 +500,7 @@ export default function DonorPage(){
                                     px-4
                                     py-2
                                     text-white
+                                    disabled:opacity-40
                                     "
 
                                     >
@@ -309,8 +508,6 @@ export default function DonorPage(){
                                         ✅ Accept
 
                                     </button>
-
-
 
 
 
@@ -345,6 +542,7 @@ export default function DonorPage(){
                                     </>
 
                                 }
+
 
 
 
@@ -424,18 +622,29 @@ export default function DonorPage(){
 
 
 
+                                </div>
+
+
+
+
+
                             </div>
 
 
 
+                        ))
 
 
-                        </div>
+                    }
 
 
-                    ))
 
-                }
+
+
+
+
+                </div>
+
 
 
 
@@ -445,6 +654,9 @@ export default function DonorPage(){
 
 
         </main>
+
+
+    </ProtectedRoute>
 
 
     );

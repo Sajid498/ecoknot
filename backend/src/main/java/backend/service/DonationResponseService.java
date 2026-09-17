@@ -253,65 +253,61 @@ public class DonationResponseService {
 
     // Update donation status
 
-    public DonationResponse updateStatus(
-            Long id,
-            DonationStatus status
-    ){
+    // Update donation status
+
+public DonationResponse updateStatus(
+        Long id,
+        DonationStatus status
+){
+
+    DonationResponse response =
+            donationResponseRepository
+                    .findById(id)
+                    .orElseThrow(
+                            () -> new RuntimeException(
+                                    "Donation response not found"
+                            )
+                    );
 
 
-        DonationResponse response =
+
+
+    // ==============================
+    // Prevent multiple accepted donors
+    // ==============================
+
+    if(status == DonationStatus.ACCEPTED){
+
+
+        List<DonationResponse> existingDonors =
                 donationResponseRepository
-                        .findById(id)
-                        .orElseThrow(
-                                () -> new RuntimeException(
-                                        "Donation response not found"
-                                )
+                        .findByRequestId(
+                                response.getRequestId()
                         );
 
 
 
-        response.setStatus(status);
+        boolean alreadyAccepted =
+                existingDonors
+                        .stream()
+                        .anyMatch(
+                                donor ->
+                                donor.getStatus()
+                                == DonationStatus.ACCEPTED
+                        );
 
 
 
-        DonationResponse savedResponse =
-                donationResponseRepository.save(response);
+        if(alreadyAccepted){
 
 
+            throw new RuntimeException(
+                    "A donor is already accepted for this request"
+            );
 
-
-
-
-        if(status == DonationStatus.ACCEPTED){
-
-
-            bloodRequestService
-                    .markDonorFound(
-                            response.getRequestId()
-                    );
 
         }
 
-
-
-
-
-        if(status == DonationStatus.COMPLETED){
-
-
-            bloodRequestService
-                    .markFulfilled(
-                            response.getRequestId()
-                    );
-
-        }
-
-
-
-
-
-
-        return savedResponse;
 
     }
 
@@ -319,6 +315,57 @@ public class DonationResponseService {
 
 
 
+
+    response.setStatus(status);
+
+
+
+    DonationResponse savedResponse =
+            donationResponseRepository.save(response);
+
+
+
+
+
+
+
+    // Update blood request status
+
+    if(status == DonationStatus.ACCEPTED){
+
+
+        bloodRequestService
+                .markDonorFound(
+                        response.getRequestId()
+                );
+
+    }
+
+
+
+
+
+
+
+    if(status == DonationStatus.COMPLETED){
+
+
+        bloodRequestService
+                .markFulfilled(
+                        response.getRequestId()
+                );
+
+    }
+
+
+
+
+
+
+
+    return savedResponse;
+
+}
 
 
 
