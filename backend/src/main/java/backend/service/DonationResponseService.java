@@ -10,6 +10,7 @@ import backend.dto.DonationResponseDTO;
 import backend.entity.BloodRequest;
 import backend.entity.DonationResponse;
 import backend.entity.DonationStatus;
+import backend.exception.ResourceNotFoundException;
 import backend.repository.BloodRequestRepository;
 import backend.repository.DonationResponseRepository;
 
@@ -116,13 +117,14 @@ public class DonationResponseService {
                 .map(response -> {
 
 
+
                     BloodRequest request =
                             bloodRequestRepository
                                     .findById(
                                             response.getRequestId()
                                     )
                                     .orElseThrow(
-                                            () -> new RuntimeException(
+                                            () -> new ResourceNotFoundException(
                                                     "Blood request not found"
                                             )
                                     );
@@ -136,6 +138,7 @@ public class DonationResponseService {
                             response.getRequestId(),
 
                             response.getDonorId(),
+
 
                             response.getStatus() != null
                                     ? response.getStatus().toString()
@@ -181,13 +184,14 @@ public class DonationResponseService {
                 .map(response -> {
 
 
+
                     BloodRequest request =
                             bloodRequestRepository
                                     .findById(
                                             response.getRequestId()
                                     )
                                     .orElseThrow(
-                                            () -> new RuntimeException(
+                                            () -> new ResourceNotFoundException(
                                                     "Blood request not found"
                                             )
                                     );
@@ -253,119 +257,125 @@ public class DonationResponseService {
 
     // Update donation status
 
-    // Update donation status
-
-public DonationResponse updateStatus(
-        Long id,
-        DonationStatus status
-){
-
-    DonationResponse response =
-            donationResponseRepository
-                    .findById(id)
-                    .orElseThrow(
-                            () -> new RuntimeException(
-                                    "Donation response not found"
-                            )
-                    );
+    public DonationResponse updateStatus(
+            Long id,
+            DonationStatus status
+    ){
 
 
-
-
-    // ==============================
-    // Prevent multiple accepted donors
-    // ==============================
-
-    if(status == DonationStatus.ACCEPTED){
-
-
-        List<DonationResponse> existingDonors =
+        DonationResponse response =
                 donationResponseRepository
-                        .findByRequestId(
-                                response.getRequestId()
+                        .findById(id)
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException(
+                                        "Donation response not found"
+                                )
                         );
 
 
 
-        boolean alreadyAccepted =
-                existingDonors
-                        .stream()
-                        .anyMatch(
-                                donor ->
-                                donor.getStatus()
-                                == DonationStatus.ACCEPTED
-                        );
 
 
 
-        if(alreadyAccepted){
+        // Prevent multiple accepted donors
+
+        if(status == DonationStatus.ACCEPTED){
 
 
-            throw new RuntimeException(
-                    "A donor is already accepted for this request"
-            );
+            List<DonationResponse> existingDonors =
+                    donationResponseRepository
+                            .findByRequestId(
+                                    response.getRequestId()
+                            );
+
+
+
+            boolean alreadyAccepted =
+                    existingDonors
+                            .stream()
+                            .anyMatch(
+                                    donor ->
+                                    donor.getStatus()
+                                    == DonationStatus.ACCEPTED
+                            );
+
+
+
+            if(alreadyAccepted){
+
+
+                throw new RuntimeException(
+                        "A donor is already accepted for this request"
+                );
+
+
+            }
 
 
         }
 
 
+
+
+
+
+
+        response.setStatus(status);
+
+
+
+        DonationResponse savedResponse =
+                donationResponseRepository.save(response);
+
+
+
+
+
+
+
+
+        // Update blood request status
+
+        if(status == DonationStatus.ACCEPTED){
+
+
+            bloodRequestService
+                    .markDonorFound(
+                            response.getRequestId()
+                    );
+
+        }
+
+
+
+
+
+
+
+        if(status == DonationStatus.COMPLETED){
+
+
+            bloodRequestService
+                    .markFulfilled(
+                            response.getRequestId()
+                    );
+
+        }
+
+
+
+
+
+
+
+        return savedResponse;
+
     }
 
 
 
 
 
-
-    response.setStatus(status);
-
-
-
-    DonationResponse savedResponse =
-            donationResponseRepository.save(response);
-
-
-
-
-
-
-
-    // Update blood request status
-
-    if(status == DonationStatus.ACCEPTED){
-
-
-        bloodRequestService
-                .markDonorFound(
-                        response.getRequestId()
-                );
-
-    }
-
-
-
-
-
-
-
-    if(status == DonationStatus.COMPLETED){
-
-
-        bloodRequestService
-                .markFulfilled(
-                        response.getRequestId()
-                );
-
-    }
-
-
-
-
-
-
-
-    return savedResponse;
-
-}
 
 
 

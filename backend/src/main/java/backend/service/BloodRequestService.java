@@ -10,6 +10,7 @@ import backend.entity.BloodGroup;
 import backend.entity.BloodRequest;
 import backend.entity.RequestStatus;
 import backend.entity.User;
+import backend.exception.ResourceNotFoundException;
 import backend.repository.BloodRequestRepository;
 import backend.repository.UserRepository;
 
@@ -39,6 +40,8 @@ public class BloodRequestService {
 
 
 
+
+
     // CREATE BLOOD REQUEST
 
     public BloodRequest createBloodRequest(
@@ -50,7 +53,7 @@ public class BloodRequestService {
         User user = userRepository
                 .findById(userId)
                 .orElseThrow(
-                        () -> new RuntimeException(
+                        () -> new ResourceNotFoundException(
                                 "User not found"
                         )
                 );
@@ -62,6 +65,8 @@ public class BloodRequestService {
         return bloodRequestRepository.save(bloodRequest);
 
     }
+
+
 
 
 
@@ -81,7 +86,7 @@ public class BloodRequestService {
                 bloodRequestRepository
                         .findById(requestId)
                         .orElseThrow(
-                                () -> new RuntimeException(
+                                () -> new ResourceNotFoundException(
                                         "Request not found"
                                 )
                         );
@@ -149,6 +154,8 @@ public class BloodRequestService {
 
 
 
+
+
     // CANCEL BLOOD REQUEST
 
     public BloodRequest cancelBloodRequest(
@@ -161,7 +168,7 @@ public class BloodRequestService {
                 bloodRequestRepository
                         .findById(requestId)
                         .orElseThrow(
-                                () -> new RuntimeException(
+                                () -> new ResourceNotFoundException(
                                         "Request not found"
                                 )
                         );
@@ -199,6 +206,7 @@ public class BloodRequestService {
         return bloodRequestRepository.save(request);
 
     }
+
 
 
 
@@ -264,6 +272,7 @@ public class BloodRequestService {
 
 
 
+
     // GET ALL REQUESTS
 
     public List<BloodRequest> getAllRequests(){
@@ -271,6 +280,7 @@ public class BloodRequestService {
         return bloodRequestRepository.findAll();
 
     }
+
 
 
 
@@ -296,6 +306,7 @@ public class BloodRequestService {
 
 
 
+
     // GET USER REQUESTS
 
     public List<BloodRequest> getRequestsByUser(
@@ -307,68 +318,96 @@ public class BloodRequestService {
 
     }
 
-// UPDATE STATUS WHEN DONOR ACCEPTED
-
-public BloodRequest markDonorFound(
-        Long requestId
-){
-
-    BloodRequest request =
-            bloodRequestRepository
-                    .findById(requestId)
-                    .orElseThrow(
-                            () -> new RuntimeException(
-                                    "Blood request not found"
-                            )
-                    );
 
 
-    request.setStatus(
-            RequestStatus.DONOR_FOUND
-    );
 
 
-    return bloodRequestRepository.save(request);
-
-}
-
-// GET SINGLE REQUEST
-
-public BloodRequest getRequestById(
-        Long requestId
-){
-
-    return bloodRequestRepository
-            .findById(requestId)
-            .orElseThrow(
-                    () -> new RuntimeException(
-                            "Blood request not found"
-                    )
-            );
-
-}
-// UPDATE STATUS WHEN DONATION COMPLETED
-
-public BloodRequest markFulfilled(
-        Long requestId
-){
-
-    BloodRequest request =
-            bloodRequestRepository
-                    .findById(requestId)
-                    .orElseThrow(
-                            () -> new RuntimeException(
-                                    "Blood request not found"
-                            )
-                    );
 
 
-    request.setStatus(
-            RequestStatus.FULFILLED
-    );
 
 
-    return bloodRequestRepository.save(request);
+    // UPDATE STATUS WHEN DONOR ACCEPTED
 
-}
+    public BloodRequest markDonorFound(
+            Long requestId
+    ){
+
+        BloodRequest request =
+                bloodRequestRepository
+                        .findById(requestId)
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException(
+                                        "Blood request not found"
+                                )
+                        );
+
+
+        request.setStatus(
+                RequestStatus.DONOR_FOUND
+        );
+
+
+        return bloodRequestRepository.save(request);
+
+    }
+
+
+
+
+
+
+
+
+
+
+    // GET SINGLE REQUEST
+
+    public BloodRequest getRequestById(
+            Long requestId
+    ){
+
+        return bloodRequestRepository
+                .findById(requestId)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Blood request not found"
+                        )
+                );
+
+    }
+
+
+
+
+
+
+
+
+
+    // UPDATE STATUS WHEN DONATION COMPLETED
+
+    public BloodRequest markFulfilled(
+            Long requestId
+    ){
+
+        BloodRequest request =
+                bloodRequestRepository
+                        .findById(requestId)
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException(
+                                        "Blood request not found"
+                                )
+                        );
+
+
+        request.setStatus(
+                RequestStatus.FULFILLED
+        );
+
+
+        return bloodRequestRepository.save(request);
+
+    }
+
+
 }
