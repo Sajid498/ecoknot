@@ -21,7 +21,7 @@ export default function Navbar() {
       localStorage.getItem("user");
 
 
-    if(savedUser){
+    if (savedUser) {
 
       setUser(JSON.parse(savedUser));
 
@@ -168,6 +168,19 @@ export default function Navbar() {
 
 
                 <Link
+                  href="/my-requests"
+                  className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
+                >
+
+                  🩸 My Requests
+
+                </Link>
+
+
+
+
+
+                <Link
                   href="/messages"
                   className="text-sm font-medium text-slate-600 transition hover:text-emerald-700"
                 >
@@ -302,58 +315,58 @@ export default function Navbar() {
 
             )
 
-            :
+              :
 
 
-            (
+              (
 
 
-              <>
+                <>
 
 
-                <Link href="/login">
+                  <Link href="/login">
 
-                  <button
+                    <button
 
-                    className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 sm:block"
+                      className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 sm:block"
 
-                  >
+                    >
 
-                    Log In
+                      Log In
 
-                  </button>
-
-
-                </Link>
+                    </button>
 
 
-
+                  </Link>
 
 
 
 
-                <Link href="/signup">
-
-
-                  <button
-
-                    className="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800"
-
-                  >
-
-                    Sign Up
-
-                  </button>
-
-
-                </Link>
 
 
 
-              </>
+                  <Link href="/signup">
 
 
-            )
+                    <button
+
+                      className="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800"
+
+                    >
+
+                      Sign Up
+
+                    </button>
+
+
+                  </Link>
+
+
+
+                </>
+
+
+              )
 
           }
 
