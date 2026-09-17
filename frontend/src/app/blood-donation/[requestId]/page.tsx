@@ -2,13 +2,15 @@
 
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
+
 
 
 const API_URL =
     process.env.NEXT_PUBLIC_API_URL ||
     "http://localhost:8080";
+
 
 
 
@@ -37,7 +39,10 @@ type BloodRequest = {
 
     status:string;
 
+    userId:number;
+
 };
+
 
 
 
@@ -49,6 +54,12 @@ type DonationResponse = {
     requestId:number;
 
     donorId:number;
+
+    donorName:string;
+
+    donorEmail:string;
+
+    donorPhone:string;
 
     status:string;
 
@@ -66,9 +77,13 @@ export default function BloodRequestDetailsPage(){
 
     const params = useParams();
 
+    const router = useRouter();
+
+
 
     const requestId =
         Number(params.requestId);
+
 
 
 
@@ -82,8 +97,13 @@ export default function BloodRequestDetailsPage(){
 
 
 
-    const [donation,setDonation] =
+    const [myDonation,setMyDonation] =
         useState<DonationResponse | null>(null);
+
+
+
+    const [donors,setDonors] =
+        useState<DonationResponse[]>([]);
 
 
 
@@ -112,15 +132,14 @@ export default function BloodRequestDetailsPage(){
             setUser(userData);
 
 
-            checkDonation(
-                userData.id
-            );
-
         }
 
 
 
         loadRequest();
+
+
+        loadDonors();
 
 
 
@@ -146,8 +165,10 @@ export default function BloodRequestDetailsPage(){
                 );
 
 
+
             const data =
                 await response.json();
+
 
 
             setRequest(data);
@@ -157,7 +178,9 @@ export default function BloodRequestDetailsPage(){
         }
         catch(error){
 
+
             console.log(error);
+
 
         }
 
@@ -172,7 +195,55 @@ export default function BloodRequestDetailsPage(){
 
 
 
-    async function checkDonation(
+    async function loadDonors(){
+
+
+        try{
+
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/donation-response/request/${requestId}`
+                );
+
+
+
+            const data =
+                await response.json();
+
+
+
+            if(Array.isArray(data)){
+
+
+                setDonors(data);
+
+
+            }
+
+
+
+        }
+        catch(error){
+
+
+            console.log(error);
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async function checkMyDonation(
         donorId:number
     ){
 
@@ -186,6 +257,7 @@ export default function BloodRequestDetailsPage(){
                 );
 
 
+
             const data =
                 await response.json();
 
@@ -197,13 +269,14 @@ export default function BloodRequestDetailsPage(){
                 const found =
                     data.find(
                         (item:any)=>
-                            item.requestId === requestId
+                            item.requestId===requestId
                     );
+
 
 
                 if(found){
 
-                    setDonation(found);
+                    setMyDonation(found);
 
                 }
 
@@ -211,15 +284,39 @@ export default function BloodRequestDetailsPage(){
             }
 
 
+
         }
         catch(error){
 
+
             console.log(error);
+
 
         }
 
 
     }
+
+
+
+
+
+
+
+
+    useEffect(()=>{
+
+
+        if(user){
+
+            checkMyDonation(
+                user.id
+            );
+
+        }
+
+
+    },[user]);
 
 
 
@@ -234,9 +331,11 @@ export default function BloodRequestDetailsPage(){
 
         if(!user){
 
+
             alert(
                 "Please login first"
             );
+
 
             return;
 
@@ -245,11 +344,13 @@ export default function BloodRequestDetailsPage(){
 
 
 
-        setLoading(true);
-
 
 
         try{
+
+
+            setLoading(true);
+
 
 
             const response =
@@ -262,44 +363,29 @@ export default function BloodRequestDetailsPage(){
 
 
                         headers:{
-                            "Content-Type":"application/json"
+
+                            "Content-Type":
+                            "application/json"
+
                         },
 
 
                         body:JSON.stringify({
 
+                            requestId,
 
-                            requestId:
+                            donorId:user.id,
 
+                            donorName:user.name,
 
-                                requestId,
-
-
-                            donorId:
-
-
-                                user.id,
-
-
-                            donorName:
-
-
-                                user.name,
-
-
-                            donorEmail:
-
-
-                                user.email,
-
+                            donorEmail:user.email,
 
                             donorPhone:
-
-
-                                user.phone || "Not provided"
-
+                            user.phone ||
+                            "Not provided"
 
                         })
+
 
                     }
                 );
@@ -315,7 +401,9 @@ export default function BloodRequestDetailsPage(){
                     "Donation failed"
                 );
 
+
             }
+
 
 
 
@@ -325,13 +413,87 @@ export default function BloodRequestDetailsPage(){
 
 
 
-            setDonation(data);
+            setMyDonation(data);
 
 
 
             alert(
-                "Donation request sent successfully"
+                "Donation request sent"
             );
+
+
+
+            loadDonors();
+
+
+
+        }
+        catch(error:any){
+
+
+            alert(
+                error.message ||
+                "Already applied"
+            );
+
+
+        }
+        finally{
+
+
+            setLoading(false);
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async function updateDonationStatus(
+        id:number,
+        status:string
+    ){
+
+
+        try{
+
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/donation-response/${id}?status=${status}`,
+                    {
+
+                        method:"PUT"
+
+                    }
+                );
+
+
+
+            if(!response.ok){
+
+
+                throw new Error(
+                    "Update failed"
+                );
+
+
+            }
+
+
+
+
+            loadDonors();
+
+            loadRequest();
 
 
 
@@ -339,20 +501,20 @@ export default function BloodRequestDetailsPage(){
         catch(error){
 
 
+            console.log(error);
+
+
             alert(
-                "You already applied for this request"
+                "Something went wrong"
             );
 
-
-        }
-        finally{
-
-            setLoading(false);
 
         }
 
 
     }
+
+
 
 
 
@@ -371,7 +533,9 @@ export default function BloodRequestDetailsPage(){
             <Navbar />
 
             <p className="p-10">
+
                 Loading...
+
             </p>
 
 
@@ -379,7 +543,21 @@ export default function BloodRequestDetailsPage(){
 
         );
 
+
     }
+
+
+
+
+
+
+
+
+    const isOwner =
+        user &&
+        user.id === request.userId;
+
+
 
 
 
@@ -390,24 +568,49 @@ export default function BloodRequestDetailsPage(){
     return(
 
 
-        <main className="min-h-screen bg-slate-50">
+        <main className="
+        min-h-screen
+        bg-slate-50
+        ">
 
 
             <Navbar />
 
 
 
-            <div className="mx-auto max-w-4xl px-6 py-10">
 
 
-                <div className="rounded-3xl bg-white p-8 shadow">
+            <div className="
+            mx-auto
+            max-w-5xl
+            px-6
+            py-10
+            ">
 
 
 
-                    <div className="flex justify-between">
+
+
+                <div className="
+                rounded-3xl
+                bg-white
+                p-8
+                shadow
+                ">
+
+
+
+
+
+                    <div className="
+                    flex
+                    justify-between
+                    ">
+
 
 
                         <div>
+
 
                             <span className="
                             rounded-lg
@@ -418,13 +621,17 @@ export default function BloodRequestDetailsPage(){
                             text-red-700
                             ">
 
-                                {request.bloodGroup}
+                                🩸 {request.bloodGroup}
 
                             </span>
 
 
 
-                            <h1 className="mt-5 text-3xl font-bold">
+                            <h1 className="
+                            mt-5
+                            text-3xl
+                            font-bold
+                            ">
 
                                 {request.patientName}
 
@@ -432,6 +639,8 @@ export default function BloodRequestDetailsPage(){
 
 
                         </div>
+
+
 
 
 
@@ -444,7 +653,7 @@ export default function BloodRequestDetailsPage(){
                         text-yellow-700
                         ">
 
-                            {request.urgency}
+                            {request.status}
 
                         </span>
 
@@ -458,7 +667,12 @@ export default function BloodRequestDetailsPage(){
 
 
 
-                    <div className="mt-8 space-y-3">
+
+                    <div className="
+                    mt-8
+                    space-y-3
+                    text-slate-600
+                    ">
 
 
                         <p>
@@ -474,14 +688,20 @@ export default function BloodRequestDetailsPage(){
 
 
                         <p>
-                            📅 Required Date:
+                            📅 Date:
                             <b> {request.requiredDate}</b>
                         </p>
 
 
                         <p>
-                            🩸 Units Needed:
+                            🩸 Units:
                             <b> {request.unitsNeeded}</b>
+                        </p>
+
+
+                        <p>
+                            ⚠️ Urgency:
+                            <b> {request.urgency}</b>
                         </p>
 
 
@@ -489,16 +709,6 @@ export default function BloodRequestDetailsPage(){
                             📞 Contact:
                             <b> {request.contactNumber}</b>
                         </p>
-
-
-                        <p>
-                            Status:
-                            <b className="text-green-600">
-                                {" "}
-                                {request.status}
-                            </b>
-                        </p>
-
 
 
                     </div>
@@ -513,11 +723,345 @@ export default function BloodRequestDetailsPage(){
                     {
                         request.description &&
 
-
-                        <div className="mt-6 rounded-xl bg-slate-100 p-4">
-
+                        <div className="
+                        mt-6
+                        rounded-xl
+                        bg-slate-100
+                        p-4
+                        ">
 
                             {request.description}
+
+                        </div>
+
+                    }
+
+
+
+
+
+
+
+
+
+                    {
+                        !isOwner &&
+
+
+                        <div className="mt-8">
+
+
+                            {
+                                myDonation ?
+
+
+                                <div className="
+                                rounded-xl
+                                bg-green-100
+                                p-5
+                                text-green-700
+                                ">
+
+
+                                    <h2 className="font-bold">
+
+                                        ✅ Donation Sent
+
+                                    </h2>
+
+
+                                    <p>
+
+                                        Status:
+                                        {" "}
+                                        {myDonation.status}
+
+                                    </p>
+
+
+                                </div>
+
+
+
+                                :
+
+
+                                <button
+
+                                onClick={donate}
+
+                                disabled={loading}
+
+                                className="
+                                rounded-xl
+                                bg-red-600
+                                px-6
+                                py-3
+                                font-semibold
+                                text-white
+                                "
+
+                                >
+
+                                    {
+                                        loading
+                                        ?
+                                        "Sending..."
+                                        :
+                                        "🩸 I Want To Donate"
+                                    }
+
+
+                                </button>
+
+
+                            }
+
+
+
+                        </div>
+
+                    }
+
+
+
+
+
+
+
+
+
+                    {
+                        isOwner &&
+
+
+                        <div className="mt-10">
+
+
+                            <h2 className="
+                            text-2xl
+                            font-bold
+                            ">
+
+                                Interested Donors
+
+                            </h2>
+
+
+
+
+
+
+                            {
+                                donors.length===0 ?
+
+
+                                <p className="
+                                mt-5
+                                text-gray-500
+                                ">
+
+                                    No donors yet.
+
+                                </p>
+
+
+
+                                :
+
+
+
+                                donors.map((donor)=>(
+
+
+
+                                    <div
+
+                                    key={donor.id}
+
+                                    className="
+                                    mt-5
+                                    rounded-xl
+                                    border
+                                    p-5
+                                    ">
+
+
+                                        <h3 className="
+                                        text-xl
+                                        font-bold
+                                        ">
+
+                                            {donor.donorName}
+
+                                        </h3>
+
+
+
+                                        <p>
+                                            Email:
+                                            {donor.donorEmail}
+                                        </p>
+
+
+                                        <p>
+                                            Phone:
+                                            {donor.donorPhone}
+                                        </p>
+
+
+                                        <p>
+
+                                            Status:
+                                            {" "}
+                                            {donor.status}
+
+                                        </p>
+
+
+
+
+
+
+                                        <div className="
+                                        mt-4
+                                        flex
+                                        gap-3
+                                        flex-wrap
+                                        ">
+
+
+                                        {
+                                            donor.status==="PENDING" &&
+
+                                            <>
+
+
+                                            <button
+
+                                            onClick={()=>updateDonationStatus(
+                                                donor.id,
+                                                "ACCEPTED"
+                                            )}
+
+                                            className="
+                                            rounded-lg
+                                            bg-green-600
+                                            px-4
+                                            py-2
+                                            text-white
+                                            "
+
+                                            >
+
+                                                Accept
+
+                                            </button>
+
+
+
+
+                                            <button
+
+                                            onClick={()=>updateDonationStatus(
+                                                donor.id,
+                                                "REJECTED"
+                                            )}
+
+                                            className="
+                                            rounded-lg
+                                            bg-red-600
+                                            px-4
+                                            py-2
+                                            text-white
+                                            "
+
+                                            >
+
+                                                Reject
+
+                                            </button>
+
+
+                                            </>
+
+                                        }
+
+
+
+
+
+
+                                        {
+                                            donor.status==="ACCEPTED" &&
+
+
+                                            <button
+
+                                            onClick={()=>updateDonationStatus(
+                                                donor.id,
+                                                "COMPLETED"
+                                            )}
+
+                                            className="
+                                            rounded-lg
+                                            bg-blue-600
+                                            px-4
+                                            py-2
+                                            text-white
+                                            "
+
+                                            >
+
+                                                Complete Donation
+
+                                            </button>
+
+
+                                        }
+
+
+
+
+
+                                        <button
+
+                                        onClick={()=>{
+
+                                            router.push(
+                                                `/chat/${requestId}/${donor.donorId}`
+                                            );
+
+                                        }}
+
+                                        className="
+                                        rounded-lg
+                                        bg-emerald-700
+                                        px-4
+                                        py-2
+                                        text-white
+                                        "
+
+                                        >
+
+                                            💬 Chat
+
+                                        </button>
+
+
+
+                                        </div>
+
+
+
+                                    </div>
+
+
+
+                                ))
+
+                            }
+
 
 
                         </div>
@@ -525,91 +1069,6 @@ export default function BloodRequestDetailsPage(){
 
                     }
 
-
-
-
-
-
-
-
-                    <div className="mt-8">
-
-
-                    {
-                        donation ?
-
-
-                        (
-
-                            <div className="
-                            rounded-xl
-                            bg-green-100
-                            p-5
-                            text-green-700
-                            ">
-
-
-                                <h2 className="font-bold">
-
-                                    ✅ Donation Sent
-
-                                </h2>
-
-
-                                <p>
-
-                                    Status:
-                                    {" "}
-                                    {donation.status}
-
-                                </p>
-
-
-
-                            </div>
-
-                        )
-
-
-                        :
-
-
-                        (
-
-                            <button
-
-                            onClick={donate}
-
-                            disabled={loading}
-
-                            className="
-                            rounded-xl
-                            bg-red-600
-                            px-6
-                            py-3
-                            font-semibold
-                            text-white
-                            disabled:opacity-50
-                            "
-
-                            >
-
-                                {
-                                    loading
-                                    ?
-                                    "Sending..."
-                                    :
-                                    "🩸 I Want To Donate"
-                                }
-
-                            </button>
-
-                        )
-
-                    }
-
-
-                    </div>
 
 
 
