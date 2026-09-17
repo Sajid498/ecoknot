@@ -59,6 +59,8 @@ public class UserService {
 
 
 
+
+
         return userRepository.save(user);
 
 
@@ -95,6 +97,7 @@ public class UserService {
 
 
 
+
         if(!user.getPassword()
                 .equals(password)
         ) {
@@ -117,6 +120,91 @@ public class UserService {
 
 
     }
+
+
+
+
+
+
+
+
+
+    // Get user profile
+
+    public User getUserById(
+            Long id
+    ){
+
+
+        return userRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "User not found"
+                        )
+                );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // Update donor profile
+
+    public User updateProfile(
+            Long id,
+            User updatedUser
+    ){
+
+
+
+        User existingUser =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException(
+                                        "User not found"
+                                )
+                        );
+
+
+
+
+
+        existingUser.setLocation(
+                updatedUser.getLocation()
+        );
+
+
+
+        existingUser.setAvailableForDonation(
+                updatedUser.isAvailableForDonation()
+        );
+
+
+
+        existingUser.setLastDonationDate(
+                updatedUser.getLastDonationDate()
+        );
+
+
+
+
+
+        return userRepository.save(
+                existingUser
+        );
+
+
+    }
+
+
 
 
 
