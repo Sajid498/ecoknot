@@ -307,6 +307,29 @@ public class BloodRequestService {
 
     }
 
+// UPDATE STATUS WHEN DONOR ACCEPTED
 
+public BloodRequest markDonorFound(
+        Long requestId
+){
+
+    BloodRequest request =
+            bloodRequestRepository
+                    .findById(requestId)
+                    .orElseThrow(
+                            () -> new RuntimeException(
+                                    "Blood request not found"
+                            )
+                    );
+
+
+    request.setStatus(
+            RequestStatus.DONOR_FOUND
+    );
+
+
+    return bloodRequestRepository.save(request);
+
+}
 
 }

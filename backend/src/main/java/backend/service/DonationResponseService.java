@@ -23,19 +23,26 @@ public class DonationResponseService {
 
     private final BloodRequestRepository bloodRequestRepository;
 
+    private final BloodRequestService bloodRequestService;
+
 
 
 
 
     public DonationResponseService(
             DonationResponseRepository donationResponseRepository,
-            BloodRequestRepository bloodRequestRepository
+            BloodRequestRepository bloodRequestRepository,
+            BloodRequestService bloodRequestService
     ){
 
         this.donationResponseRepository = donationResponseRepository;
+
         this.bloodRequestRepository = bloodRequestRepository;
 
+        this.bloodRequestService = bloodRequestService;
+
     }
+
 
 
 
@@ -169,7 +176,32 @@ public class DonationResponseService {
 
 
 
-        return donationResponseRepository.save(response);
+        DonationResponse savedResponse =
+                donationResponseRepository.save(response);
+
+
+
+
+
+        // If donor accepted,
+        // update blood request status
+
+        if(status == DonationStatus.ACCEPTED){
+
+
+            bloodRequestService
+                    .markDonorFound(
+                            response.getRequestId()
+                    );
+
+
+        }
+
+
+
+
+
+        return savedResponse;
 
     }
 
