@@ -10,6 +10,7 @@ import backend.dto.DonationResponseDTO;
 import backend.entity.BloodRequest;
 import backend.entity.DonationResponse;
 import backend.entity.DonationStatus;
+import backend.entity.RequestStatus;
 import backend.exception.ResourceNotFoundException;
 import backend.repository.BloodRequestRepository;
 import backend.repository.DonationResponseRepository;
@@ -61,6 +62,79 @@ public class DonationResponseService {
 
 
 
+        // ==============================
+        // Check blood request exists
+        // ==============================
+
+        BloodRequest request =
+                bloodRequestRepository
+                        .findById(
+                                response.getRequestId()
+                        )
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException(
+                                        "Blood request not found"
+                                )
+                        );
+
+
+
+
+
+
+
+        // ==============================
+        // Check request availability
+        // ==============================
+
+        if(request.getStatus() != RequestStatus.OPEN){
+
+
+            throw new RuntimeException(
+                    "This blood request is not available"
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
+        // ==============================
+        // Owner cannot donate own request
+        // ==============================
+
+        if(request.getUser() != null &&
+                request.getUser()
+                        .getId()
+                        .equals(response.getDonorId())
+        ){
+
+
+            throw new RuntimeException(
+                    "You cannot donate to your own request"
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
+        // ==============================
+        // Duplicate application check
+        // ==============================
+
         boolean alreadyApplied =
                 donationResponseRepository
                         .existsByRequestIdAndDonorId(
@@ -79,6 +153,7 @@ public class DonationResponseService {
 
 
         }
+
 
 
 
@@ -115,7 +190,6 @@ public class DonationResponseService {
                 .findByDonorId(donorId)
                 .stream()
                 .map(response -> {
-
 
 
                     BloodRequest request =
@@ -182,7 +256,6 @@ public class DonationResponseService {
                                         == DonationStatus.COMPLETED
                 )
                 .map(response -> {
-
 
 
                     BloodRequest request =
@@ -332,9 +405,6 @@ public class DonationResponseService {
 
 
 
-
-
-        // Update blood request status
 
         if(status == DonationStatus.ACCEPTED){
 
