@@ -1265,19 +1265,63 @@ Cancel Request
 
 
 
-                      <button
+                <div className="mt-4 flex gap-3">
 
-                        onClick={() =>
-                          handleDonate(request.id)
-                        }
 
-                        className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white"
+<button
 
-                      >
+onClick={() =>
+  router.push(
+    `/blood-donation/${request.id}`
+  )
+}
 
-                        🩸 I Want To Donate
+className="
+rounded-lg
+border
+border-slate-300
+px-4
+py-2
+text-sm
+font-semibold
+text-slate-700
+hover:bg-slate-50
+"
 
-                      </button>
+>
+
+View Details
+
+</button>
+
+
+
+
+<button
+
+onClick={() =>
+  handleDonate(request.id)
+}
+
+className="
+rounded-lg
+bg-red-600
+px-4
+py-2
+text-sm
+font-semibold
+text-white
+hover:bg-red-700
+"
+
+>
+
+🩸 I Want To Donate
+
+</button>
+
+
+</div>
 
 
                     </div>

@@ -145,5 +145,15 @@ public List<BloodRequest> getUserRequests(
             .getRequestsByUser(userId);
 
 }
+// Get single blood request details
 
+@GetMapping("/{requestId}")
+public BloodRequest getRequestById(
+        @PathVariable Long requestId
+){
+
+    return bloodRequestService
+            .getRequestById(requestId);
+
+}
 }
