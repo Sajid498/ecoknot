@@ -12,24 +12,25 @@ const API_URL =
 
 type DonationResponse = {
 
-    id: number;
+    id:number;
 
-    donorId: number;
+    donorId:number;
 
-    donorName: string;
+    donorName:string;
 
-    donorEmail: string;
+    donorEmail:string;
 
-    donorPhone: string;
+    donorPhone:string;
 
-    status: string;
+    status:string;
 
 };
 
 
 
 
-export default function DonorPage() {
+
+export default function DonorPage(){
 
 
     const params = useParams();
@@ -37,32 +38,38 @@ export default function DonorPage() {
     const router = useRouter();
 
 
-    const requestId = params.requestId;
+    const requestId = String(params.requestId);
 
 
 
-    const [donors, setDonors] =
+    const [donors,setDonors] =
         useState<DonationResponse[]>([]);
 
 
 
 
-    useEffect(() => {
-
-        loadDonors();
-
-    }, []);
 
 
+    useEffect(()=>{
+
+        if(requestId){
+
+            loadDonors();
+
+        }
+
+    },[requestId]);
 
 
 
 
 
-    async function loadDonors() {
 
 
-        try {
+    async function loadDonors(){
+
+
+        try{
 
 
             const response =
@@ -71,15 +78,26 @@ export default function DonorPage() {
                 );
 
 
+
             const data =
                 await response.json();
 
 
-            setDonors(data);
+
+            if(Array.isArray(data)){
+
+                setDonors(data);
+
+            }
+            else{
+
+                setDonors([]);
+
+            }
 
 
         }
-        catch (error) {
+        catch(error){
 
             console.log(error);
 
@@ -96,12 +114,12 @@ export default function DonorPage() {
 
 
     async function updateDonationStatus(
-        id: number,
-        status: string
-    ) {
+        id:number,
+        status:string
+    ){
 
 
-        try {
+        try{
 
 
             const response =
@@ -109,14 +127,14 @@ export default function DonorPage() {
                     `${API_URL}/api/donation-response/${id}?status=${status}`,
                     {
 
-                        method: "PUT"
+                        method:"PUT"
 
                     }
                 );
 
 
 
-            if (!response.ok) {
+            if(!response.ok){
 
                 throw new Error(
                     "Status update failed"
@@ -131,7 +149,7 @@ export default function DonorPage() {
 
 
         }
-        catch (error) {
+        catch(error){
 
             console.log(error);
 
@@ -146,10 +164,12 @@ export default function DonorPage() {
 
 
 
-    return (
+
+    return(
 
 
         <main className="min-h-screen bg-slate-50 p-10">
+
 
 
             <div className="mx-auto max-w-3xl rounded-2xl bg-white p-6 shadow">
@@ -167,78 +187,81 @@ export default function DonorPage() {
 
 
                 {
+                    donors.length===0 ?
 
-                    donors.length === 0 ?
 
-                        (
+                    (
 
-                            <p className="mt-5 text-gray-500">
+                        <p className="mt-5 text-gray-500">
 
-                                No donors yet.
+                            No donors yet.
+
+                        </p>
+
+                    )
+
+
+                    :
+
+
+                    donors.map((donor)=>(
+
+
+                        <div
+
+                        key={donor.id}
+
+                        className="mt-5 rounded-xl border p-5"
+
+                        >
+
+
+
+
+                            <h2 className="text-xl font-bold">
+
+                                {donor.donorName}
+
+                            </h2>
+
+
+
+
+
+                            <p>
+
+                                Email:
+                                {donor.donorEmail}
 
                             </p>
 
-                        )
-
-                        :
-
-
-                        donors.map((donor) => (
 
 
 
-                            <div
+                            <p>
 
-                                key={donor.id}
+                                Phone:
+                                {donor.donorPhone}
 
-                                className="mt-5 rounded-xl border p-5"
-
-                            >
-
-
-
-
-                                <h2 className="text-xl font-bold">
-
-                                    {donor.donorName}
-
-                                </h2>
-
-
-
-
-                                <p>
-
-                                    Email:
-                                    {donor.donorEmail}
-
-                                </p>
-
-
-
-
-                                <p>
-
-                                    Phone:
-                                    {donor.donorPhone}
-
-                                </p>
+                            </p>
 
 
 
 
 
-                                <p className="mt-2 font-semibold">
 
-                                    Status:
+                            <p className="mt-2 font-semibold">
 
-                                    <span className="ml-2 text-emerald-600">
+                                Status:
 
-                                        {donor.status}
+                                <span className="ml-2 text-emerald-600">
 
-                                    </span>
+                                    {donor.status}
 
-                                </p>
+                                </span>
+
+
+                            </p>
 
 
 
@@ -246,30 +269,34 @@ export default function DonorPage() {
 
 
 
-                                <div className="mt-4 flex gap-3">
+
+
+                            <div className="mt-4 flex flex-wrap gap-3">
 
 
 
 
 
-                                    {
-                                        donor.status === "PENDING" &&
-
-                                        <>
 
 
-                                            <button
+                                {
+                                    donor.status==="PENDING" &&
 
-                                                onClick={() => {
+                                    <>
 
-                                                    updateDonationStatus(
-                                                        donor.id,
-                                                        "ACCEPTED"
-                                                    );
 
-                                                }}
+                                    <button
 
-                                                className="
+                                    onClick={()=>{
+
+                                        updateDonationStatus(
+                                            donor.id,
+                                            "ACCEPTED"
+                                        );
+
+                                    }}
+
+                                    className="
                                     rounded-lg
                                     bg-green-600
                                     px-4
@@ -277,47 +304,11 @@ export default function DonorPage() {
                                     text-white
                                     "
 
-                                            >
+                                    >
 
-                                                ✅ Accept
+                                        ✅ Accept
 
-                                            </button>
-
-
-
-
-
-
-                                            <button
-
-                                                onClick={() => {
-
-                                                    updateDonationStatus(
-                                                        donor.id,
-                                                        "REJECTED"
-                                                    );
-
-                                                }}
-
-                                                className="
-                                    rounded-lg
-                                    bg-red-600
-                                    px-4
-                                    py-2
-                                    text-white
-                                    "
-
-                                            >
-
-                                                ❌ Reject
-
-                                            </button>
-
-
-                                        </>
-
-
-                                    }
+                                    </button>
 
 
 
@@ -327,18 +318,94 @@ export default function DonorPage() {
 
                                     <button
 
+                                    onClick={()=>{
 
-                                        onClick={() => {
+                                        updateDonationStatus(
+                                            donor.id,
+                                            "REJECTED"
+                                        );
 
-                                            router.push(
-                                                `/chat/${requestId}/${donor.donorId}`
-                                            );
+                                    }}
 
-                                        }}
+                                    className="
+                                    rounded-lg
+                                    bg-red-600
+                                    px-4
+                                    py-2
+                                    text-white
+                                    "
+
+                                    >
+
+                                        ❌ Reject
+
+                                    </button>
+
+
+                                    </>
+
+                                }
 
 
 
-                                        className="
+
+
+
+
+
+                                {
+                                    donor.status==="ACCEPTED" &&
+
+
+                                    <button
+
+                                    onClick={()=>{
+
+                                        updateDonationStatus(
+                                            donor.id,
+                                            "COMPLETED"
+                                        );
+
+                                    }}
+
+                                    className="
+                                    rounded-lg
+                                    bg-blue-600
+                                    px-4
+                                    py-2
+                                    text-white
+                                    "
+
+                                    >
+
+                                        ✅ Complete Donation
+
+                                    </button>
+
+
+                                }
+
+
+
+
+
+
+
+
+
+                                <button
+
+
+                                onClick={()=>{
+
+                                    router.push(
+                                        `/chat/${requestId}/${donor.donorId}`
+                                    );
+
+                                }}
+
+
+                                className="
                                 rounded-lg
                                 bg-emerald-700
                                 px-4
@@ -346,17 +413,12 @@ export default function DonorPage() {
                                 text-white
                                 "
 
-                                    >
+                                >
 
-                                        💬 Chat
+                                    💬 Chat
 
-                                    </button>
+                                </button>
 
-
-
-
-
-                                </div>
 
 
 
@@ -366,11 +428,14 @@ export default function DonorPage() {
 
 
 
-                        ))
 
+
+                        </div>
+
+
+                    ))
 
                 }
-
 
 
 

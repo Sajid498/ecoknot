@@ -331,5 +331,28 @@ public BloodRequest markDonorFound(
     return bloodRequestRepository.save(request);
 
 }
+// UPDATE STATUS WHEN DONATION COMPLETED
 
+public BloodRequest markFulfilled(
+        Long requestId
+){
+
+    BloodRequest request =
+            bloodRequestRepository
+                    .findById(requestId)
+                    .orElseThrow(
+                            () -> new RuntimeException(
+                                    "Blood request not found"
+                            )
+                    );
+
+
+    request.setStatus(
+            RequestStatus.FULFILLED
+    );
+
+
+    return bloodRequestRepository.save(request);
+
+}
 }

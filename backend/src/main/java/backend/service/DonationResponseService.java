@@ -153,7 +153,7 @@ public class DonationResponseService {
 
 
 
-    // Accept or Reject donor response
+    // Update donation status
 
     public DonationResponse updateStatus(
             Long id,
@@ -183,8 +183,8 @@ public class DonationResponseService {
 
 
 
-        // If donor accepted,
-        // update blood request status
+
+        // When donor accepts request
 
         if(status == DonationStatus.ACCEPTED){
 
@@ -194,8 +194,26 @@ public class DonationResponseService {
                             response.getRequestId()
                     );
 
+        }
+
+
+
+
+
+
+        // When donation is completed
+
+        if(status == DonationStatus.COMPLETED){
+
+
+            bloodRequestService
+                    .markFulfilled(
+                            response.getRequestId()
+                    );
 
         }
+
+
 
 
 
