@@ -25,34 +25,49 @@ public class DonationResponseService {
 
 
 
-   private final DonationResponseRepository donationResponseRepository;
+    private final DonationResponseRepository donationResponseRepository;
 
-private final BloodRequestRepository bloodRequestRepository;
+    private final BloodRequestRepository bloodRequestRepository;
 
-private final BloodRequestService bloodRequestService;
+    private final BloodRequestService bloodRequestService;
 
-private final UserRepository userRepository;
-
-
+    private final UserRepository userRepository;
 
 
 
- public DonationResponseService(
-        DonationResponseRepository donationResponseRepository,
-        BloodRequestRepository bloodRequestRepository,
-        BloodRequestService bloodRequestService,
-        UserRepository userRepository
-){
 
-    this.donationResponseRepository = donationResponseRepository;
 
-    this.bloodRequestRepository = bloodRequestRepository;
 
-    this.bloodRequestService = bloodRequestService;
+    public DonationResponseService(
 
-    this.userRepository = userRepository;
+            DonationResponseRepository donationResponseRepository,
 
-}
+            BloodRequestRepository bloodRequestRepository,
+
+            BloodRequestService bloodRequestService,
+
+            UserRepository userRepository
+
+    ){
+
+
+        this.donationResponseRepository =
+                donationResponseRepository;
+
+
+        this.bloodRequestRepository =
+                bloodRequestRepository;
+
+
+        this.bloodRequestService =
+                bloodRequestService;
+
+
+        this.userRepository =
+                userRepository;
+
+
+    }
 
 
 
@@ -64,25 +79,29 @@ private final UserRepository userRepository;
 
     // Create donor response
 
+
     public DonationResponse createResponse(
+
             DonationResponse response
+
     ){
 
 
 
-        // ==============================
-        // Check blood request exists
-        // ==============================
-
         BloodRequest request =
+
                 bloodRequestRepository
+
                         .findById(
                                 response.getRequestId()
                         )
+
                         .orElseThrow(
+
                                 () -> new ResourceNotFoundException(
                                         "Blood request not found"
                                 )
+
                         );
 
 
@@ -91,11 +110,10 @@ private final UserRepository userRepository;
 
 
 
-        // ==============================
-        // Check request availability
-        // ==============================
-
-        if(request.getStatus() != RequestStatus.OPEN){
+        if(
+                request.getStatus()
+                != RequestStatus.OPEN
+        ){
 
 
             throw new RuntimeException(
@@ -113,14 +131,18 @@ private final UserRepository userRepository;
 
 
 
-        // ==============================
-        // Owner cannot donate own request
-        // ==============================
+        if(
 
-        if(request.getUser() != null &&
+                request.getUser() != null
+
+                &&
+
                 request.getUser()
                         .getId()
-                        .equals(response.getDonorId())
+                        .equals(
+                                response.getDonorId()
+                        )
+
         ){
 
 
@@ -139,16 +161,20 @@ private final UserRepository userRepository;
 
 
 
-        // ==============================
-        // Duplicate application check
-        // ==============================
-
         boolean alreadyApplied =
+
                 donationResponseRepository
+
                         .existsByRequestIdAndDonorId(
+
                                 response.getRequestId(),
+
                                 response.getDonorId()
+
                         );
+
+
+
 
 
 
@@ -177,6 +203,7 @@ private final UserRepository userRepository;
         return donationResponseRepository.save(response);
 
 
+
     }
 
 
@@ -187,29 +214,199 @@ private final UserRepository userRepository;
 
 
 
-    // Get donations made by a donor
+
+
+
+
+
+    // Accept recommended donor directly
+
+
+    public DonationResponse acceptRecommendedDonor(
+
+            DonationResponse response
+
+    ){
+
+
+
+        BloodRequest request =
+
+                bloodRequestRepository
+
+                        .findById(
+                                response.getRequestId()
+                        )
+
+                        .orElseThrow(
+
+                                () -> new ResourceNotFoundException(
+                                        "Blood request not found"
+                                )
+
+                        );
+
+
+
+
+
+
+
+
+
+        if(
+
+                request.getStatus()
+                != RequestStatus.OPEN
+
+        ){
+
+
+            throw new RuntimeException(
+                    "Blood request is not available"
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
+        boolean alreadyAccepted =
+
+                donationResponseRepository
+
+                        .findByRequestId(
+                                response.getRequestId()
+                        )
+
+                        .stream()
+
+                        .anyMatch(
+
+                                donor ->
+
+                                donor.getStatus()
+                                == DonationStatus.ACCEPTED
+
+                        );
+
+
+
+
+
+
+
+
+        if(alreadyAccepted){
+
+
+            throw new RuntimeException(
+                    "A donor is already accepted for this request"
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
+        response.setStatus(
+                DonationStatus.ACCEPTED
+        );
+
+
+
+
+
+
+        DonationResponse savedResponse =
+
+                donationResponseRepository.save(
+                        response
+                );
+
+
+
+
+
+
+
+        bloodRequestService
+
+                .markDonorFound(
+                        response.getRequestId()
+                );
+
+
+
+
+
+
+
+        return savedResponse;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    // Get donations made by donor
+
 
     public List<DonationResponseDTO> getDonationsByDonor(
+
             Long donorId
+
     ){
 
 
         return donationResponseRepository
+
                 .findByDonorId(donorId)
+
                 .stream()
+
                 .map(response -> {
 
 
+
                     BloodRequest request =
+
                             bloodRequestRepository
+
                                     .findById(
                                             response.getRequestId()
                                     )
+
                                     .orElseThrow(
+
                                             () -> new ResourceNotFoundException(
                                                     "Blood request not found"
                                             )
+
                                     );
+
 
 
 
@@ -223,8 +420,14 @@ private final UserRepository userRepository;
 
 
                             response.getStatus() != null
-                                    ? response.getStatus().toString()
-                                    : null,
+
+                            ?
+
+                            response.getStatus().toString()
+
+                            :
+
+                            null,
 
 
                             request.getUser().getId(),
@@ -235,10 +438,12 @@ private final UserRepository userRepository;
 
 
                 })
+
                 .toList();
 
 
     }
+        
 
 
 
@@ -250,32 +455,53 @@ private final UserRepository userRepository;
 
     // Get donation history of donor
 
+
     public List<DonationHistoryDTO> getDonationHistory(
+
             Long donorId
+
     ){
 
 
+
         return donationResponseRepository
+
                 .findByDonorId(donorId)
+
                 .stream()
+
                 .filter(
+
                         response ->
+
                                 response.getStatus()
-                                        == DonationStatus.COMPLETED
+
+                                == DonationStatus.COMPLETED
+
                 )
+
                 .map(response -> {
 
 
+
                     BloodRequest request =
+
                             bloodRequestRepository
+
                                     .findById(
                                             response.getRequestId()
                                     )
+
                                     .orElseThrow(
+
                                             () -> new ResourceNotFoundException(
                                                     "Blood request not found"
                                             )
+
                                     );
+
+
+
 
 
 
@@ -288,8 +514,15 @@ private final UserRepository userRepository;
                             request.getPatientName(),
 
                             request.getBloodGroup() != null
-                                    ? request.getBloodGroup().toString()
-                                    : null,
+
+                            ?
+
+                            request.getBloodGroup().toString()
+
+                            :
+
+                            null,
+
 
 
                             request.getHospital(),
@@ -303,11 +536,18 @@ private final UserRepository userRepository;
                     );
 
 
+
                 })
+
                 .toList();
 
 
+
     }
+
+
+
+
 
 
 
@@ -319,14 +559,25 @@ private final UserRepository userRepository;
 
     // Get all donors for a blood request
 
+
     public List<DonationResponse> getDonorsByRequestId(
+
             Long requestId
+
     ){
 
+
         return donationResponseRepository
+
                 .findByRequestId(requestId);
 
+
+
     }
+
+
+
+
 
 
 
@@ -338,20 +589,32 @@ private final UserRepository userRepository;
 
     // Update donation status
 
+
     public DonationResponse updateStatus(
+
             Long id,
+
             DonationStatus status
+
     ){
 
 
+
         DonationResponse response =
+
                 donationResponseRepository
+
                         .findById(id)
+
                         .orElseThrow(
+
                                 () -> new ResourceNotFoundException(
                                         "Donation response not found"
                                 )
+
                         );
+
+
 
 
 
@@ -360,40 +623,66 @@ private final UserRepository userRepository;
 
         // Prevent multiple accepted donors
 
-        if(status == DonationStatus.ACCEPTED){
+
+        if(
+                status == DonationStatus.ACCEPTED
+        ){
+
 
 
             List<DonationResponse> existingDonors =
+
                     donationResponseRepository
+
                             .findByRequestId(
                                     response.getRequestId()
                             );
 
 
 
+
+
+
             boolean alreadyAccepted =
+
                     existingDonors
+
                             .stream()
+
                             .anyMatch(
+
                                     donor ->
+
                                     donor.getStatus()
                                     == DonationStatus.ACCEPTED
+
                             );
+
+
+
+
 
 
 
             if(alreadyAccepted){
 
 
+
                 throw new RuntimeException(
+
                         "A donor is already accepted for this request"
+
                 );
+
 
 
             }
 
 
+
         }
+
+
 
 
 
@@ -405,8 +694,13 @@ private final UserRepository userRepository;
 
 
 
+
+
         DonationResponse savedResponse =
-                donationResponseRepository.save(response);
+
+                donationResponseRepository.save(
+                        response
+                );
 
 
 
@@ -414,13 +708,19 @@ private final UserRepository userRepository;
 
 
 
-        if(status == DonationStatus.ACCEPTED){
+
+
+        if(
+                status == DonationStatus.ACCEPTED
+        ){
 
 
             bloodRequestService
+
                     .markDonorFound(
                             response.getRequestId()
                     );
+
 
         }
 
@@ -430,52 +730,81 @@ private final UserRepository userRepository;
 
 
 
-   if(status == DonationStatus.COMPLETED){
 
 
-    bloodRequestService
-            .markFulfilled(
-                    response.getRequestId()
+        if(
+                status == DonationStatus.COMPLETED
+        ){
+
+
+
+            bloodRequestService
+
+                    .markFulfilled(
+                            response.getRequestId()
+                    );
+
+
+
+
+
+
+
+
+
+            // Update donor last donation date
+
+
+            User donor =
+
+                    userRepository
+
+                            .findById(
+                                    response.getDonorId()
+                            )
+
+                            .orElseThrow(
+
+                                    () -> new ResourceNotFoundException(
+                                            "Donor not found"
+                                    )
+
+                            );
+
+
+
+
+
+
+
+            donor.setLastDonationDate(
+                    LocalDate.now()
             );
 
 
 
 
 
-    // Update donor last donation date
 
-    User donor =
-            userRepository
-                    .findById(
-                            response.getDonorId()
-                    )
-                    .orElseThrow(
-                            () -> new ResourceNotFoundException(
-                                    "Donor not found"
-                            )
-                    );
+
+            donor.setAvailableForDonation(
+                    false
+            );
 
 
 
 
-    donor.setLastDonationDate(
-            LocalDate.now()
-    );
 
 
 
-    donor.setAvailableForDonation(
-            false
-    );
+            userRepository.save(
+                    donor
+            );
 
 
 
-    userRepository.save(
-            donor
-    );
+        }
 
-
-}
 
 
 
@@ -485,7 +814,13 @@ private final UserRepository userRepository;
 
         return savedResponse;
 
+
+
     }
+
+
+
+
 
 
 
@@ -497,11 +832,19 @@ private final UserRepository userRepository;
 
     // Delete response
 
-    public void deleteResponse(Long id){
+
+    public void deleteResponse(
+
+            Long id
+
+    ){
+
 
         donationResponseRepository.deleteById(id);
 
+
     }
+
 
 
 }

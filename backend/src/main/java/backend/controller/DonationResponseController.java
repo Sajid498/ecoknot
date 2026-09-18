@@ -29,7 +29,10 @@ public class DonationResponseController {
 
 
 
+
     private final DonationResponseService donationResponseService;
+
+
 
 
 
@@ -40,6 +43,8 @@ public class DonationResponseController {
         this.donationResponseService = donationResponseService;
 
     }
+
+
 
 
 
@@ -67,6 +72,26 @@ public class DonationResponseController {
 
 
 
+    // Accept recommended donor directly
+
+    @PostMapping("/accept-recommended")
+    public DonationResponse acceptRecommendedDonor(
+            @RequestBody DonationResponse response
+    ){
+
+        return donationResponseService
+                .acceptRecommendedDonor(response);
+
+    }
+
+
+
+
+
+
+
+
+
     // Get donations made by a donor
 
     @GetMapping("/donor/{donorId}")
@@ -78,6 +103,7 @@ public class DonationResponseController {
                 .getDonationsByDonor(donorId);
 
     }
+
 
 
 
@@ -128,25 +154,27 @@ public class DonationResponseController {
 
     // Accept / Reject / Complete donation
 
-   @PutMapping("/{id}")
-public DonationResponse updateStatus(
-        @PathVariable Long id,
-        @RequestParam DonationStatus status
-){
+    @PutMapping("/{id}")
+    public DonationResponse updateStatus(
+            @PathVariable Long id,
+            @RequestParam DonationStatus status
+    ){
 
-    System.out.println(
-            "Donation ID: " + id
-            + " Status: " + status
-    );
+        System.out.println(
+                "Donation ID: "
+                + id
+                + " Status: "
+                + status
+        );
 
 
-    return donationResponseService
-            .updateStatus(
-                    id,
-                    status
-            );
+        return donationResponseService
+                .updateStatus(
+                        id,
+                        status
+                );
 
-}
+    }
 
 
 
@@ -168,6 +196,7 @@ public DonationResponse updateStatus(
         return "Donation response deleted successfully";
 
     }
+
 
 
 }
