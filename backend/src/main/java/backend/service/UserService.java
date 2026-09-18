@@ -1,10 +1,15 @@
 package backend.service;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
+import backend.entity.DonationStatus;
 import backend.entity.User;
 import backend.exception.ResourceNotFoundException;
+import backend.repository.DonationResponseRepository;
 import backend.repository.UserRepository;
 
 
@@ -17,16 +22,32 @@ public class UserService {
     private final UserRepository userRepository;
 
 
+    private final DonationResponseRepository donationResponseRepository;
+
+
 
 
 
     public UserService(
-            UserRepository userRepository
+
+            UserRepository userRepository,
+
+            DonationResponseRepository donationResponseRepository
+
     ) {
 
-        this.userRepository = userRepository;
+
+        this.userRepository =
+                userRepository;
+
+
+        this.donationResponseRepository =
+                donationResponseRepository;
+
 
     }
+
+
 
 
 
@@ -42,9 +63,12 @@ public class UserService {
 
 
 
-        if(userRepository
-                .findByEmail(user.getEmail())
-                .isPresent()
+        if(
+                userRepository
+                        .findByEmail(
+                                user.getEmail()
+                        )
+                        .isPresent()
         ) {
 
 
@@ -59,9 +83,9 @@ public class UserService {
 
 
 
-
-
-        return userRepository.save(user);
+        return userRepository.save(
+                user
+        );
 
 
     }
@@ -77,19 +101,29 @@ public class UserService {
     // Login
 
     public User login(
+
             String email,
+
             String password
+
     ) {
 
 
 
         User user =
+
                 userRepository
-                        .findByEmail(email)
+
+                        .findByEmail(
+                                email
+                        )
+
                         .orElseThrow(
+
                                 () -> new ResourceNotFoundException(
                                         "User not found"
                                 )
+
                         );
 
 
@@ -98,8 +132,9 @@ public class UserService {
 
 
 
-        if(!user.getPassword()
-                .equals(password)
+        if(
+                !user.getPassword()
+                        .equals(password)
         ) {
 
 
@@ -109,8 +144,6 @@ public class UserService {
 
 
         }
-
-
 
 
 
@@ -137,11 +170,15 @@ public class UserService {
 
 
         return userRepository
+
                 .findById(id)
+
                 .orElseThrow(
+
                         () -> new ResourceNotFoundException(
                                 "User not found"
                         )
+
                 );
 
 
@@ -158,24 +195,36 @@ public class UserService {
     // Update donor profile
 
     public User updateProfile(
+
             Long id,
+
             User updatedUser
+
     ){
 
 
 
         User existingUser =
+
                 userRepository
+
                         .findById(id)
+
                         .orElseThrow(
+
                                 () -> new ResourceNotFoundException(
                                         "User not found"
                                 )
+
                         );
 
 
 
 
+
+
+
+        // Update location
 
         existingUser.setLocation(
                 updatedUser.getLocation()
@@ -183,15 +232,38 @@ public class UserService {
 
 
 
+
+
+
+        // Update blood group
+
+        existingUser.setBloodGroup(
+                updatedUser.getBloodGroup()
+        );
+
+
+
+
+
+
+        // Update donation availability
+
         existingUser.setAvailableForDonation(
                 updatedUser.isAvailableForDonation()
         );
 
 
 
+
+
+
+        // Update last donation date
+
         existingUser.setLastDonationDate(
                 updatedUser.getLastDonationDate()
         );
+
+
 
 
 
@@ -205,6 +277,268 @@ public class UserService {
     }
 
 
+
+
+
+
+
+
+
+    // Update only donor availability
+
+    public User updateAvailability(
+
+            Long id,
+
+            boolean available
+
+    ){
+
+
+
+        User user =
+
+                userRepository
+
+                        .findById(id)
+
+                        .orElseThrow(
+
+                                () -> new ResourceNotFoundException(
+                                        "User not found"
+                                )
+
+                        );
+
+
+
+
+
+
+        user.setAvailableForDonation(
+                available
+        );
+
+
+
+
+
+        return userRepository.save(
+                user
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // Get donor dashboard information
+
+    public Map<String,Object> getDonorDashboard(
+
+            Long id
+
+    ){
+
+
+
+        User user =
+
+                userRepository
+
+                        .findById(id)
+
+                        .orElseThrow(
+
+                                () -> new ResourceNotFoundException(
+                                        "User not found"
+                                )
+
+                        );
+
+
+
+
+
+
+
+
+        long completedDonations =
+
+                donationResponseRepository
+
+                        .countByDonorIdAndStatus(
+
+                                id,
+
+                                DonationStatus.COMPLETED
+
+                        );
+
+
+
+
+
+
+
+
+        // Same reliability rule used by
+        // Smart Donor Matching:
+        //
+        // 1 completed donation = 5 points
+        // Maximum reliability = 20 points
+
+        int reliabilityScore =
+
+                (int) completedDonations * 5;
+
+
+
+
+
+
+        if(reliabilityScore > 20){
+
+
+            reliabilityScore = 20;
+
+
+        }
+
+
+
+
+
+
+
+
+        String reliabilityLevel;
+
+
+
+        if(reliabilityScore >= 15){
+
+
+            reliabilityLevel =
+                    "Highly Reliable";
+
+
+        }
+        else if(reliabilityScore > 0){
+
+
+            reliabilityLevel =
+                    "Reliable";
+
+
+        }
+        else{
+
+
+            reliabilityLevel =
+                    "New Donor";
+
+
+        }
+
+
+
+
+
+
+
+
+        Map<String,Object> dashboard =
+                new HashMap<>();
+
+
+
+
+
+
+        dashboard.put(
+                "id",
+                user.getId()
+        );
+
+
+
+        dashboard.put(
+                "name",
+                user.getName()
+        );
+
+
+
+        dashboard.put(
+                "email",
+                user.getEmail()
+        );
+
+
+
+        dashboard.put(
+                "bloodGroup",
+                user.getBloodGroup()
+        );
+
+
+
+        dashboard.put(
+                "location",
+                user.getLocation()
+        );
+
+
+
+        dashboard.put(
+                "availableForDonation",
+                user.isAvailableForDonation()
+        );
+
+
+
+        dashboard.put(
+                "lastDonationDate",
+                user.getLastDonationDate()
+        );
+
+
+
+        dashboard.put(
+                "completedDonations",
+                completedDonations
+        );
+
+
+
+        dashboard.put(
+                "reliabilityScore",
+                reliabilityScore
+        );
+
+
+
+        dashboard.put(
+                "reliabilityLevel",
+                reliabilityLevel
+        );
+
+
+
+
+
+
+        return dashboard;
+
+
+    }
 
 
 

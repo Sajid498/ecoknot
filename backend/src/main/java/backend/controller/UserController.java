@@ -38,14 +38,23 @@ public class UserController {
 
 
 
+
     public UserController(
+
             UserService userService,
+
             EligibilityService eligibilityService
+
     ){
 
-        this.userService = userService;
 
-        this.eligibilityService = eligibilityService;
+        this.userService =
+                userService;
+
+
+        this.eligibilityService =
+                eligibilityService;
+
 
     }
 
@@ -56,13 +65,21 @@ public class UserController {
 
 
 
+
+    // Signup
 
     @PostMapping("/signup")
     public User signup(
+
             @RequestBody User user
+
     ){
 
-        return userService.signup(user);
+
+        return userService.signup(
+                user
+        );
+
 
     }
 
@@ -74,15 +91,24 @@ public class UserController {
 
 
 
+    // Login
+
     @PostMapping("/login")
     public User login(
+
             @RequestBody User user
+
     ){
 
+
         return userService.login(
+
                 user.getEmail(),
+
                 user.getPassword()
+
         );
+
 
     }
 
@@ -98,10 +124,16 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUser(
+
             @PathVariable Long id
+
     ){
 
-        return userService.getUserById(id);
+
+        return userService.getUserById(
+                id
+        );
+
 
     }
 
@@ -117,14 +149,107 @@ public class UserController {
 
     @PutMapping("/{id}")
     public User updateProfile(
+
             @PathVariable Long id,
+
             @RequestBody User user
+
     ){
 
+
         return userService.updateProfile(
+
                 id,
+
                 user
+
         );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // Get donor dashboard
+
+    @GetMapping("/{id}/donor-dashboard")
+    public Map<String,Object> getDonorDashboard(
+
+            @PathVariable Long id
+
+    ){
+
+
+        return userService
+                .getDonorDashboard(
+                        id
+                );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // Update donor availability
+
+    @PutMapping("/{id}/availability")
+    public User updateAvailability(
+
+            @PathVariable Long id,
+
+            @RequestBody Map<String,Boolean> body
+
+    ){
+
+
+
+        Boolean available =
+
+                body.get(
+                        "available"
+                );
+
+
+
+
+
+
+        if(available == null){
+
+
+            throw new RuntimeException(
+                    "Availability value is required"
+            );
+
+
+        }
+
+
+
+
+
+
+        return userService
+                .updateAvailability(
+
+                        id,
+
+                        available
+
+                );
+
 
     }
 
@@ -140,14 +265,18 @@ public class UserController {
 
     @GetMapping("/{id}/eligibility")
     public Map<String,Object> checkEligibility(
+
             @PathVariable Long id
+
     ){
 
 
 
         boolean eligible =
+
                 eligibilityService
                         .isEligible(id);
+
 
 
 
@@ -158,10 +287,18 @@ public class UserController {
 
 
 
+
+
+
         response.put(
+
                 "eligible",
+
                 eligible
+
         );
+
+
 
 
 
@@ -172,8 +309,11 @@ public class UserController {
 
 
             response.put(
+
                     "message",
+
                     "You are eligible to donate blood"
+
             );
 
 
@@ -182,21 +322,38 @@ public class UserController {
 
 
             LocalDate nextDate =
+
                     eligibilityService
-                            .getNextEligibleDate(id);
+
+                            .getNextEligibleDate(
+                                    id
+                            );
+
+
+
 
 
 
             response.put(
+
                     "message",
-                    "You can donate after " + nextDate
+
+                    "You can donate after "
+                            + nextDate
+
             );
 
 
 
+
+
+
             response.put(
+
                     "nextEligibleDate",
+
                     nextDate
+
             );
 
 
@@ -205,13 +362,11 @@ public class UserController {
 
 
 
+
         return response;
 
 
     }
-
-
-
 
 
 

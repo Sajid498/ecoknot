@@ -17,6 +17,8 @@ const API_URL =
 
 
 
+
+
 export default function ProfilePage(){
 
 
@@ -28,6 +30,11 @@ export default function ProfilePage(){
 
     const [requests,setRequests] =
         useState<any[]>([]);
+
+
+
+    const [donorDashboard,setDonorDashboard] =
+        useState<any>(null);
 
 
 
@@ -53,6 +60,8 @@ export default function ProfilePage(){
 
     const [message,setMessage] =
         useState("");
+
+
 
 
 
@@ -91,11 +100,21 @@ export default function ProfilePage(){
             );
 
 
+
+            loadDonorDashboard(
+                userData.id
+            );
+
+
         }
 
 
 
     },[]);
+
+
+
+
 
 
 
@@ -122,6 +141,8 @@ export default function ProfilePage(){
 
             const data =
                 await response.json();
+
+
 
 
 
@@ -159,6 +180,7 @@ export default function ProfilePage(){
             );
 
 
+
         }
         catch(error){
 
@@ -168,6 +190,67 @@ export default function ProfilePage(){
 
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    async function loadDonorDashboard(
+        id:number
+    ){
+
+
+        try{
+
+
+            const response =
+                await fetch(
+
+`${API_URL}/api/users/${id}/donor-dashboard`
+
+                );
+
+
+
+            if(!response.ok){
+
+                return;
+
+            }
+
+
+
+            const data =
+                await response.json();
+
+
+
+            setDonorDashboard(
+                data
+            );
+
+
+        }
+        catch(error){
+
+
+            console.log(error);
+
+
+        }
+
+
+    }
+
+
+
 
 
 
@@ -218,6 +301,9 @@ export default function ProfilePage(){
 
 
 
+
+
+
     async function updateProfile(){
 
 
@@ -232,24 +318,33 @@ export default function ProfilePage(){
                         method:"PUT",
 
                         headers:{
+
                             "Content-Type":
                             "application/json"
+
                         },
 
 
                         body:JSON.stringify({
 
+
                             location,
+
 
                             bloodGroup,
 
+
                             availableForDonation,
+
 
                             lastDonationDate
 
+
                         })
 
+
                     }
+
                 );
 
 
@@ -267,19 +362,40 @@ export default function ProfilePage(){
 
 
 
+
+
             const updatedUser =
                 await response.json();
 
 
 
-            setUser(updatedUser);
+
+
+            setUser(
+                updatedUser
+            );
+
+
 
 
 
             localStorage.setItem(
+
                 "user",
+
                 JSON.stringify(updatedUser)
+
             );
+
+
+
+
+
+            loadDonorDashboard(
+                user.id
+            );
+
+
 
 
 
@@ -296,6 +412,7 @@ export default function ProfilePage(){
             console.log(error);
 
 
+
             setMessage(
                 "Something went wrong"
             );
@@ -305,22 +422,16 @@ export default function ProfilePage(){
 
 
     }
-
-
-
-
-
-
-
-
-
     return(
 
 
     <ProtectedRoute>
 
 
-        <main className="min-h-screen bg-slate-50">
+        <main className="
+        min-h-screen
+        bg-slate-50
+        ">
 
 
             <Navbar />
@@ -328,7 +439,12 @@ export default function ProfilePage(){
 
 
 
-            <div className="mx-auto max-w-5xl px-6 py-10">
+            <div className="
+            mx-auto
+            max-w-5xl
+            px-6
+            py-10
+            ">
 
 
 
@@ -347,7 +463,13 @@ export default function ProfilePage(){
 
 
 
-                    <div className="flex items-center gap-5">
+
+
+                    <div className="
+                    flex
+                    items-center
+                    gap-5
+                    ">
 
 
                         <div className="
@@ -376,10 +498,14 @@ export default function ProfilePage(){
 
 
 
+
                         <div>
 
 
-                            <h1 className="text-3xl font-bold">
+                            <h1 className="
+                            text-3xl
+                            font-bold
+                            ">
 
                                 {user?.name}
 
@@ -387,7 +513,9 @@ export default function ProfilePage(){
 
 
 
-                            <p className="text-slate-500">
+                            <p className="
+                            text-slate-500
+                            ">
 
                                 EcoKnot Community Member
 
@@ -406,6 +534,7 @@ export default function ProfilePage(){
 
 
 
+
                     <div className="
                     mt-8
                     grid
@@ -415,14 +544,23 @@ export default function ProfilePage(){
 
 
 
-                        <div className="rounded-xl bg-slate-50 p-5">
+
+                        <div className="
+                        rounded-xl
+                        bg-slate-50
+                        p-5
+                        ">
 
 
-                            <p className="text-sm text-slate-500">
+                            <p className="
+                            text-sm
+                            text-slate-500
+                            ">
 
                                 Email
 
                             </p>
+
 
 
                             <p className="font-semibold">
@@ -438,14 +576,24 @@ export default function ProfilePage(){
 
 
 
-                        <div className="rounded-xl bg-slate-50 p-5">
 
 
-                            <p className="text-sm text-slate-500">
+                        <div className="
+                        rounded-xl
+                        bg-slate-50
+                        p-5
+                        ">
+
+
+                            <p className="
+                            text-sm
+                            text-slate-500
+                            ">
 
                                 Role
 
                             </p>
+
 
 
                             <p className="font-semibold">
@@ -458,7 +606,280 @@ export default function ProfilePage(){
                         </div>
 
 
+
                     </div>
+
+
+
+
+
+
+
+
+
+                    {/* Donor Reliability Dashboard */}
+
+
+                    {
+
+                    donorDashboard &&
+
+
+                    <div className="
+                    mt-10
+                    rounded-2xl
+                    bg-gradient-to-r
+                    from-emerald-50
+                    to-teal-50
+                    p-6
+                    border
+                    border-emerald-200
+                    ">
+
+
+
+
+                        <h2 className="
+                        text-2xl
+                        font-bold
+                        ">
+
+                            ⭐ Donor Reliability Dashboard
+
+                        </h2>
+
+
+
+
+
+
+
+                        <div className="
+                        mt-5
+                        grid
+                        gap-4
+                        md:grid-cols-3
+                        ">
+
+
+
+
+
+                            <div className="
+                            rounded-xl
+                            bg-white
+                            p-5
+                            shadow
+                            ">
+
+
+                                <p className="
+                                text-sm
+                                text-slate-500
+                                ">
+
+                                    Completed Donations
+
+                                </p>
+
+
+                                <p className="
+                                mt-2
+                                text-3xl
+                                font-bold
+                                ">
+
+                                    {
+                                        donorDashboard.completedDonations
+                                    }
+
+                                </p>
+
+
+                            </div>
+
+
+
+
+
+
+
+
+
+                            <div className="
+                            rounded-xl
+                            bg-white
+                            p-5
+                            shadow
+                            ">
+
+
+                                <p className="
+                                text-sm
+                                text-slate-500
+                                ">
+
+                                    Reliability Score
+
+                                </p>
+
+
+                                <p className="
+                                mt-2
+                                text-3xl
+                                font-bold
+                                text-emerald-700
+                                ">
+
+
+                                    {
+                                        donorDashboard.reliabilityScore
+                                    }
+
+                                    /20
+
+
+                                </p>
+
+
+                            </div>
+
+
+
+
+
+
+
+
+
+                            <div className="
+                            rounded-xl
+                            bg-white
+                            p-5
+                            shadow
+                            ">
+
+
+                                <p className="
+                                text-sm
+                                text-slate-500
+                                ">
+
+                                    Level
+
+                                </p>
+
+
+                                <p className="
+                                mt-2
+                                text-xl
+                                font-bold
+                                ">
+
+                                    {
+                                        donorDashboard.reliabilityLevel
+                                    }
+
+                                </p>
+
+
+                            </div>
+
+
+
+
+
+                        </div>
+
+
+
+
+
+
+
+
+
+                        <div className="
+                        mt-5
+                        rounded-xl
+                        bg-white
+                        p-5
+                        ">
+
+
+
+                            <p>
+
+                                🩸 Last Donation:
+
+                                <span className="font-semibold">
+
+                                {" "}
+                                {
+                                    donorDashboard.lastDonationDate
+                                    ||
+                                    "No donation yet"
+                                }
+
+                                </span>
+
+
+                            </p>
+
+
+
+
+
+
+                            <p className="mt-3">
+
+
+                                Availability:
+
+                                <span className="font-semibold">
+
+
+                                {" "}
+
+                                {
+
+                                donorDashboard.availableForDonation
+
+                                ?
+
+                                "Available ✅"
+
+                                :
+
+                                "Unavailable"
+
+                                }
+
+
+                                </span>
+
+
+                            </p>
+
+
+
+                        </div>
+
+
+
+
+
+
+
+                    </div>
+
+
+                    }
+
+
+
+
+
 
 
 
@@ -469,6 +890,7 @@ export default function ProfilePage(){
                     {/* Smart Blood Profile */}
 
 
+
                     <div className="
                     mt-10
                     rounded-2xl
@@ -477,7 +899,10 @@ export default function ProfilePage(){
                     ">
 
 
-                        <h2 className="text-2xl font-bold">
+                        <h2 className="
+                        text-2xl
+                        font-bold
+                        ">
 
                             🩸 Donor Information
 
@@ -488,7 +913,12 @@ export default function ProfilePage(){
 
 
 
-                        <div className="mt-5 space-y-5">
+                        <div className="
+                        mt-5
+                        space-y-5
+                        ">
+
+
 
 
 
@@ -504,13 +934,16 @@ export default function ProfilePage(){
 
                                 <input
 
+
                                     value={location}
+
 
                                     onChange={(e)=>
                                         setLocation(
                                             e.target.value
                                         )
                                     }
+
 
                                     className="
                                     mt-2
@@ -520,7 +953,9 @@ export default function ProfilePage(){
                                     p-3
                                     "
 
+
                                     placeholder="Enter your location"
+
 
                                 />
 
@@ -534,8 +969,6 @@ export default function ProfilePage(){
 
 
 
-                            {/* Blood Group */}
-
 
                             <div>
 
@@ -545,6 +978,7 @@ export default function ProfilePage(){
                                     Blood Group
 
                                 </label>
+
 
 
 
@@ -569,7 +1003,9 @@ export default function ProfilePage(){
                                     p-3
                                     "
 
+
                                 >
+
 
 
                                     <option value="">
@@ -579,11 +1015,13 @@ export default function ProfilePage(){
                                     </option>
 
 
+
                                     <option value="A_POSITIVE">
 
                                         A+
 
                                     </option>
+
 
 
                                     <option value="A_NEGATIVE">
@@ -593,11 +1031,13 @@ export default function ProfilePage(){
                                     </option>
 
 
+
                                     <option value="B_POSITIVE">
 
                                         B+
 
                                     </option>
+
 
 
                                     <option value="B_NEGATIVE">
@@ -607,11 +1047,13 @@ export default function ProfilePage(){
                                     </option>
 
 
+
                                     <option value="AB_POSITIVE">
 
                                         AB+
 
                                     </option>
+
 
 
                                     <option value="AB_NEGATIVE">
@@ -621,11 +1063,13 @@ export default function ProfilePage(){
                                     </option>
 
 
+
                                     <option value="O_POSITIVE">
 
                                         O+
 
                                     </option>
+
 
 
                                     <option value="O_NEGATIVE">
@@ -635,7 +1079,9 @@ export default function ProfilePage(){
                                     </option>
 
 
+
                                 </select>
+
 
 
                             </div>
@@ -647,16 +1093,25 @@ export default function ProfilePage(){
 
 
 
-                            <div className="flex items-center gap-3">
+
+                            <div className="
+                            flex
+                            items-center
+                            gap-3
+                            ">
+
 
 
                                 <input
 
+
                                     type="checkbox"
+
 
                                     checked={
                                         availableForDonation
                                     }
+
 
                                     onChange={(e)=>
                                         setAvailableForDonation(
@@ -664,9 +1119,12 @@ export default function ProfilePage(){
                                         )
                                     }
 
+
                                     className="h-5 w-5"
 
+
                                 />
+
 
 
                                 <span className="font-semibold">
@@ -676,7 +1134,10 @@ export default function ProfilePage(){
                                 </span>
 
 
+
                             </div>
+
+
 
 
 
@@ -694,13 +1155,17 @@ export default function ProfilePage(){
                                 </label>
 
 
+
                                 <input
 
+
                                     type="date"
+
 
                                     value={
                                         lastDonationDate
                                     }
+
 
                                     onChange={(e)=>
                                         setLastDonationDate(
@@ -716,6 +1181,7 @@ export default function ProfilePage(){
                                     p-3
                                     "
 
+
                                 />
 
 
@@ -724,7 +1190,13 @@ export default function ProfilePage(){
 
 
 
+
+
+
+
+
                             <button
+
 
                                 onClick={updateProfile}
 
@@ -738,6 +1210,7 @@ export default function ProfilePage(){
                                 text-white
                                 "
 
+
                             >
 
                                 Save Profile
@@ -747,14 +1220,24 @@ export default function ProfilePage(){
 
 
 
+
+
                             {
+
                                 message &&
 
-                                <p className="font-semibold text-emerald-700">
+
+                                <p className="
+                                font-semibold
+                                text-emerald-700
+                                ">
+
 
                                     {message}
 
+
                                 </p>
+
 
                             }
 
@@ -771,7 +1254,11 @@ export default function ProfilePage(){
 
 
 
+
                 </div>
+
+
+
 
 
 
@@ -791,7 +1278,11 @@ export default function ProfilePage(){
 
 
 
-                    <h2 className="text-2xl font-bold">
+
+                    <h2 className="
+                    text-2xl
+                    font-bold
+                    ">
 
                         My Blood Requests
 
@@ -801,24 +1292,36 @@ export default function ProfilePage(){
 
 
 
+
+
                     {
-                        requests.length===0 ?
 
-                        (
+                    requests.length===0
 
-                            <p className="mt-5 text-slate-500">
-
-                                No blood requests created yet.
-
-                            </p>
-
-                        )
-
-                        :
+                    ?
 
 
-                        requests.map(
-                            (request)=>(
+                    (
+
+                        <p className="
+                        mt-5
+                        text-slate-500
+                        ">
+
+                            No blood requests created yet.
+
+                        </p>
+
+
+                    )
+
+
+                    :
+
+
+                    requests.map(
+
+                        (request)=>(
 
 
                             <div
@@ -832,7 +1335,9 @@ export default function ProfilePage(){
                             p-5
                             "
 
+
                             >
+
 
 
                                 <h3 className="font-bold">
@@ -842,12 +1347,14 @@ export default function ProfilePage(){
                                 </h3>
 
 
+
                                 <p>
 
                                     Blood:
                                     {request.bloodGroup}
 
                                 </p>
+
 
 
                                 <p>
@@ -862,14 +1369,20 @@ export default function ProfilePage(){
                             </div>
 
 
-                        ))
+                        )
+
+                    )
+
 
                     }
 
 
 
 
+
                 </div>
+
+
 
 
 
