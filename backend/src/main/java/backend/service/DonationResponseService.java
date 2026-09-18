@@ -269,137 +269,61 @@ public class DonationResponseService {
 
 
 
-    public DonationResponse acceptRecommendedDonor(
+    // Accept recommended donor directly
 
-            DonationResponse response
+public DonationResponse acceptRecommendedDonor(
+
+        DonationResponse response
+
+){
+
+
+
+    BloodRequest request =
+
+            bloodRequestRepository
+
+                    .findById(
+
+                            response.getRequestId()
+
+                    )
+
+                    .orElseThrow(
+
+                            () -> new ResourceNotFoundException(
+
+                                    "Blood request not found"
+
+                            )
+
+                    );
+
+
+
+
+
+
+
+
+
+    if(
+
+            request.getStatus()
+
+            != RequestStatus.OPEN
 
     ){
 
 
+        throw new RuntimeException(
 
-        BloodRequest request =
-
-                bloodRequestRepository
-
-                        .findById(
-
-                                response.getRequestId()
-
-                        )
-
-                        .orElseThrow(
-
-                                () -> new ResourceNotFoundException(
-
-                                        "Blood request not found"
-
-                                )
-
-                        );
-
-
-
-
-
-
-
-
-
-        if(
-
-                request.getStatus()
-
-                != RequestStatus.OPEN
-
-        ){
-
-
-            throw new RuntimeException(
-
-                    "Blood request is not available"
-
-            );
-
-
-        }
-
-
-
-
-
-
-
-
-
-        boolean alreadyAccepted =
-
-
-                donationResponseRepository
-
-                        .findByRequestId(
-
-                                response.getRequestId()
-
-                        )
-
-                        .stream()
-
-                        .anyMatch(
-
-                                donor ->
-
-                                donor.getStatus()
-
-                                == DonationStatus.ACCEPTED
-
-                        );
-
-
-
-
-
-
-
-
-
-        if(alreadyAccepted){
-
-
-            throw new RuntimeException(
-
-                    "A donor is already accepted for this request"
-
-            );
-
-
-        }
-
-
-
-
-
-
-
-
-
-        response.setStatus(
-
-                DonationStatus.ACCEPTED
+                "Blood request is not available"
 
         );
 
 
-
-
-
-
-        DonationResponse savedResponse =
-
-                donationResponseRepository.save(
-
-                        response
-
-                );
+    }
 
 
 
@@ -407,25 +331,139 @@ public class DonationResponseService {
 
 
 
-        bloodRequestService
-
-                .markDonorFound(
-
-                        response.getRequestId()
-
-                );
 
 
+    boolean alreadyAccepted =
+
+
+            donationResponseRepository
+
+                    .findByRequestId(
+
+                            response.getRequestId()
+
+                    )
+
+                    .stream()
+
+                    .anyMatch(
+
+                            donor ->
+
+                            donor.getStatus()
+
+                            == DonationStatus.ACCEPTED
+
+                    );
 
 
 
 
 
-        return savedResponse;
 
+
+
+
+    if(alreadyAccepted){
+
+
+        throw new RuntimeException(
+
+                "A donor is already accepted for this request"
+
+        );
 
 
     }
+
+
+
+
+
+
+
+
+
+    response.setStatus(
+
+            DonationStatus.ACCEPTED
+
+    );
+
+
+
+
+
+
+    DonationResponse savedResponse =
+
+            donationResponseRepository.save(
+
+                    response
+
+            );
+
+
+
+
+
+
+
+
+
+    // Reject other pending donors
+
+    rejectOtherDonors(
+
+            response
+
+    );
+
+
+
+
+
+
+
+
+
+    // Send notifications
+
+    sendAcceptanceNotifications(
+
+            response
+
+    );
+
+
+
+
+
+
+
+
+
+    // Update blood request status
+
+    bloodRequestService
+
+            .markDonorFound(
+
+                    response.getRequestId()
+
+            );
+
+
+
+
+
+
+
+    return savedResponse;
+
+
+
+}
         // Get donations made by donor
 
 
