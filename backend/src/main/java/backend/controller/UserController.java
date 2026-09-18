@@ -3,6 +3,7 @@ package backend.controller;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import backend.entity.BloodGroup;
 import backend.entity.User;
 import backend.service.EligibilityService;
 import backend.service.UserService;
@@ -176,6 +179,31 @@ public class UserController {
 
 
 
+    // Search available donors
+
+    @GetMapping("/search-donors")
+    public List<User> searchDonors(
+
+            @RequestParam(required = false)
+            BloodGroup bloodGroup,
+
+
+            @RequestParam(required = false)
+            String location
+
+    ){
+
+
+        return userService.searchDonors(
+
+                bloodGroup,
+
+                location
+
+        );
+
+
+    }
     // Get donor dashboard
 
     @GetMapping("/{id}/donor-dashboard")
@@ -226,11 +254,14 @@ public class UserController {
 
 
 
+
         if(available == null){
 
 
             throw new RuntimeException(
+
                     "Availability value is required"
+
             );
 
 
@@ -241,7 +272,10 @@ public class UserController {
 
 
 
+
+
         return userService
+
                 .updateAvailability(
 
                         id,
@@ -275,6 +309,7 @@ public class UserController {
         boolean eligible =
 
                 eligibilityService
+
                         .isEligible(id);
 
 
@@ -282,8 +317,14 @@ public class UserController {
 
 
 
+
+
         Map<String,Object> response =
+
                 new HashMap<>();
+
+
+
 
 
 
@@ -305,7 +346,9 @@ public class UserController {
 
 
 
+
         if(eligible){
+
 
 
             response.put(
@@ -318,7 +361,9 @@ public class UserController {
 
 
         }
+
         else{
+
 
 
             LocalDate nextDate =
@@ -326,8 +371,12 @@ public class UserController {
                     eligibilityService
 
                             .getNextEligibleDate(
+
                                     id
+
                             );
+
+
 
 
 
@@ -348,6 +397,8 @@ public class UserController {
 
 
 
+
+
             response.put(
 
                     "nextEligibleDate",
@@ -358,6 +409,9 @@ public class UserController {
 
 
         }
+
+
+
 
 
 

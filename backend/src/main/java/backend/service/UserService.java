@@ -2,10 +2,12 @@ package backend.service;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import backend.entity.BloodGroup;
 import backend.entity.DonationStatus;
 import backend.entity.User;
 import backend.exception.ResourceNotFoundException;
@@ -114,9 +116,7 @@ public class UserService {
 
                 userRepository
 
-                        .findByEmail(
-                                email
-                        )
+                        .findByEmail(email)
 
                         .orElseThrow(
 
@@ -224,46 +224,24 @@ public class UserService {
 
 
 
-        // Update location
-
         existingUser.setLocation(
                 updatedUser.getLocation()
         );
 
-
-
-
-
-
-        // Update blood group
 
         existingUser.setBloodGroup(
                 updatedUser.getBloodGroup()
         );
 
 
-
-
-
-
-        // Update donation availability
-
         existingUser.setAvailableForDonation(
                 updatedUser.isAvailableForDonation()
         );
 
 
-
-
-
-
-        // Update last donation date
-
         existingUser.setLastDonationDate(
                 updatedUser.getLastDonationDate()
         );
-
-
 
 
 
@@ -284,7 +262,7 @@ public class UserService {
 
 
 
-    // Update only donor availability
+    // Update donor availability
 
     public User updateAvailability(
 
@@ -338,6 +316,102 @@ public class UserService {
 
 
 
+    // Search available donors
+
+    public List<User> searchDonors(
+
+            BloodGroup bloodGroup,
+
+            String location
+
+    ){
+
+
+        if(
+
+                bloodGroup != null
+
+                &&
+
+                location != null
+
+                &&
+
+                !location.isBlank()
+
+        ){
+
+
+            return userRepository
+
+                    .findByBloodGroupAndLocationContainingIgnoreCaseAndAvailableForDonationTrue(
+
+                            bloodGroup,
+
+                            location
+
+                    );
+
+
+        }
+
+
+
+
+
+
+        if(bloodGroup != null){
+
+
+            return userRepository
+
+                    .findByBloodGroupAndAvailableForDonationTrue(
+
+                            bloodGroup
+
+                    );
+
+
+        }
+
+
+
+
+
+
+        if(
+
+                location != null
+
+                &&
+
+                !location.isBlank()
+
+        ){
+
+
+            return userRepository
+
+                    .findByLocationContainingIgnoreCaseAndAvailableForDonationTrue(
+
+                            location
+
+                    );
+
+
+        }
+
+
+
+
+
+
+        return userRepository
+
+                .findByAvailableForDonationTrue();
+
+
+    }
     // Get donor dashboard information
 
     public Map<String,Object> getDonorDashboard(
@@ -368,7 +442,6 @@ public class UserService {
 
 
 
-
         long completedDonations =
 
                 donationResponseRepository
@@ -388,11 +461,12 @@ public class UserService {
 
 
 
-        // Same reliability rule used by
-        // Smart Donor Matching:
-        //
+
+        // Reliability calculation
+
         // 1 completed donation = 5 points
-        // Maximum reliability = 20 points
+        // Maximum = 20 points
+
 
         int reliabilityScore =
 
@@ -417,7 +491,6 @@ public class UserService {
 
 
 
-
         String reliabilityLevel;
 
 
@@ -430,6 +503,7 @@ public class UserService {
 
 
         }
+
         else if(reliabilityScore > 0){
 
 
@@ -438,6 +512,7 @@ public class UserService {
 
 
         }
+
         else{
 
 
@@ -454,7 +529,9 @@ public class UserService {
 
 
 
+
         Map<String,Object> dashboard =
+
                 new HashMap<>();
 
 
@@ -462,73 +539,134 @@ public class UserService {
 
 
 
+
+
+
         dashboard.put(
+
                 "id",
+
                 user.getId()
+
         );
 
 
 
+
+
+
         dashboard.put(
+
                 "name",
+
                 user.getName()
+
         );
 
 
 
+
+
+
         dashboard.put(
+
                 "email",
+
                 user.getEmail()
+
         );
 
 
 
+
+
+
         dashboard.put(
+
                 "bloodGroup",
+
                 user.getBloodGroup()
+
         );
 
 
 
+
+
+
         dashboard.put(
+
                 "location",
+
                 user.getLocation()
+
         );
 
 
 
+
+
+
         dashboard.put(
+
                 "availableForDonation",
+
                 user.isAvailableForDonation()
+
         );
 
 
 
+
+
+
         dashboard.put(
+
                 "lastDonationDate",
+
                 user.getLastDonationDate()
+
         );
 
 
 
+
+
+
         dashboard.put(
+
                 "completedDonations",
+
                 completedDonations
+
         );
 
 
 
+
+
+
         dashboard.put(
+
                 "reliabilityScore",
+
                 reliabilityScore
+
         );
+
+
+
 
 
 
         dashboard.put(
+
                 "reliabilityLevel",
+
                 reliabilityLevel
+
         );
+
 
 
 
