@@ -772,67 +772,214 @@ public class DonorMatchingService {
     // Blood compatibility
 
 
-    private boolean isBloodCompatible(
+    // Blood compatibility
 
-            BloodGroup donorGroup,
+private boolean isBloodCompatible(
 
-            BloodGroup requestGroup
+        BloodGroup donorGroup,
+
+        BloodGroup requestGroup
+
+){
+
+
+    if(
+
+            donorGroup == null
+
+            ||
+
+            requestGroup == null
 
     ){
 
+        return false;
+
+    }
 
 
-        if(
 
-                donorGroup == null
 
-                ||
 
-                requestGroup == null
 
-        ){
+
+    switch(donorGroup){
+
+
+
+        // Universal donor
+
+        case O_NEGATIVE:
+
+
+            return true;
+
+
+
+
+
+
+
+        // O+ can donate to positive groups
+
+        case O_POSITIVE:
+
+
+            return requestGroup == BloodGroup.O_POSITIVE
+
+                    ||
+
+                    requestGroup == BloodGroup.A_POSITIVE
+
+                    ||
+
+                    requestGroup == BloodGroup.B_POSITIVE
+
+                    ||
+
+                    requestGroup == BloodGroup.AB_POSITIVE;
+
+
+
+
+
+
+
+
+
+        // A-
+
+        case A_NEGATIVE:
+
+
+            return requestGroup == BloodGroup.A_NEGATIVE
+
+                    ||
+
+                    requestGroup == BloodGroup.A_POSITIVE
+
+                    ||
+
+                    requestGroup == BloodGroup.AB_NEGATIVE
+
+                    ||
+
+                    requestGroup == BloodGroup.AB_POSITIVE;
+
+
+
+
+
+
+
+
+
+        // A+
+
+        case A_POSITIVE:
+
+
+            return requestGroup == BloodGroup.A_POSITIVE
+
+                    ||
+
+                    requestGroup == BloodGroup.AB_POSITIVE;
+
+
+
+
+
+
+
+
+
+        // B-
+
+        case B_NEGATIVE:
+
+
+            return requestGroup == BloodGroup.B_NEGATIVE
+
+                    ||
+
+                    requestGroup == BloodGroup.B_POSITIVE
+
+                    ||
+
+                    requestGroup == BloodGroup.AB_NEGATIVE
+
+                    ||
+
+                    requestGroup == BloodGroup.AB_POSITIVE;
+
+
+
+
+
+
+
+
+
+        // B+
+
+        case B_POSITIVE:
+
+
+            return requestGroup == BloodGroup.B_POSITIVE
+
+                    ||
+
+                    requestGroup == BloodGroup.AB_POSITIVE;
+
+
+
+
+
+
+
+
+
+        // AB-
+
+        case AB_NEGATIVE:
+
+
+            return requestGroup == BloodGroup.AB_NEGATIVE
+
+                    ||
+
+                    requestGroup == BloodGroup.AB_POSITIVE;
+
+
+
+
+
+
+
+
+
+        // AB+
+
+        case AB_POSITIVE:
+
+
+            return requestGroup == BloodGroup.AB_POSITIVE;
+
+
+
+
+
+
+
+        default:
 
             return false;
 
-        }
-
-
-
-
-
-
-        if(
-                donorGroup == requestGroup
-        ){
-
-            return true;
-
-        }
-
-
-
-
-
-
-
-        if(
-                donorGroup == BloodGroup.O_NEGATIVE
-        ){
-
-            return true;
-
-        }
-
-
-
-
-
-
-
-        return false;
-
 
     }
+
+
+}
 
 
 
