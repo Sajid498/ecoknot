@@ -3,25 +3,31 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+
+
 
 
 
 export default function Navbar() {
 
 
+
   const router = useRouter();
 
-  const pathname = usePathname();
 
 
 
-  const [user, setUser] =
+  const [user,setUser] =
     useState<any>(null);
+
 
 
   const [activeModule,setActiveModule] =
     useState("");
+
+
+
 
 
 
@@ -34,13 +40,19 @@ export default function Navbar() {
       localStorage.getItem("user");
 
 
+
     if(savedUser){
+
 
       setUser(
         JSON.parse(savedUser)
       );
 
+
     }
+
+
+
 
 
 
@@ -48,11 +60,17 @@ export default function Navbar() {
       localStorage.getItem("activeModule");
 
 
+
     if(savedModule){
 
-      setActiveModule(savedModule);
+
+      setActiveModule(
+        savedModule
+      );
+
 
     }
+
 
 
   },[]);
@@ -63,8 +81,12 @@ export default function Navbar() {
 
 
 
+
+
   const isBloodSection =
       activeModule === "blood";
+
+
 
 
 
@@ -85,10 +107,13 @@ export default function Navbar() {
     setActiveModule("");
 
 
+
     router.push("/login");
 
 
   };
+
+
 
 
 
@@ -105,7 +130,6 @@ export default function Navbar() {
 
 
     setActiveModule("");
-
 
     router.push("/");
 
@@ -139,9 +163,7 @@ export default function Navbar() {
 
 
 
-
 return (
-
 
 <header className="
 sticky
@@ -203,6 +225,7 @@ E
 
 <div>
 
+
 <h1 className="
 text-xl
 font-bold
@@ -212,6 +235,7 @@ text-slate-900
 EcoKnot
 
 </h1>
+
 
 
 <p className="
@@ -224,11 +248,12 @@ Community Connected
 </p>
 
 
+
 </div>
 
 
-</Link>
 
+</Link>
 
 
 
@@ -244,8 +269,6 @@ items-center
 gap-7
 lg:flex
 ">
-
-
 
 
 
@@ -298,7 +321,6 @@ text-emerald-700
 
 
 
-
 <Link
 
 href="/my-requests"
@@ -315,8 +337,6 @@ hover:text-emerald-700
 📋 My Requests
 
 </Link>
-
-
 
 
 
@@ -343,8 +363,6 @@ hover:text-emerald-700
 
 
 
-
-
 <Link
 
 href="/donation-history"
@@ -361,8 +379,6 @@ hover:text-emerald-700
 🩸 Donation History
 
 </Link>
-
-
 
 
 
@@ -389,10 +405,7 @@ hover:text-emerald-700
 </>
 
 
-
 :
-
-
 
 <>
 
@@ -438,7 +451,6 @@ Blood Donation
 
 
 
-
 <Link
 
 href="#"
@@ -460,8 +472,6 @@ Campaigns
 
 
 
-
-
 <Link
 
 href="#"
@@ -478,8 +488,6 @@ hover:text-emerald-700
 Resources
 
 </Link>
-
-
 
 
 
@@ -509,22 +517,15 @@ Academic Hub
 }
 
 
-
 </nav>
-
-
-
-
-
-
-
-
-
 <div className="
 flex
 items-center
 gap-3
 ">
+
+
+
 
 
 {
@@ -533,6 +534,39 @@ user ?
 
 
 <>
+
+
+{/* Notification Bell */}
+
+
+<Link
+
+href="/notifications"
+
+className="
+relative
+rounded-lg
+p-2
+text-xl
+text-slate-700
+transition
+hover:bg-emerald-50
+hover:text-emerald-700
+"
+
+title="Notifications"
+
+>
+
+🔔
+
+
+</Link>
+
+
+
+
+
 
 
 <span className="
@@ -546,6 +580,10 @@ sm:block
 {user.name}
 
 </span>
+
+
+
+
 
 
 
@@ -579,6 +617,9 @@ Profile
 
 
 
+
+
+
 <button
 
 onClick={handleLogout}
@@ -601,14 +642,21 @@ Logout
 </button>
 
 
+
 </>
+
+
 
 
 
 :
 
 
+
+
+
 <>
+
 
 
 <Link href="/login">
@@ -633,8 +681,11 @@ Log In
 
 </button>
 
-
 </Link>
+
+
+
+
 
 
 
@@ -660,8 +711,8 @@ Sign Up
 
 </button>
 
-
 </Link>
+
 
 
 </>
@@ -670,7 +721,11 @@ Sign Up
 }
 
 
+
+
 </div>
+
+
 
 
 
@@ -683,6 +738,7 @@ Sign Up
 
 
 );
+
 
 
 }
