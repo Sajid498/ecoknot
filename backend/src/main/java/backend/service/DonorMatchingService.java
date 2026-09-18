@@ -24,12 +24,10 @@ public class DonorMatchingService {
 
 
 
-
     private final UserRepository userRepository;
 
 
     private final BloodRequestRepository bloodRequestRepository;
-
 
 
 
@@ -60,7 +58,6 @@ public class DonorMatchingService {
     ){
 
 
-
         BloodRequest request =
                 bloodRequestRepository
                         .findById(requestId)
@@ -79,7 +76,6 @@ public class DonorMatchingService {
         List<User> donors =
                 userRepository
                         .findByAvailableForDonationTrue();
-
 
 
 
@@ -118,11 +114,7 @@ public class DonorMatchingService {
                 .toList();
 
 
-
     }
-
-
-
 
 
 
@@ -138,13 +130,11 @@ public class DonorMatchingService {
     ){
 
 
-
         int score = 0;
 
 
         StringBuilder reason =
                 new StringBuilder();
-
 
 
 
@@ -158,10 +148,10 @@ public class DonorMatchingService {
 
 
         if(
-                isBloodCompatible(
-                        donor.getBloodGroup(),
-                        request.getBloodGroup()
-                )
+            isBloodCompatible(
+                    donor.getBloodGroup(),
+                    request.getBloodGroup()
+            )
         ){
 
 
@@ -184,9 +174,11 @@ public class DonorMatchingService {
 
                     donor.getName(),
 
-                    donor.getBloodGroup() != null
-                    ? donor.getBloodGroup().toString()
-                    : null,
+                    donor.getBloodGroup()!=null
+                    ?
+                    donor.getBloodGroup().toString()
+                    :
+                    null,
 
                     donor.getLocation(),
 
@@ -208,25 +200,24 @@ public class DonorMatchingService {
 
 
         // ==========================
-        // Location Matching
+        // Advanced Location Matching
         // ==========================
 
 
-        if(
-
-            donor.getLocation() != null
-
-            &&
-
-            donor.getLocation()
-            .equalsIgnoreCase(
-                    request.getLocation()
-            )
-
-        ){
+        int locationScore =
+                calculateLocationScore(
+                        donor.getLocation(),
+                        request.getLocation()
+                );
 
 
-            score += 25;
+
+        score += locationScore;
+
+
+
+
+        if(locationScore == 25){
 
 
             reason.append(
@@ -235,11 +226,16 @@ public class DonorMatchingService {
 
 
         }
+        else if(locationScore == 20){
 
+
+            reason.append(
+                    "Nearby location. "
+            );
+
+
+        }
         else{
-
-
-            score += 10;
 
 
             reason.append(
@@ -314,7 +310,7 @@ public class DonorMatchingService {
 
 
         // ==========================
-        // Urgency Priority Score
+        // Urgency Priority
         // ==========================
 
 
@@ -344,34 +340,26 @@ public class DonorMatchingService {
 
         return new RecommendedDonorDTO(
 
-
                 donor.getId(),
-
 
                 donor.getName(),
 
-
-                donor.getBloodGroup() != null
-                ? donor.getBloodGroup().toString()
-                : null,
-
+                donor.getBloodGroup()!=null
+                ?
+                donor.getBloodGroup().toString()
+                :
+                null,
 
                 donor.getLocation(),
 
-
                 score,
 
-
                 reason.toString()
-
 
         );
 
 
     }
-
-
-
 
 
 
@@ -393,7 +381,7 @@ public class DonorMatchingService {
 
 
         if(
-                donor.getLastDonationDate() == null
+                donor.getLastDonationDate()==null
         ){
 
             return true;
@@ -435,11 +423,218 @@ public class DonorMatchingService {
 
 
 
+    // ==========================
+    // Location Intelligence
+    // ==========================
+
+
+    private int calculateLocationScore(
+            String donorLocation,
+            String requestLocation
+    ){
+
+
+
+        if(
+                donorLocation == null
+                ||
+                requestLocation == null
+        ){
+
+            return 0;
+
+        }
+
+
+
+
+
+
+
+        if(
+                donorLocation.equalsIgnoreCase(
+                        requestLocation
+                )
+        ){
+
+            return 25;
+
+        }
+
+
+
+
+
+
+
+        if(
+                isNearbyLocation(
+                        donorLocation,
+                        requestLocation
+                )
+        ){
+
+            return 20;
+
+        }
+
+
+
+
+
+
+
+        return 10;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private boolean isNearbyLocation(
+            String donorLocation,
+            String requestLocation
+    ){
+
+
+
+        String donor =
+                donorLocation.toLowerCase();
+
+
+        String request =
+                requestLocation.toLowerCase();
+
+
+
+
+
+
+
+        String[][] nearbyAreas = {
+
+
+                {
+                    "dhaka",
+                    "uttara",
+                    "mirpur",
+                    "dhanmondi",
+                    "gulshan",
+                    "banani"
+                },
+
+
+
+                {
+                    "chittagong",
+                    "agrabad",
+                    "halishahar"
+                },
+
+
+
+                {
+                    "sylhet",
+                    "zindabazar"
+                }
+
+
+
+        };
+
+
+
+
+
+
+
+
+
+        for(String[] area : nearbyAreas){
+
+
+            boolean donorMatch = false;
+
+
+            boolean requestMatch = false;
+
+
+
+
+
+            for(String place : area){
+
+
+                if(
+                    donor.contains(place)
+                ){
+
+                    donorMatch = true;
+
+                }
+
+
+
+
+
+                if(
+                    request.contains(place)
+                ){
+
+                    requestMatch = true;
+
+                }
+
+
+            }
+
+
+
+
+
+
+
+            if(
+                    donorMatch
+                    &&
+                    requestMatch
+            ){
+
+                return true;
+
+            }
+
+
+
+        }
+
+
+
+
+
+
+
+        return false;
+
+
+    }
+
+
+
+
+
+
 
 
 
     // ==========================
-    // Blood Compatibility Logic
+    // Blood Compatibility
     // ==========================
 
 
@@ -469,8 +664,6 @@ public class DonorMatchingService {
 
 
 
-        // Same blood group
-
         if(
                 donorGroup == requestGroup
         ){
@@ -485,8 +678,7 @@ public class DonorMatchingService {
 
 
 
-
-        // O Negative universal donor
+        // Universal donor
 
         if(
                 donorGroup == BloodGroup.O_NEGATIVE
@@ -502,11 +694,11 @@ public class DonorMatchingService {
 
 
 
-
         return false;
 
 
     }
+
 
 
 
