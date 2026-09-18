@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 import backend.dto.RecommendedDonorDTO;
 import backend.entity.BloodGroup;
 import backend.entity.BloodRequest;
+import backend.entity.DonationStatus;
 import backend.entity.UrgencyLevel;
 import backend.entity.User;
 import backend.exception.ResourceNotFoundException;
 import backend.repository.BloodRequestRepository;
+import backend.repository.DonationResponseRepository;
 import backend.repository.UserRepository;
 
 
@@ -30,18 +32,36 @@ public class DonorMatchingService {
     private final BloodRequestRepository bloodRequestRepository;
 
 
+    private final DonationResponseRepository donationResponseRepository;
+
+
+
 
 
 
 
     public DonorMatchingService(
+
             UserRepository userRepository,
-            BloodRequestRepository bloodRequestRepository
+
+            BloodRequestRepository bloodRequestRepository,
+
+            DonationResponseRepository donationResponseRepository
+
     ){
 
-        this.userRepository = userRepository;
 
-        this.bloodRequestRepository = bloodRequestRepository;
+        this.userRepository =
+                userRepository;
+
+
+        this.bloodRequestRepository =
+                bloodRequestRepository;
+
+
+        this.donationResponseRepository =
+                donationResponseRepository;
+
 
     }
 
@@ -58,13 +78,18 @@ public class DonorMatchingService {
     ){
 
 
+
         BloodRequest request =
+
                 bloodRequestRepository
                         .findById(requestId)
+
                         .orElseThrow(
+
                                 () -> new ResourceNotFoundException(
                                         "Blood request not found"
                                 )
+
                         );
 
 
@@ -74,6 +99,7 @@ public class DonorMatchingService {
 
 
         List<User> donors =
+
                 userRepository
                         .findByAvailableForDonationTrue();
 
@@ -105,13 +131,17 @@ public class DonorMatchingService {
                 )
 
                 .sorted(
+
                         Comparator.comparingInt(
                                 RecommendedDonorDTO::getScore
                         )
+
                         .reversed()
+
                 )
 
                 .toList();
+
 
 
     }
@@ -125,8 +155,11 @@ public class DonorMatchingService {
 
 
     private RecommendedDonorDTO createRecommendation(
+
             User donor,
+
             BloodRequest request
+
     ){
 
 
@@ -142,16 +175,18 @@ public class DonorMatchingService {
 
 
 
-        // ==========================
-        // Blood Compatibility
-        // ==========================
+
+
+        // Blood compatibility
 
 
         if(
-            isBloodCompatible(
-                    donor.getBloodGroup(),
-                    request.getBloodGroup()
-            )
+
+                isBloodCompatible(
+                        donor.getBloodGroup(),
+                        request.getBloodGroup()
+                )
+
         ){
 
 
@@ -188,7 +223,6 @@ public class DonorMatchingService {
 
             );
 
-
         }
 
 
@@ -199,20 +233,23 @@ public class DonorMatchingService {
 
 
 
-        // ==========================
-        // Advanced Location Matching
-        // ==========================
+        // Location score
 
 
         int locationScore =
+
                 calculateLocationScore(
+
                         donor.getLocation(),
+
                         request.getLocation()
+
                 );
 
 
 
         score += locationScore;
+
 
 
 
@@ -226,6 +263,7 @@ public class DonorMatchingService {
 
 
         }
+
         else if(locationScore == 20){
 
 
@@ -235,6 +273,7 @@ public class DonorMatchingService {
 
 
         }
+
         else{
 
 
@@ -253,9 +292,7 @@ public class DonorMatchingService {
 
 
 
-        // ==========================
-        // Eligibility Score
-        // ==========================
+        // Eligibility score
 
 
         if(
@@ -281,9 +318,7 @@ public class DonorMatchingService {
 
 
 
-        // ==========================
-        // Availability Score
-        // ==========================
+        // Availability score
 
 
         if(
@@ -309,14 +344,14 @@ public class DonorMatchingService {
 
 
 
-        // ==========================
-        // Urgency Priority
-        // ==========================
+        // Critical request priority
 
 
         if(
+
                 request.getUrgency()
                 == UrgencyLevel.CRITICAL
+
         ){
 
 
@@ -338,6 +373,50 @@ public class DonorMatchingService {
 
 
 
+        // Reliability score
+
+
+        int reliabilityScore =
+
+                calculateReliabilityScore(
+                        donor.getId()
+                );
+
+
+
+        score += reliabilityScore;
+
+
+
+
+
+        if(reliabilityScore >= 15){
+
+
+            reason.append(
+                    "Highly reliable donor. "
+            );
+
+
+        }
+
+        else if(reliabilityScore > 0){
+
+
+            reason.append(
+                    "Previous donation history found. "
+            );
+
+
+        }
+
+
+
+
+
+
+
+
         return new RecommendedDonorDTO(
 
                 donor.getId(),
@@ -350,9 +429,12 @@ public class DonorMatchingService {
                 :
                 null,
 
+
                 donor.getLocation(),
 
+
                 score,
+
 
                 reason.toString()
 
@@ -369,9 +451,64 @@ public class DonorMatchingService {
 
 
 
-    // ==========================
-    // Donation Eligibility
-    // ==========================
+    // Reliability calculation
+
+
+    private int calculateReliabilityScore(
+
+            Long donorId
+
+    ){
+
+
+        long completedDonations =
+
+                donationResponseRepository
+                        .countByDonorIdAndStatus(
+
+                                donorId,
+
+                                DonationStatus.COMPLETED
+
+                        );
+
+
+
+
+
+        int score =
+
+                (int)(completedDonations * 5);
+
+
+
+
+
+
+        if(score > 20){
+
+            score = 20;
+
+        }
+
+
+
+
+
+        return score;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // Eligibility check
 
 
     private boolean isEligible(
@@ -392,8 +529,6 @@ public class DonorMatchingService {
 
 
 
-
-
         long days =
 
                 ChronoUnit.DAYS.between(
@@ -403,7 +538,6 @@ public class DonorMatchingService {
                         LocalDate.now()
 
                 );
-
 
 
 
@@ -423,22 +557,27 @@ public class DonorMatchingService {
 
 
 
-    // ==========================
-    // Location Intelligence
-    // ==========================
+    // Location matching
 
 
     private int calculateLocationScore(
+
             String donorLocation,
+
             String requestLocation
+
     ){
 
 
 
         if(
+
                 donorLocation == null
+
                 ||
+
                 requestLocation == null
+
         ){
 
             return 0;
@@ -449,12 +588,12 @@ public class DonorMatchingService {
 
 
 
-
-
         if(
+
                 donorLocation.equalsIgnoreCase(
                         requestLocation
                 )
+
         ){
 
             return 25;
@@ -466,18 +605,18 @@ public class DonorMatchingService {
 
 
 
-
         if(
+
                 isNearbyLocation(
                         donorLocation,
                         requestLocation
                 )
+
         ){
 
             return 20;
 
         }
-
 
 
 
@@ -498,8 +637,11 @@ public class DonorMatchingService {
 
 
     private boolean isNearbyLocation(
+
             String donorLocation,
+
             String requestLocation
+
     ){
 
 
@@ -516,8 +658,8 @@ public class DonorMatchingService {
 
 
 
-
         String[][] nearbyAreas = {
+
 
 
                 {
@@ -530,7 +672,6 @@ public class DonorMatchingService {
                 },
 
 
-
                 {
                     "chittagong",
                     "agrabad",
@@ -538,12 +679,10 @@ public class DonorMatchingService {
                 },
 
 
-
                 {
                     "sylhet",
                     "zindabazar"
                 }
-
 
 
         };
@@ -554,13 +693,11 @@ public class DonorMatchingService {
 
 
 
-
-
         for(String[] area : nearbyAreas){
 
 
-            boolean donorMatch = false;
 
+            boolean donorMatch = false;
 
             boolean requestMatch = false;
 
@@ -571,8 +708,9 @@ public class DonorMatchingService {
             for(String place : area){
 
 
+
                 if(
-                    donor.contains(place)
+                        donor.contains(place)
                 ){
 
                     donorMatch = true;
@@ -581,10 +719,8 @@ public class DonorMatchingService {
 
 
 
-
-
                 if(
-                    request.contains(place)
+                        request.contains(place)
                 ){
 
                     requestMatch = true;
@@ -599,11 +735,14 @@ public class DonorMatchingService {
 
 
 
-
             if(
+
                     donorMatch
+
                     &&
+
                     requestMatch
+
             ){
 
                 return true;
@@ -611,10 +750,7 @@ public class DonorMatchingService {
             }
 
 
-
         }
-
-
 
 
 
@@ -633,9 +769,7 @@ public class DonorMatchingService {
 
 
 
-    // ==========================
-    // Blood Compatibility
-    // ==========================
+    // Blood compatibility
 
 
     private boolean isBloodCompatible(
@@ -649,15 +783,18 @@ public class DonorMatchingService {
 
 
         if(
+
                 donorGroup == null
+
                 ||
+
                 requestGroup == null
+
         ){
 
             return false;
 
         }
-
 
 
 
@@ -678,8 +815,6 @@ public class DonorMatchingService {
 
 
 
-        // Universal donor
-
         if(
                 donorGroup == BloodGroup.O_NEGATIVE
         ){
@@ -698,7 +833,6 @@ public class DonorMatchingService {
 
 
     }
-
 
 
 

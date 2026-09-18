@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import backend.entity.DonationResponse;
+import backend.entity.DonationStatus;
 
 
 
@@ -14,25 +15,53 @@ public interface DonationResponseRepository
 
 
 
+
+
     // Get all donations made by a donor
+
     List<DonationResponse> findByDonorId(
             Long donorId
     );
 
 
 
+
+
+
+
     // Get all donors for a blood request
+
     List<DonationResponse> findByRequestId(
             Long requestId
     );
 
 
 
+
+
+
+
     // Check duplicate donation request
+
     boolean existsByRequestIdAndDonorId(
             Long requestId,
             Long donorId
     );
+
+
+
+
+
+
+
+
+    // Count completed donations of a donor
+
+    long countByDonorIdAndStatus(
+            Long donorId,
+            DonationStatus status
+    );
+
 
 
 }
