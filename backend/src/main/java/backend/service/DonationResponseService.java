@@ -1,6 +1,7 @@
 package backend.service;
 
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -11,9 +12,11 @@ import backend.entity.BloodRequest;
 import backend.entity.DonationResponse;
 import backend.entity.DonationStatus;
 import backend.entity.RequestStatus;
+import backend.entity.User;
 import backend.exception.ResourceNotFoundException;
 import backend.repository.BloodRequestRepository;
 import backend.repository.DonationResponseRepository;
+import backend.repository.UserRepository;
 
 
 
@@ -22,29 +25,34 @@ public class DonationResponseService {
 
 
 
-    private final DonationResponseRepository donationResponseRepository;
+   private final DonationResponseRepository donationResponseRepository;
 
-    private final BloodRequestRepository bloodRequestRepository;
+private final BloodRequestRepository bloodRequestRepository;
 
-    private final BloodRequestService bloodRequestService;
+private final BloodRequestService bloodRequestService;
+
+private final UserRepository userRepository;
 
 
 
 
 
-    public DonationResponseService(
-            DonationResponseRepository donationResponseRepository,
-            BloodRequestRepository bloodRequestRepository,
-            BloodRequestService bloodRequestService
-    ){
+ public DonationResponseService(
+        DonationResponseRepository donationResponseRepository,
+        BloodRequestRepository bloodRequestRepository,
+        BloodRequestService bloodRequestService,
+        UserRepository userRepository
+){
 
-        this.donationResponseRepository = donationResponseRepository;
+    this.donationResponseRepository = donationResponseRepository;
 
-        this.bloodRequestRepository = bloodRequestRepository;
+    this.bloodRequestRepository = bloodRequestRepository;
 
-        this.bloodRequestService = bloodRequestService;
+    this.bloodRequestService = bloodRequestService;
 
-    }
+    this.userRepository = userRepository;
+
+}
 
 
 
@@ -422,15 +430,52 @@ public class DonationResponseService {
 
 
 
-        if(status == DonationStatus.COMPLETED){
+   if(status == DonationStatus.COMPLETED){
 
 
-            bloodRequestService
-                    .markFulfilled(
-                            response.getRequestId()
+    bloodRequestService
+            .markFulfilled(
+                    response.getRequestId()
+            );
+
+
+
+
+
+    // Update donor last donation date
+
+    User donor =
+            userRepository
+                    .findById(
+                            response.getDonorId()
+                    )
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException(
+                                    "Donor not found"
+                            )
                     );
 
-        }
+
+
+
+    donor.setLastDonationDate(
+            LocalDate.now()
+    );
+
+
+
+    donor.setAvailableForDonation(
+            false
+    );
+
+
+
+    userRepository.save(
+            donor
+    );
+
+
+}
 
 
 

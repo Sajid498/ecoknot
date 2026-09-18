@@ -368,9 +368,188 @@ allRequests
 
 }
 async function handleDonate(
-requestId:number
+    requestId:number
 ){
 
+
+
+if(!currentUser){
+
+    toast.error(
+        "Please login first"
+    );
+
+    return;
+
+}
+
+
+
+
+
+
+try{
+
+
+
+    // ==============================
+    // Step 1: Check donor eligibility
+    // ==============================
+
+
+    const eligibilityResponse =
+        await fetch(
+            `${API_URL}/api/users/${currentUser.id}/eligibility`
+        );
+
+
+
+    const eligibilityData =
+        await eligibilityResponse.json();
+
+
+
+
+
+    if(!eligibilityData.eligible){
+
+
+        toast.error(
+            eligibilityData.message
+        );
+
+
+        return;
+
+
+    }
+
+
+
+
+
+
+
+
+    // ==============================
+    // Step 2: Create donation request
+    // ==============================
+
+
+
+    const response =
+        await fetch(
+            `${API_URL}/api/donation-response`,
+            {
+
+                method:"POST",
+
+
+                headers:{
+
+
+                    "Content-Type":
+                    "application/json"
+
+
+                },
+
+
+
+                body:JSON.stringify({
+
+
+                    requestId,
+
+
+                    donorId:
+                    currentUser.id,
+
+
+                    donorName:
+                    currentUser.name,
+
+
+                    donorEmail:
+                    currentUser.email,
+
+
+                    donorPhone:
+                    currentUser.phone ||
+                    "Not provided"
+
+
+                })
+
+
+            }
+        );
+
+
+
+
+
+
+
+
+    if(!response.ok){
+
+
+        const error =
+            await response.json();
+
+
+
+        throw new Error(
+            error.message ||
+            "Donation failed"
+        );
+
+
+    }
+
+
+
+
+
+
+
+    toast.success(
+        "Donation interest sent successfully"
+    );
+
+
+
+
+
+    loadBloodRequests();
+
+
+
+
+
+}
+
+catch(error:any){
+
+
+
+    console.log(error);
+
+
+
+    toast.error(
+        error.message ||
+        "Something went wrong"
+    );
+
+
+
+}
+
+
+
+}
 
 
 if(!currentUser){
