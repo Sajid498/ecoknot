@@ -25,13 +25,22 @@ public class DonationResponseService {
 
 
 
+
     private final DonationResponseRepository donationResponseRepository;
+
 
     private final BloodRequestRepository bloodRequestRepository;
 
+
     private final BloodRequestService bloodRequestService;
 
+
     private final UserRepository userRepository;
+
+
+    private final NotificationService notificationService;
+
+
 
 
 
@@ -46,25 +55,36 @@ public class DonationResponseService {
 
             BloodRequestService bloodRequestService,
 
-            UserRepository userRepository
+            UserRepository userRepository,
+
+            NotificationService notificationService
 
     ){
+
 
 
         this.donationResponseRepository =
                 donationResponseRepository;
 
 
+
         this.bloodRequestRepository =
                 bloodRequestRepository;
+
 
 
         this.bloodRequestService =
                 bloodRequestService;
 
 
+
         this.userRepository =
                 userRepository;
+
+
+
+        this.notificationService =
+                notificationService;
 
 
     }
@@ -77,7 +97,12 @@ public class DonationResponseService {
 
 
 
+
+
+
+
     // Create donor response
+
 
 
     public DonationResponse createResponse(
@@ -110,14 +135,19 @@ public class DonationResponseService {
 
 
 
+
         if(
+
                 request.getStatus()
                 != RequestStatus.OPEN
+
         ){
 
 
             throw new RuntimeException(
+
                     "This blood request is not available"
+
             );
 
 
@@ -147,7 +177,9 @@ public class DonationResponseService {
 
 
             throw new RuntimeException(
+
                     "You cannot donate to your own request"
+
             );
 
 
@@ -162,6 +194,7 @@ public class DonationResponseService {
 
 
         boolean alreadyApplied =
+
 
                 donationResponseRepository
 
@@ -178,11 +211,16 @@ public class DonationResponseService {
 
 
 
+
+
+
         if(alreadyApplied){
 
 
             throw new RuntimeException(
+
                     "You already applied for this blood request"
+
             );
 
 
@@ -194,18 +232,26 @@ public class DonationResponseService {
 
 
 
+
+
         response.setStatus(
+
                 DonationStatus.PENDING
+
         );
 
 
 
-        return donationResponseRepository.save(response);
 
+
+        return donationResponseRepository.save(
+
+                response
+
+        );
 
 
     }
-
 
 
 
@@ -222,6 +268,7 @@ public class DonationResponseService {
     // Accept recommended donor directly
 
 
+
     public DonationResponse acceptRecommendedDonor(
 
             DonationResponse response
@@ -235,13 +282,17 @@ public class DonationResponseService {
                 bloodRequestRepository
 
                         .findById(
+
                                 response.getRequestId()
+
                         )
 
                         .orElseThrow(
 
                                 () -> new ResourceNotFoundException(
+
                                         "Blood request not found"
+
                                 )
 
                         );
@@ -257,13 +308,16 @@ public class DonationResponseService {
         if(
 
                 request.getStatus()
+
                 != RequestStatus.OPEN
 
         ){
 
 
             throw new RuntimeException(
+
                     "Blood request is not available"
+
             );
 
 
@@ -279,10 +333,13 @@ public class DonationResponseService {
 
         boolean alreadyAccepted =
 
+
                 donationResponseRepository
 
                         .findByRequestId(
+
                                 response.getRequestId()
+
                         )
 
                         .stream()
@@ -292,9 +349,11 @@ public class DonationResponseService {
                                 donor ->
 
                                 donor.getStatus()
+
                                 == DonationStatus.ACCEPTED
 
                         );
+
 
 
 
@@ -307,7 +366,9 @@ public class DonationResponseService {
 
 
             throw new RuntimeException(
+
                     "A donor is already accepted for this request"
+
             );
 
 
@@ -322,7 +383,9 @@ public class DonationResponseService {
 
 
         response.setStatus(
+
                 DonationStatus.ACCEPTED
+
         );
 
 
@@ -333,7 +396,9 @@ public class DonationResponseService {
         DonationResponse savedResponse =
 
                 donationResponseRepository.save(
+
                         response
+
                 );
 
 
@@ -345,7 +410,9 @@ public class DonationResponseService {
         bloodRequestService
 
                 .markDonorFound(
+
                         response.getRequestId()
+
                 );
 
 
@@ -359,19 +426,7 @@ public class DonationResponseService {
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-    // Get donations made by donor
+        // Get donations made by donor
 
 
     public List<DonationResponseDTO> getDonationsByDonor(
@@ -396,7 +451,9 @@ public class DonationResponseService {
                             bloodRequestRepository
 
                                     .findById(
+
                                             response.getRequestId()
+
                                     )
 
                                     .orElseThrow(
@@ -406,6 +463,7 @@ public class DonationResponseService {
                                             )
 
                                     );
+
 
 
 
@@ -443,7 +501,11 @@ public class DonationResponseService {
 
 
     }
-        
+
+
+
+
+
 
 
 
@@ -489,7 +551,9 @@ public class DonationResponseService {
                             bloodRequestRepository
 
                                     .findById(
+
                                             response.getRequestId()
+
                                     )
 
                                     .orElseThrow(
@@ -513,7 +577,7 @@ public class DonationResponseService {
 
                             request.getPatientName(),
 
-                            request.getBloodGroup() != null
+                            request.getBloodGroup()!=null
 
                             ?
 
@@ -522,7 +586,6 @@ public class DonationResponseService {
                             :
 
                             null,
-
 
 
                             request.getHospital(),
@@ -536,11 +599,9 @@ public class DonationResponseService {
                     );
 
 
-
                 })
 
                 .toList();
-
 
 
     }
@@ -557,7 +618,7 @@ public class DonationResponseService {
 
 
 
-    // Get all donors for a blood request
+    // Get donors for request
 
 
     public List<DonationResponse> getDonorsByRequestId(
@@ -570,7 +631,6 @@ public class DonationResponseService {
         return donationResponseRepository
 
                 .findByRequestId(requestId);
-
 
 
     }
@@ -621,31 +681,24 @@ public class DonationResponseService {
 
 
 
-        // Prevent multiple accepted donors
-
 
         if(
+
                 status == DonationStatus.ACCEPTED
+
         ){
-
-
-
-            List<DonationResponse> existingDonors =
-
-                    donationResponseRepository
-
-                            .findByRequestId(
-                                    response.getRequestId()
-                            );
-
-
-
-
 
 
             boolean alreadyAccepted =
 
-                    existingDonors
+
+                    donationResponseRepository
+
+                            .findByRequestId(
+
+                                    response.getRequestId()
+
+                            )
 
                             .stream()
 
@@ -654,6 +707,7 @@ public class DonationResponseService {
                                     donor ->
 
                                     donor.getStatus()
+
                                     == DonationStatus.ACCEPTED
 
                             );
@@ -662,10 +716,7 @@ public class DonationResponseService {
 
 
 
-
-
             if(alreadyAccepted){
-
 
 
                 throw new RuntimeException(
@@ -675,9 +726,7 @@ public class DonationResponseService {
                 );
 
 
-
             }
-
 
 
         }
@@ -694,12 +743,12 @@ public class DonationResponseService {
 
 
 
-
-
         DonationResponse savedResponse =
 
                 donationResponseRepository.save(
+
                         response
+
                 );
 
 
@@ -710,16 +759,43 @@ public class DonationResponseService {
 
 
 
+        // When requester accepts donor
+
+
         if(
+
                 status == DonationStatus.ACCEPTED
+
         ){
+
+
+
+            rejectOtherDonors(
+
+                    response
+
+            );
+
+
+
+
+            sendAcceptanceNotifications(
+
+                    response
+
+            );
+
+
 
 
             bloodRequestService
 
                     .markDonorFound(
+
                             response.getRequestId()
+
                     );
+
 
 
         }
@@ -733,7 +809,9 @@ public class DonationResponseService {
 
 
         if(
+
                 status == DonationStatus.COMPLETED
+
         ){
 
 
@@ -741,7 +819,9 @@ public class DonationResponseService {
             bloodRequestService
 
                     .markFulfilled(
+
                             response.getRequestId()
+
                     );
 
 
@@ -750,17 +830,14 @@ public class DonationResponseService {
 
 
 
-
-
-            // Update donor last donation date
-
-
             User donor =
 
                     userRepository
 
                             .findById(
+
                                     response.getDonorId()
+
                             )
 
                             .orElseThrow(
@@ -778,7 +855,9 @@ public class DonationResponseService {
 
 
             donor.setLastDonationDate(
+
                     LocalDate.now()
+
             );
 
 
@@ -788,7 +867,9 @@ public class DonationResponseService {
 
 
             donor.setAvailableForDonation(
+
                     false
+
             );
 
 
@@ -798,9 +879,10 @@ public class DonationResponseService {
 
 
             userRepository.save(
-                    donor
-            );
 
+                    donor
+
+            );
 
 
         }
@@ -811,8 +893,195 @@ public class DonationResponseService {
 
 
 
-
         return savedResponse;
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Reject other pending donors
+
+
+    private void rejectOtherDonors(
+
+            DonationResponse acceptedResponse
+
+    ){
+
+
+
+        List<DonationResponse> donors =
+
+                donationResponseRepository
+
+                        .findByRequestId(
+
+                                acceptedResponse.getRequestId()
+
+                        );
+
+
+
+
+
+
+        for(DonationResponse donor : donors){
+
+
+
+            if(
+
+                    !donor.getId()
+
+                    .equals(
+
+                            acceptedResponse.getId()
+
+                    )
+
+                    &&
+
+                    donor.getStatus()
+
+                    == DonationStatus.PENDING
+
+            ){
+
+
+
+                donor.setStatus(
+
+                        DonationStatus.REJECTED
+
+                );
+
+
+
+                donationResponseRepository.save(
+
+                        donor
+
+                );
+
+
+            }
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Send accept/reject notifications
+
+
+    private void sendAcceptanceNotifications(
+
+            DonationResponse acceptedResponse
+
+    ){
+
+
+
+        notificationService.createNotification(
+
+
+                acceptedResponse.getDonorId(),
+
+
+                "Your donation request has been accepted. Please contact the requester.",
+
+
+                "DONATION_ACCEPTED"
+
+
+        );
+
+
+
+
+
+
+
+
+
+        List<DonationResponse> donors =
+
+                donationResponseRepository
+
+                        .findByRequestId(
+
+                                acceptedResponse.getRequestId()
+
+                        );
+
+
+
+
+
+
+
+        for(DonationResponse donor : donors){
+
+
+
+            if(
+
+                    !donor.getId()
+
+                    .equals(
+
+                            acceptedResponse.getId()
+
+                    )
+
+            ){
+
+
+
+                notificationService.createNotification(
+
+
+                        donor.getDonorId(),
+
+
+                        "Another donor has been selected for this blood request.",
+
+
+                        "DONATION_REJECTED"
+
+
+                );
+
+
+            }
+
+
+        }
 
 
 
@@ -844,7 +1113,6 @@ public class DonationResponseService {
 
 
     }
-
 
 
 }
