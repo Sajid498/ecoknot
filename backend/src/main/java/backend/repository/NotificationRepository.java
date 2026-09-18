@@ -14,9 +14,25 @@ public interface NotificationRepository
 
 
 
+
+    // Get all notifications of a user
+
     List<Notification> findByUserIdOrderByCreatedAtDesc(
             Long userId
     );
+
+
+
+
+
+
+
+    // Count unread notifications
+
+    long countByUserIdAndReadStatusFalse(
+            Long userId
+    );
+
 
 
 }

@@ -17,9 +17,12 @@ public class Notification {
 
 
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+
 
 
 
@@ -27,7 +30,11 @@ public class Notification {
 
 
 
+
+
     private String message;
+
+
 
 
 
@@ -35,11 +42,24 @@ public class Notification {
 
 
 
+
+
     private boolean readStatus = false;
 
 
 
+
+
     private LocalDateTime createdAt;
+
+
+
+
+
+    private LocalDateTime readAt;
+
+
+
 
 
 
@@ -56,11 +76,18 @@ public class Notification {
 
 
 
+
+
     public Notification(
+
             Long userId,
+
             String message,
+
             String type
+
     ){
+
 
         this.userId = userId;
 
@@ -70,7 +97,12 @@ public class Notification {
 
         this.createdAt = LocalDateTime.now();
 
+        this.readStatus = false;
+
+
     }
+
+
 
 
 
@@ -83,6 +115,9 @@ public class Notification {
         return id;
 
     }
+
+
+
 
 
 
@@ -103,6 +138,9 @@ public class Notification {
         this.userId = userId;
 
     }
+
+
+
 
 
 
@@ -130,6 +168,9 @@ public class Notification {
 
 
 
+
+
+
     public String getType(){
 
         return type;
@@ -145,6 +186,9 @@ public class Notification {
         this.type = type;
 
     }
+
+
+
 
 
 
@@ -172,6 +216,9 @@ public class Notification {
 
 
 
+
+
+
     public LocalDateTime getCreatedAt(){
 
         return createdAt;
@@ -185,6 +232,30 @@ public class Notification {
     public void setCreatedAt(LocalDateTime createdAt){
 
         this.createdAt = createdAt;
+
+    }
+
+
+
+
+
+
+
+
+
+    public LocalDateTime getReadAt(){
+
+        return readAt;
+
+    }
+
+
+
+
+
+    public void setReadAt(LocalDateTime readAt){
+
+        this.readAt = readAt;
 
     }
 

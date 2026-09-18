@@ -9,11 +9,20 @@ import { useRouter } from "next/navigation";
 
 
 
+const API_URL =
+    "http://localhost:8080";
+
+
+
+
+
+
 export default function Navbar() {
 
 
 
   const router = useRouter();
+
 
 
 
@@ -25,6 +34,12 @@ export default function Navbar() {
 
   const [activeModule,setActiveModule] =
     useState("");
+
+
+
+  const [unreadCount,setUnreadCount] =
+    useState(0);
+
 
 
 
@@ -44,12 +59,24 @@ export default function Navbar() {
     if(savedUser){
 
 
+      const userData =
+        JSON.parse(savedUser);
+
+
+
       setUser(
-        JSON.parse(savedUser)
+        userData
+      );
+
+
+
+      loadUnreadCount(
+        userData.id
       );
 
 
     }
+
 
 
 
@@ -83,6 +110,64 @@ export default function Navbar() {
 
 
 
+  async function loadUnreadCount(
+      userId:number
+  ){
+
+
+    try{
+
+
+      const response =
+        await fetch(
+
+          `${API_URL}/api/notifications/unread-count/${userId}`
+
+        );
+
+
+
+      if(!response.ok){
+
+        return;
+
+      }
+
+
+
+
+      const data =
+        await response.json();
+
+
+
+
+      setUnreadCount(
+        data.count
+      );
+
+
+
+    }
+    catch(error){
+
+
+      console.log(error);
+
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+
+
   const isBloodSection =
       activeModule === "blood";
 
@@ -105,6 +190,8 @@ export default function Navbar() {
     setUser(null);
 
     setActiveModule("");
+
+    setUnreadCount(0);
 
 
 
@@ -156,13 +243,6 @@ export default function Navbar() {
 
 
   };
-
-
-
-
-
-
-
 return (
 
 <header className="
@@ -252,7 +332,6 @@ Community Connected
 </div>
 
 
-
 </Link>
 
 
@@ -301,6 +380,7 @@ hover:text-emerald-700
 
 
 
+
 <Link
 
 href="/blood-donation"
@@ -316,6 +396,7 @@ text-emerald-700
 🩸 Blood Donation
 
 </Link>
+
 
 
 
@@ -342,6 +423,7 @@ hover:text-emerald-700
 
 
 
+
 <Link
 
 href="/my-donations"
@@ -358,6 +440,7 @@ hover:text-emerald-700
 ❤️ My Donations
 
 </Link>
+
 
 
 
@@ -384,6 +467,7 @@ hover:text-emerald-700
 
 
 
+
 <Link
 
 href="/messages"
@@ -402,10 +486,14 @@ hover:text-emerald-700
 </Link>
 
 
+
 </>
 
 
+
 :
+
+
 
 <>
 
@@ -425,6 +513,7 @@ text-emerald-700
 Home
 
 </Link>
+
 
 
 
@@ -451,6 +540,7 @@ Blood Donation
 
 
 
+
 <Link
 
 href="#"
@@ -467,6 +557,7 @@ hover:text-emerald-700
 Campaigns
 
 </Link>
+
 
 
 
@@ -493,6 +584,7 @@ Resources
 
 
 
+
 <Link
 
 href="#"
@@ -511,6 +603,7 @@ Academic Hub
 </Link>
 
 
+
 </>
 
 
@@ -518,11 +611,21 @@ Academic Hub
 
 
 </nav>
+
+
+
+
+
+
+
+
+
 <div className="
 flex
 items-center
 gap-3
 ">
+
 
 
 
@@ -536,7 +639,7 @@ user ?
 <>
 
 
-{/* Notification Bell */}
+{/* Notification Bell with Badge */}
 
 
 <Link
@@ -558,10 +661,48 @@ title="Notifications"
 
 >
 
+
 🔔
 
 
+
+{
+
+unreadCount > 0 &&
+
+
+<span
+
+className="
+absolute
+-right-1
+-top-1
+flex
+h-5
+w-5
+items-center
+justify-center
+rounded-full
+bg-red-600
+text-xs
+font-bold
+text-white
+"
+
+>
+
+{unreadCount}
+
+</span>
+
+
+}
+
+
+
 </Link>
+
+
 
 
 
@@ -591,6 +732,7 @@ sm:block
 
 <Link href="/profile">
 
+
 <button
 
 className="
@@ -609,8 +751,8 @@ Profile
 
 </button>
 
-</Link>
 
+</Link>
 
 
 
@@ -658,8 +800,8 @@ Logout
 <>
 
 
-
 <Link href="/login">
+
 
 <button
 
@@ -681,6 +823,7 @@ Log In
 
 </button>
 
+
 </Link>
 
 
@@ -690,8 +833,8 @@ Log In
 
 
 
-
 <Link href="/signup">
+
 
 <button
 
@@ -711,8 +854,8 @@ Sign Up
 
 </button>
 
-</Link>
 
+</Link>
 
 
 </>
@@ -722,9 +865,7 @@ Sign Up
 
 
 
-
 </div>
-
 
 
 
