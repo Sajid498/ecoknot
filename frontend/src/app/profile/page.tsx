@@ -1,90 +1,558 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
+
 import ProtectedRoute from "@/components/ProtectedRoute";
+
 import Navbar from "@/components/Navbar";
 
 
-export default function ProfilePage() {
+
+const API_URL =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:8080";
 
 
-    const [user, setUser] = useState<any>(null);
-
-    const [requests, setRequests] = useState<any[]>([]);
 
 
 
-    useEffect(() => {
+export default function ProfilePage(){
 
 
-        const savedUser = localStorage.getItem("user");
+
+    const [user,setUser] =
+        useState<any>(null);
+
+
+
+    const [requests,setRequests] =
+        useState<any[]>([]);
+
+
+
+    const [location,setLocation] =
+        useState("");
+
+
+
+    const [availableForDonation,setAvailableForDonation] =
+        useState(false);
+
+
+
+    const [lastDonationDate,setLastDonationDate] =
+        useState("");
+
+
+
+    const [message,setMessage] =
+        useState("");
+
+
+
+
+
+
+
+    useEffect(()=>{
+
+
+        const savedUser =
+            localStorage.getItem("user");
+
 
 
         if(savedUser){
 
 
-            const userData = JSON.parse(savedUser);
+            const userData =
+                JSON.parse(savedUser);
+
 
 
             setUser(userData);
 
 
 
-            fetch(
-                `http://localhost:8080/api/blood-requests/user/${userData.id}`
-            )
-            .then(res => res.json())
-            .then(data => {
+            loadProfile(
+                userData.id
+            );
 
-                setRequests(data);
 
-            })
-            .catch(err => {
 
-                console.log(err);
-
-            });
+            loadRequests(
+                userData.id
+            );
 
 
         }
 
 
-    }, []);
+
+    },[]);
 
 
 
 
-    return (
-
-        <ProtectedRoute>
-
-
-            <main className="min-h-screen bg-slate-50">
-
-
-                <Navbar />
 
 
 
-                <div className="mx-auto max-w-5xl px-6 py-10">
+
+
+    async function loadProfile(
+        id:number
+    ){
+
+
+        try{
+
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/users/${id}`
+                );
 
 
 
-                    {/* Profile Card */}
-
-                    <div className="rounded-3xl bg-white p-8 shadow-lg border border-slate-200">
-
-
-                        <div className="flex items-center gap-5">
+            const data =
+                await response.json();
 
 
-                            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-700 text-3xl font-bold text-white">
+
+            setUser(data);
 
 
-                                {user?.name?.charAt(0) || "U"}
+
+            setLocation(
+                data.location || ""
+            );
+
+
+
+            setAvailableForDonation(
+                data.availableForDonation || false
+            );
+
+
+
+            setLastDonationDate(
+                data.lastDonationDate || ""
+            );
+
+
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify(data)
+            );
+
+
+        }
+        catch(error){
+
+            console.log(error);
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async function loadRequests(
+        id:number
+    ){
+
+
+        try{
+
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/blood-requests/user/${id}`
+                );
+
+
+
+            const data =
+                await response.json();
+
+
+
+            setRequests(data);
+
+
+        }
+        catch(error){
+
+            console.log(error);
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async function updateProfile(){
+
+
+        try{
+
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/users/${user.id}`,
+                    {
+
+                        method:"PUT",
+
+                        headers:{
+                            "Content-Type":
+                            "application/json"
+                        },
+
+
+                        body:JSON.stringify({
+
+                            location,
+
+                            availableForDonation,
+
+                            lastDonationDate
+
+                        })
+
+                    }
+                );
+
+
+
+
+
+            if(!response.ok){
+
+                throw new Error(
+                    "Profile update failed"
+                );
+
+            }
+
+
+
+
+            const updatedUser =
+                await response.json();
+
+
+
+            setUser(updatedUser);
+
+
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify(updatedUser)
+            );
+
+
+
+            setMessage(
+                "Profile updated successfully"
+            );
+
+
+
+        }
+        catch(error){
+
+
+            console.log(error);
+
+
+            setMessage(
+                "Something went wrong"
+            );
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+    return(
+
+
+    <ProtectedRoute>
+
+
+        <main className="min-h-screen bg-slate-50">
+
+
+            <Navbar />
+
+
+
+
+            <div className="mx-auto max-w-5xl px-6 py-10">
+
+
+
+
+
+
+
+                <div className="
+                rounded-3xl
+                bg-white
+                p-8
+                shadow-lg
+                border
+                border-slate-200
+                ">
+
+
+
+                    <div className="flex items-center gap-5">
+
+
+                        <div className="
+                        flex
+                        h-20
+                        w-20
+                        items-center
+                        justify-center
+                        rounded-full
+                        bg-emerald-700
+                        text-3xl
+                        font-bold
+                        text-white
+                        ">
+
+
+                            {
+                                user?.name?.charAt(0)
+                                ||
+                                "U"
+                            }
+
+
+                        </div>
+
+
+
+
+                        <div>
+
+
+                            <h1 className="text-3xl font-bold">
+
+                                {user?.name}
+
+                            </h1>
+
+
+
+                            <p className="text-slate-500">
+
+                                EcoKnot Community Member
+
+                            </p>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+
+
+
+
+                    <div className="
+                    mt-8
+                    grid
+                    gap-5
+                    md:grid-cols-2
+                    ">
+
+
+
+                        <div className="rounded-xl bg-slate-50 p-5">
+
+
+                            <p className="text-sm text-slate-500">
+
+                                Email
+
+                            </p>
+
+
+                            <p className="font-semibold">
+
+                                {user?.email}
+
+                            </p>
+
+
+                        </div>
+
+
+
+
+
+                        <div className="rounded-xl bg-slate-50 p-5">
+
+
+                            <p className="text-sm text-slate-500">
+
+                                Role
+
+                            </p>
+
+
+                            <p className="font-semibold">
+
+                                {user?.role}
+
+                            </p>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+
+
+
+                    {/* Smart Blood Profile */}
+
+
+                    <div className="
+                    mt-10
+                    rounded-2xl
+                    bg-emerald-50
+                    p-6
+                    ">
+
+
+                        <h2 className="text-2xl font-bold">
+
+                            🩸 Donor Information
+
+                        </h2>
+
+
+
+
+
+
+                        <div className="mt-5 space-y-5">
+
+
+
+                            <div>
+
+
+                                <label className="font-semibold">
+
+                                    Location
+
+                                </label>
+
+
+                                <input
+
+                                    value={location}
+
+                                    onChange={(e)=>
+                                        setLocation(
+                                            e.target.value
+                                        )
+                                    }
+
+                                    className="
+                                    mt-2
+                                    w-full
+                                    rounded-lg
+                                    border
+                                    p-3
+                                    "
+
+                                    placeholder="Enter your location"
+
+                                />
 
 
                             </div>
+
+
+
+
+
+
+
+                            <div className="flex items-center gap-3">
+
+
+                                <input
+
+                                    type="checkbox"
+
+                                    checked={
+                                        availableForDonation
+                                    }
+
+                                    onChange={(e)=>
+                                        setAvailableForDonation(
+                                            e.target.checked
+                                        )
+                                    }
+
+                                    className="h-5 w-5"
+
+                                />
+
+
+                                <span className="font-semibold">
+
+                                    Available for Donation
+
+                                </span>
+
+
+                            </div>
+
+
+
 
 
 
@@ -92,243 +560,85 @@ export default function ProfilePage() {
                             <div>
 
 
-                                <h1 className="text-3xl font-bold text-slate-900">
+                                <label className="font-semibold">
 
-                                    {user?.name}
+                                    Last Donation Date
 
-                                </h1>
+                                </label>
 
 
-                                <p className="text-slate-500">
+                                <input
 
-                                    EcoKnot Community Member
+                                    type="date"
 
-                                </p>
+                                    value={
+                                        lastDonationDate
+                                    }
 
-
-                            </div>
-
-
-                        </div>
-
-
-
-
-
-                        <div className="mt-8 grid gap-5 md:grid-cols-2">
-
-
-
-                            <div className="rounded-xl bg-slate-50 p-5">
-
-
-                                <p className="text-sm text-slate-500">
-
-                                    Name
-
-                                </p>
-
-
-                                <p className="mt-1 font-semibold text-slate-900">
-
-                                    {user?.name}
-
-                                </p>
-
-
-                            </div>
-
-
-
-
-
-
-                            <div className="rounded-xl bg-slate-50 p-5">
-
-
-                                <p className="text-sm text-slate-500">
-
-                                    Email
-
-                                </p>
-
-
-                                <p className="mt-1 font-semibold text-slate-900">
-
-                                    {user?.email}
-
-                                </p>
-
-
-                            </div>
-
-
-
-
-
-                            <div className="rounded-xl bg-slate-50 p-5">
-
-
-                                <p className="text-sm text-slate-500">
-
-                                    User ID
-
-                                </p>
-
-
-                                <p className="mt-1 font-semibold text-slate-900">
-
-                                    {user?.id}
-
-                                </p>
-
-
-                            </div>
-
-
-
-                            <div className="rounded-xl bg-slate-50 p-5">
-
-
-                                <p className="text-sm text-slate-500">
-
-                                    Total Requests
-
-                                </p>
-
-
-                                <p className="mt-1 font-semibold text-slate-900">
-
-                                    {requests.length}
-
-                                </p>
-
-
-                            </div>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-
-
-
-
-                    {/* Blood Requests */}
-
-                    <div className="mt-10 rounded-3xl bg-white p-8 shadow-lg border border-slate-200">
-
-
-                        <h2 className="text-2xl font-bold text-slate-900">
-
-                            My Blood Requests
-
-                        </h2>
-
-
-
-
-                        {
-
-                            requests.length === 0 ?
-
-
-                            (
-
-                                <p className="mt-5 text-slate-500">
-
-                                    No blood requests created yet.
-
-                                </p>
-
-                            )
-
-
-                            :
-
-
-                            (
-
-                                <div className="mt-6 space-y-4">
-
-
-                                    {
-                                        requests.map((request)=>(
-
-
-                                            <div
-
-                                                key={request.id}
-
-                                                className="rounded-xl border border-slate-200 p-5"
-
-
-                                            >
-
-
-                                                <div className="flex justify-between">
-
-
-                                                    <h3 className="font-bold text-slate-900">
-
-                                                        {request.patientName}
-
-                                                    </h3>
-
-
-
-                                                    <span className="rounded-full bg-red-100 px-3 py-1 text-sm text-red-700">
-
-                                                        {request.bloodGroup}
-
-                                                    </span>
-
-
-                                                </div>
-
-
-
-
-                                                <p className="mt-3 text-slate-600">
-
-                                                    Hospital: {request.hospitalName}
-
-                                                </p>
-
-
-
-                                                <p className="mt-1 text-slate-600">
-
-                                                    Status: {request.status}
-
-                                                </p>
-
-
-
-
-                                            </div>
-
-
-                                        ))
+                                    onChange={(e)=>
+                                        setLastDonationDate(
+                                            e.target.value
+                                        )
                                     }
 
 
-                                </div>
+                                    className="
+                                    mt-2
+                                    rounded-lg
+                                    border
+                                    p-3
+                                    "
 
-                            )
+                                />
 
 
-                        }
+                            </div>
 
+
+
+
+                            <button
+
+                                onClick={updateProfile}
+
+
+                                className="
+                                rounded-xl
+                                bg-emerald-700
+                                px-6
+                                py-3
+                                font-semibold
+                                text-white
+                                "
+
+                            >
+
+                                Save Profile
+
+                            </button>
+
+
+
+
+                            {
+                                message &&
+
+                                <p className="font-semibold text-emerald-700">
+
+                                    {message}
+
+                                </p>
+
+                            }
+
+
+
+                        </div>
 
 
                     </div>
+
+
 
 
 
@@ -338,12 +648,118 @@ export default function ProfilePage() {
 
 
 
-            </main>
 
 
 
-        </ProtectedRoute>
+
+
+
+                <div className="
+                mt-10
+                rounded-3xl
+                bg-white
+                p-8
+                shadow-lg
+                ">
+
+
+
+                    <h2 className="text-2xl font-bold">
+
+                        My Blood Requests
+
+                    </h2>
+
+
+
+
+
+                    {
+                        requests.length===0 ?
+
+                        (
+
+                            <p className="mt-5 text-slate-500">
+
+                                No blood requests created yet.
+
+                            </p>
+
+                        )
+
+                        :
+
+
+                        requests.map(
+                            (request)=>(
+
+
+                            <div
+
+                            key={request.id}
+
+                            className="
+                            mt-5
+                            rounded-xl
+                            border
+                            p-5
+                            "
+
+                            >
+
+
+                                <h3 className="font-bold">
+
+                                    {request.patientName}
+
+                                </h3>
+
+
+                                <p>
+
+                                    Blood:
+                                    {request.bloodGroup}
+
+                                </p>
+
+
+                                <p>
+
+                                    Status:
+                                    {request.status}
+
+                                </p>
+
+
+
+                            </div>
+
+
+                        ))
+
+                    }
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+            </div>
+
+
+        </main>
+
+
+    </ProtectedRoute>
+
 
     );
+
 
 }
