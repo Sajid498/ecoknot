@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Navbar from "@/components/Navbar";
 
@@ -15,7 +16,11 @@ const API_URL =
 
 
 
+
+
+
 type Donation = {
+
 
     id:number;
 
@@ -29,7 +34,12 @@ type Donation = {
 
     requestOwnerName:string;
 
+
 };
+
+
+
+
 
 
 
@@ -37,17 +47,14 @@ type Donation = {
 export default function MyDonationsPage(){
 
 
+
     const router = useRouter();
+
+
 
 
     const [donations,setDonations] =
         useState<Donation[]>([]);
-
-
-
-    const [user,setUser] =
-        useState<any>(null);
-
 
 
 
@@ -68,9 +75,6 @@ export default function MyDonationsPage(){
 
 
 
-            setUser(userData);
-
-
             loadDonations(
                 userData.id
             );
@@ -86,6 +90,9 @@ export default function MyDonationsPage(){
 
 
 
+
+
+
     async function loadDonations(
         userId:number
     ){
@@ -95,52 +102,39 @@ export default function MyDonationsPage(){
 
 
             const response =
+
                 await fetch(
-                    `${API_URL}/api/donation-response/donor/${userId}`
+
+`${API_URL}/api/donation-response/donor/${userId}`
+
                 );
 
 
 
-          async function loadDonations(userId:number){
-
-    try{
-
-        const response = await fetch(
-            `${API_URL}/api/donation-response/donor/${userId}`
-        );
 
 
-        const data = await response.json();
-
-
-        console.log("DONATION RESPONSE:", data);
+            const data =
+                await response.json();
 
 
 
-        if(Array.isArray(data)){
-
-            setDonations(data);
-
-        }
-        else{
-
-            console.log("Backend did not return array");
-
-            setDonations([]);
-
-        }
 
 
-    }
-    catch(error){
+            if(Array.isArray(data)){
 
-        console.log(error);
 
-        setDonations([]);
+                setDonations(data);
 
-    }
 
-}
+            }
+
+            else{
+
+
+                setDonations([]);
+
+
+            }
 
 
 
@@ -151,6 +145,9 @@ export default function MyDonationsPage(){
             console.log(error);
 
 
+            setDonations([]);
+
+
         }
 
 
@@ -160,161 +157,612 @@ export default function MyDonationsPage(){
 
 
 
-    return (
-
-        <ProtectedRoute>
-
-
-            <main className="min-h-screen bg-slate-50">
-
-
-                <Navbar />
-
-
-
-                <div className="mx-auto max-w-4xl px-6 py-10">
-
-
-                    <div className="rounded-3xl bg-white p-8 shadow">
-
-
-                        <h1 className="text-3xl font-bold">
-
-                            ❤️ My Donations
-
-                        </h1>
 
 
 
 
-
-                        {
-                            donations.length === 0 ?
-
-                            (
-
-                                <p className="mt-5 text-gray-500">
-
-                                    You have not responded to any blood request.
-
-                                </p>
-
-                            )
-
-                            :
-
-                            (
-
-                                <div className="mt-6 space-y-5">
+    function getStatusStyle(
+        status:string
+    ){
 
 
-                                    {
-                                        donations.map((donation)=>(
+        if(status==="COMPLETED"){
 
 
-                                            <div
-                                            key={donation.id}
-                                            className="rounded-xl border p-5"
-                                            >
+            return "bg-green-100 text-green-700";
+
+
+        }
+
+
+        if(status==="ACCEPTED"){
+
+
+            return "bg-blue-100 text-blue-700";
+
+
+        }
+
+
+        if(status==="REJECTED"){
+
+
+            return "bg-red-100 text-red-700";
+
+
+        }
+
+
+        return "bg-yellow-100 text-yellow-700";
+
+
+    }
 
 
 
-                   <h2 className="text-xl font-bold">
-
-    Blood Request #{donation.requestId}
-
-</h2>
 
 
-<p className="mt-2 text-gray-600">
 
-    Requester:
-    <span className="ml-2 font-semibold">
-        {donation.requestOwnerName}
-    </span>
+
+
+    function getStatusText(
+        status:string
+    ){
+
+
+        switch(status){
+
+
+            case "PENDING":
+
+                return "🟡 Waiting for approval";
+
+
+            case "ACCEPTED":
+
+                return "🟢 Donation accepted";
+
+
+            case "COMPLETED":
+
+                return "✅ Donation completed";
+
+
+            case "REJECTED":
+
+                return "❌ Request rejected";
+
+
+            default:
+
+                return status;
+
+
+        }
+
+
+    }
+  return (
+
+<ProtectedRoute>
+
+
+<main className="
+min-h-screen
+bg-slate-50
+">
+
+
+<Navbar />
+
+
+
+
+
+<div className="
+mx-auto
+max-w-5xl
+px-6
+py-10
+">
+
+
+
+
+
+<div className="
+rounded-3xl
+bg-white
+p-8
+shadow-lg
+">
+
+
+
+
+
+
+<h1 className="
+text-3xl
+font-bold
+text-slate-900
+">
+
+❤️ My Donations
+
+</h1>
+
+
+
+
+
+<p className="
+mt-2
+text-slate-500
+">
+
+Track your blood donation activities and request status.
 
 </p>
 
 
 
 
-                                                <p className="mt-2">
-
-                                                    Status:
-
-                                                    <span className="ml-2 font-semibold text-emerald-700">
-
-                                                        {donation.status}
-
-                                                    </span>
-
-                                                </p>
 
 
 
 
-                                                <button
+
+{
+
+donations.length === 0 ?
 
 
-                                                onClick={()=>{
+
+(
 
 
-                   router.push(
- `/chat/${donation.requestId}/${donation.requestOwnerId}`
+<p className="
+mt-8
+text-slate-500
+">
+
+You have not responded to any blood request.
+
+</p>
+
+
+)
+
+
+
+:
+
+
+
+(
+
+
+<div className="
+mt-8
+space-y-6
+">
+
+
+
+{
+
+donations.map((donation)=>(
+
+
+
+<div
+
+key={donation.id}
+
+className="
+rounded-2xl
+border
+border-slate-200
+p-6
+hover:shadow-md
+transition
+"
+
+>
+
+
+
+
+
+
+
+<div className="
+flex
+items-start
+justify-between
+">
+
+
+<div>
+
+
+<h2 className="
+text-xl
+font-bold
+">
+
+🩸 Blood Request #{donation.requestId}
+
+</h2>
+
+
+
+
+<p className="
+mt-2
+text-slate-600
+">
+
+Requester:
+
+<span className="
+ml-2
+font-semibold
+">
+
+{donation.requestOwnerName}
+
+</span>
+
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<span className={`
+
+rounded-full
+
+px-4
+
+py-2
+
+text-sm
+
+font-semibold
+
+${getStatusStyle(
+    donation.status
+)}
+
+`}>
+
+{donation.status}
+
+
+</span>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* Status Timeline */}
+
+
+<div className="
+mt-6
+rounded-xl
+bg-slate-50
+p-5
+">
+
+
+<h3 className="
+font-semibold
+">
+
+Donation Progress
+
+</h3>
+
+
+
+
+
+
+<div className="
+mt-4
+space-y-3
+">
+
+
+
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+<span>
+
+🟡
+
+</span>
+
+
+<p className={
+
+donation.status
+
+?
+
+"text-slate-700 font-medium"
+
+:
+
+"text-slate-400"
+
+}
+
+>
+
+Applied for donation
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+<span>
+
+{
+
+donation.status === "ACCEPTED"
+||
+donation.status === "COMPLETED"
+
+?
+
+"🟢"
+
+:
+
+"⚪"
+
+}
+
+</span>
+
+
+
+<p className="
+
+text-slate-700
+
+">
+
+Accepted by requester
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+
+<span>
+
+{
+
+donation.status === "COMPLETED"
+
+?
+
+"✅"
+
+:
+
+"⚪"
+
+}
+
+</span>
+
+
+
+
+<p className="text-slate-700">
+
+Donation completed
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<p className="
+mt-5
+font-semibold
+text-slate-700
+">
+
+{
+
+getStatusText(
+    donation.status
+)
+
+}
+
+</p>
+
+
+
+
+
+
+
+
+
+<div className="
+mt-5
+flex
+gap-3
+">
+
+
+
+
+
+<button
+
+
+onClick={()=>{
+
+
+router.push(
+
+`/chat/${donation.requestId}/${donation.requestOwnerId}`
+
 );
 
 
-                                                }}
+}}
+
+
+className="
+rounded-xl
+bg-emerald-700
+px-5
+py-3
+font-semibold
+text-white
+hover:bg-emerald-800
+"
+
+
+>
+
+
+💬 Chat
+
+</button>
 
 
 
-                                                className="
-                                                mt-4
-                                                rounded-lg
-                                                bg-emerald-700
-                                                px-4
-                                                py-2
-                                                text-white
-                                                "
-
-                                                >
 
 
-                                                    💬 Chat
-
-
-                                                </button>
+</div>
 
 
 
-                                            </div>
-
-
-                                        ))
-
-                                    }
-
-
-                                </div>
-
-                            )
-
-                        }
 
 
 
-                    </div>
+
+</div>
 
 
-                </div>
+
+))
+
+}
 
 
-            </main>
 
 
-        </ProtectedRoute>
+</div>
 
-    );
+
+)
 
 
 }
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+</main>
+
+
+</ProtectedRoute>
+
+
+);
+
+
+
+}  

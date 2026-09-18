@@ -1,5 +1,6 @@
 package backend.entity;
 
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -19,9 +20,11 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 
+
 @Entity
 @Table(name = "blood_requests")
 public class BloodRequest {
+
 
 
     @Id
@@ -29,8 +32,14 @@ public class BloodRequest {
     private Long id;
 
 
+
+
+
     @Column(nullable = false)
     private String patientName;
+
+
+
 
 
     @Enumerated(EnumType.STRING)
@@ -38,24 +47,42 @@ public class BloodRequest {
     private BloodGroup bloodGroup;
 
 
+
+
+
     @Column(nullable = false)
     private String hospital;
+
+
+
 
 
     @Column(nullable = false)
     private String location;
 
 
+
+
+
     @Column(nullable = false)
     private String contactNumber;
+
+
+
 
 
     @Column(nullable = false)
     private LocalDate requiredDate;
 
 
+
+
+
     @Column(nullable = false)
     private Integer unitsNeeded;
+
+
+
 
 
     @Enumerated(EnumType.STRING)
@@ -63,13 +90,22 @@ public class BloodRequest {
     private UrgencyLevel urgency;
 
 
+
+
+
     @Column(length = 1000)
     private String description;
+
+
+
 
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RequestStatus status = RequestStatus.OPEN;
+
+
+
 
 
     private LocalDateTime createdAt;
@@ -79,9 +115,15 @@ public class BloodRequest {
 
 
 
+
+
+
+
+
     // ============================
-    // User Relationship
+    // Request Owner
     // ============================
+
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -90,44 +132,97 @@ public class BloodRequest {
 
 
 
+
+
+
+
+
     // ============================
-    // Constructors
+    // Accepted Donor
     // ============================
 
-    public BloodRequest() {
+
+    @ManyToOne
+    @JoinColumn(name = "accepted_donor_id")
+    @JsonIgnore
+    private User acceptedDonor;
+
+
+
+
+
+
+
+
+
+    // ============================
+    // Constructor
+    // ============================
+
+
+    public BloodRequest(){
 
     }
 
 
 
+
+
+
+
+
+
     // ============================
-    // Lifecycle Methods
+    // Lifecycle
     // ============================
+
 
     @PrePersist
-    protected void onCreate() {
-
-        createdAt = LocalDateTime.now();
-
-        updatedAt = LocalDateTime.now();
+    protected void onCreate(){
 
 
-        if (status == null) {
+        createdAt =
+                LocalDateTime.now();
 
-            status = RequestStatus.OPEN;
+
+        updatedAt =
+                LocalDateTime.now();
+
+
+
+        if(status == null){
+
+
+            status =
+                    RequestStatus.OPEN;
+
 
         }
 
+
     }
+
+
+
+
 
 
 
     @PreUpdate
-    protected void onUpdate() {
+    protected void onUpdate(){
 
-        updatedAt = LocalDateTime.now();
+
+        updatedAt =
+                LocalDateTime.now();
+
 
     }
+
+
+
+
+
+
 
 
 
@@ -136,29 +231,38 @@ public class BloodRequest {
     // ============================
 
 
-    public Long getId() {
+
+    public Long getId(){
 
         return id;
 
     }
 
 
-    public void setId(Long id) {
 
-        this.id = id;
+
+    public void setId(Long id){
+
+        this.id=id;
 
     }
 
 
 
-    public String getPatientName() {
+
+
+
+    public String getPatientName(){
 
         return patientName;
 
     }
 
 
-    public void setPatientName(String patientName) {
+
+
+
+    public void setPatientName(String patientName){
 
         this.patientName = patientName;
 
@@ -166,14 +270,20 @@ public class BloodRequest {
 
 
 
-    public BloodGroup getBloodGroup() {
+
+
+
+    public BloodGroup getBloodGroup(){
 
         return bloodGroup;
 
     }
 
 
-    public void setBloodGroup(BloodGroup bloodGroup) {
+
+
+
+    public void setBloodGroup(BloodGroup bloodGroup){
 
         this.bloodGroup = bloodGroup;
 
@@ -181,14 +291,20 @@ public class BloodRequest {
 
 
 
-    public String getHospital() {
+
+
+
+    public String getHospital(){
 
         return hospital;
 
     }
 
 
-    public void setHospital(String hospital) {
+
+
+
+    public void setHospital(String hospital){
 
         this.hospital = hospital;
 
@@ -196,14 +312,20 @@ public class BloodRequest {
 
 
 
-    public String getLocation() {
+
+
+
+    public String getLocation(){
 
         return location;
 
     }
 
 
-    public void setLocation(String location) {
+
+
+
+    public void setLocation(String location){
 
         this.location = location;
 
@@ -211,14 +333,20 @@ public class BloodRequest {
 
 
 
-    public String getContactNumber() {
+
+
+
+    public String getContactNumber(){
 
         return contactNumber;
 
     }
 
 
-    public void setContactNumber(String contactNumber) {
+
+
+
+    public void setContactNumber(String contactNumber){
 
         this.contactNumber = contactNumber;
 
@@ -226,14 +354,20 @@ public class BloodRequest {
 
 
 
-    public LocalDate getRequiredDate() {
+
+
+
+    public LocalDate getRequiredDate(){
 
         return requiredDate;
 
     }
 
 
-    public void setRequiredDate(LocalDate requiredDate) {
+
+
+
+    public void setRequiredDate(LocalDate requiredDate){
 
         this.requiredDate = requiredDate;
 
@@ -241,14 +375,20 @@ public class BloodRequest {
 
 
 
-    public Integer getUnitsNeeded() {
+
+
+
+    public Integer getUnitsNeeded(){
 
         return unitsNeeded;
 
     }
 
 
-    public void setUnitsNeeded(Integer unitsNeeded) {
+
+
+
+    public void setUnitsNeeded(Integer unitsNeeded){
 
         this.unitsNeeded = unitsNeeded;
 
@@ -256,14 +396,20 @@ public class BloodRequest {
 
 
 
-    public UrgencyLevel getUrgency() {
+
+
+
+    public UrgencyLevel getUrgency(){
 
         return urgency;
 
     }
 
 
-    public void setUrgency(UrgencyLevel urgency) {
+
+
+
+    public void setUrgency(UrgencyLevel urgency){
 
         this.urgency = urgency;
 
@@ -271,14 +417,20 @@ public class BloodRequest {
 
 
 
-    public String getDescription() {
+
+
+
+    public String getDescription(){
 
         return description;
 
     }
 
 
-    public void setDescription(String description) {
+
+
+
+    public void setDescription(String description){
 
         this.description = description;
 
@@ -286,14 +438,20 @@ public class BloodRequest {
 
 
 
-    public RequestStatus getStatus() {
+
+
+
+    public RequestStatus getStatus(){
 
         return status;
 
     }
 
 
-    public void setStatus(RequestStatus status) {
+
+
+
+    public void setStatus(RequestStatus status){
 
         this.status = status;
 
@@ -301,7 +459,10 @@ public class BloodRequest {
 
 
 
-    public LocalDateTime getCreatedAt() {
+
+
+
+    public LocalDateTime getCreatedAt(){
 
         return createdAt;
 
@@ -309,7 +470,10 @@ public class BloodRequest {
 
 
 
-    public LocalDateTime getUpdatedAt() {
+
+
+
+    public LocalDateTime getUpdatedAt(){
 
         return updatedAt;
 
@@ -317,21 +481,56 @@ public class BloodRequest {
 
 
 
-    // ============================
-    // User Getter Setter
-    // ============================
 
-    public User getUser() {
+
+
+
+    // Request owner getter/setter
+
+
+    public User getUser(){
 
         return user;
 
     }
 
 
-    public void setUser(User user) {
+
+
+
+    public void setUser(User user){
 
         this.user = user;
 
     }
+
+
+
+
+
+
+
+
+
+    // Accepted donor getter/setter
+
+
+    public User getAcceptedDonor(){
+
+        return acceptedDonor;
+
+    }
+
+
+
+
+
+    public void setAcceptedDonor(User acceptedDonor){
+
+        this.acceptedDonor = acceptedDonor;
+
+    }
+
+
 
 }

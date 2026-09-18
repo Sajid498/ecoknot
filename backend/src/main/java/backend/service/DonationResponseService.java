@@ -1,7 +1,6 @@
 package backend.service;
 
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import backend.entity.BloodRequest;
 import backend.entity.DonationResponse;
 import backend.entity.DonationStatus;
 import backend.entity.RequestStatus;
-import backend.entity.User;
 import backend.exception.ResourceNotFoundException;
 import backend.repository.BloodRequestRepository;
 import backend.repository.DonationResponseRepository;
@@ -102,7 +100,6 @@ public class DonationResponseService {
 
 
     // Create donor response
-
 
 
     public DonationResponse createResponse(
@@ -252,75 +249,238 @@ public class DonationResponseService {
 
 
     }
+        // Accept recommended donor directly
 
 
+    public DonationResponse acceptRecommendedDonor(
 
-
-
-
-
-
-
-
-
-
-
-    // Accept recommended donor directly
-
-
-
-    // Accept recommended donor directly
-
-public DonationResponse acceptRecommendedDonor(
-
-        DonationResponse response
-
-){
-
-
-
-    BloodRequest request =
-
-            bloodRequestRepository
-
-                    .findById(
-
-                            response.getRequestId()
-
-                    )
-
-                    .orElseThrow(
-
-                            () -> new ResourceNotFoundException(
-
-                                    "Blood request not found"
-
-                            )
-
-                    );
-
-
-
-
-
-
-
-
-
-    if(
-
-            request.getStatus()
-
-            != RequestStatus.OPEN
+            DonationResponse response
 
     ){
 
 
-        throw new RuntimeException(
 
-                "Blood request is not available"
+        BloodRequest request =
+
+                bloodRequestRepository
+
+                        .findById(
+
+                                response.getRequestId()
+
+                        )
+
+                        .orElseThrow(
+
+                                () -> new ResourceNotFoundException(
+
+                                        "Blood request not found"
+
+                                )
+
+                        );
+
+
+
+
+
+
+
+
+
+        if(
+
+                request.getStatus()
+
+                != RequestStatus.OPEN
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "Blood request is not available"
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
+        // Validate donor exists
+
+
+        userRepository
+
+                .findById(
+
+                        response.getDonorId()
+
+                )
+
+                .orElseThrow(
+
+                        () -> new ResourceNotFoundException(
+
+                                "Donor not found"
+
+                        )
+
+                );
+
+
+
+
+
+
+
+
+
+        boolean alreadyAccepted =
+
+
+                donationResponseRepository
+
+                        .findByRequestId(
+
+                                response.getRequestId()
+
+                        )
+
+                        .stream()
+
+                        .anyMatch(
+
+                                donor ->
+
+                                donor.getStatus()
+
+                                == DonationStatus.ACCEPTED
+
+                        );
+
+
+
+
+
+
+
+
+
+        if(alreadyAccepted){
+
+
+            throw new RuntimeException(
+
+                    "A donor is already accepted for this request"
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
+        response.setStatus(
+
+                DonationStatus.ACCEPTED
 
         );
+
+
+
+
+
+
+
+
+
+        DonationResponse savedResponse =
+
+
+                donationResponseRepository.save(
+
+                        response
+
+                );
+
+
+
+
+
+
+
+
+
+        // Reject other pending donors
+
+
+        rejectOtherDonors(
+
+                response
+
+        );
+
+
+
+
+
+
+
+
+
+        // Send notifications
+
+
+        sendAcceptanceNotifications(
+
+                response
+
+        );
+
+
+
+
+
+
+
+
+
+        // Update blood request with accepted donor
+
+
+        bloodRequestService
+
+                .markDonorFound(
+
+                        response.getRequestId(),
+
+                        response.getDonorId()
+
+                );
+
+
+
+
+
+
+
+
+        return savedResponse;
+
 
 
     }
@@ -333,138 +493,11 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
-    boolean alreadyAccepted =
 
 
-            donationResponseRepository
 
-                    .findByRequestId(
 
-                            response.getRequestId()
-
-                    )
-
-                    .stream()
-
-                    .anyMatch(
-
-                            donor ->
-
-                            donor.getStatus()
-
-                            == DonationStatus.ACCEPTED
-
-                    );
-
-
-
-
-
-
-
-
-
-    if(alreadyAccepted){
-
-
-        throw new RuntimeException(
-
-                "A donor is already accepted for this request"
-
-        );
-
-
-    }
-
-
-
-
-
-
-
-
-
-    response.setStatus(
-
-            DonationStatus.ACCEPTED
-
-    );
-
-
-
-
-
-
-    DonationResponse savedResponse =
-
-            donationResponseRepository.save(
-
-                    response
-
-            );
-
-
-
-
-
-
-
-
-
-    // Reject other pending donors
-
-    rejectOtherDonors(
-
-            response
-
-    );
-
-
-
-
-
-
-
-
-
-    // Send notifications
-
-    sendAcceptanceNotifications(
-
-            response
-
-    );
-
-
-
-
-
-
-
-
-
-    // Update blood request status
-
-    bloodRequestService
-
-            .markDonorFound(
-
-                    response.getRequestId()
-
-            );
-
-
-
-
-
-
-
-    return savedResponse;
-
-
-
-}
-        // Get donations made by donor
+    // Get donations made by donor
 
 
     public List<DonationResponseDTO> getDonationsByDonor(
@@ -472,6 +505,7 @@ public DonationResponse acceptRecommendedDonor(
             Long donorId
 
     ){
+
 
 
         return donationResponseRepository
@@ -486,6 +520,7 @@ public DonationResponse acceptRecommendedDonor(
 
                     BloodRequest request =
 
+
                             bloodRequestRepository
 
                                     .findById(
@@ -497,7 +532,9 @@ public DonationResponse acceptRecommendedDonor(
                                     .orElseThrow(
 
                                             () -> new ResourceNotFoundException(
+
                                                     "Blood request not found"
+
                                             )
 
                                     );
@@ -506,16 +543,22 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
+
+
                     return new DonationResponseDTO(
+
 
                             response.getId(),
 
+
                             response.getRequestId(),
+
 
                             response.getDonorId(),
 
 
-                            response.getStatus() != null
+
+                            response.getStatus()!=null
 
                             ?
 
@@ -526,9 +569,14 @@ public DonationResponse acceptRecommendedDonor(
                             null,
 
 
+
                             request.getUser().getId(),
 
+
+
                             request.getUser().getName()
+
+
 
                     );
 
@@ -552,8 +600,7 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
-
-    // Get donation history of donor
+    // Get completed donation history
 
 
     public List<DonationHistoryDTO> getDonationHistory(
@@ -586,6 +633,7 @@ public DonationResponse acceptRecommendedDonor(
 
                     BloodRequest request =
 
+
                             bloodRequestRepository
 
                                     .findById(
@@ -597,7 +645,9 @@ public DonationResponse acceptRecommendedDonor(
                                     .orElseThrow(
 
                                             () -> new ResourceNotFoundException(
+
                                                     "Blood request not found"
+
                                             )
 
                                     );
@@ -607,13 +657,19 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
+
                     return new DonationHistoryDTO(
+
 
                             response.getId(),
 
+
                             request.getId(),
 
+
                             request.getPatientName(),
+
+
 
                             request.getBloodGroup()!=null
 
@@ -626,13 +682,19 @@ public DonationResponse acceptRecommendedDonor(
                             null,
 
 
+
                             request.getHospital(),
+
 
                             request.getLocation(),
 
+
                             response.getStatus().toString(),
 
+
                             request.getCreatedAt()
+
+
 
                     );
 
@@ -643,20 +705,7 @@ public DonationResponse acceptRecommendedDonor(
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Get donors for request
+        // Get donors for specific blood request
 
 
     public List<DonationResponse> getDonorsByRequestId(
@@ -668,11 +717,14 @@ public DonationResponse acceptRecommendedDonor(
 
         return donationResponseRepository
 
-                .findByRequestId(requestId);
+                .findByRequestId(
+
+                        requestId
+
+                );
 
 
     }
-
 
 
 
@@ -687,7 +739,6 @@ public DonationResponse acceptRecommendedDonor(
 
     // Update donation status
 
-
     public DonationResponse updateStatus(
 
             Long id,
@@ -700,6 +751,7 @@ public DonationResponse acceptRecommendedDonor(
 
         DonationResponse response =
 
+
                 donationResponseRepository
 
                         .findById(id)
@@ -707,7 +759,9 @@ public DonationResponse acceptRecommendedDonor(
                         .orElseThrow(
 
                                 () -> new ResourceNotFoundException(
+
                                         "Donation response not found"
+
                                 )
 
                         );
@@ -720,68 +774,22 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
-        if(
+        response.setStatus(
 
-                status == DonationStatus.ACCEPTED
+                status
 
-        ){
-
-
-            boolean alreadyAccepted =
-
-
-                    donationResponseRepository
-
-                            .findByRequestId(
-
-                                    response.getRequestId()
-
-                            )
-
-                            .stream()
-
-                            .anyMatch(
-
-                                    donor ->
-
-                                    donor.getStatus()
-
-                                    == DonationStatus.ACCEPTED
-
-                            );
-
-
-
-
-
-            if(alreadyAccepted){
-
-
-                throw new RuntimeException(
-
-                        "A donor is already accepted for this request"
-
-                );
-
-
-            }
-
-
-        }
+        );
 
 
 
 
 
 
-
-
-
-        response.setStatus(status);
 
 
 
         DonationResponse savedResponse =
+
 
                 donationResponseRepository.save(
 
@@ -799,7 +807,6 @@ public DonationResponse acceptRecommendedDonor(
 
         // When requester accepts donor
 
-
         if(
 
                 status == DonationStatus.ACCEPTED
@@ -808,11 +815,18 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
-            rejectOtherDonors(
+            bloodRequestService
 
-                    response
+                    .markDonorFound(
 
-            );
+                            response.getRequestId(),
+
+                            response.getDonorId()
+
+                    );
+
+
+
 
 
 
@@ -825,17 +839,6 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
-
-            bloodRequestService
-
-                    .markDonorFound(
-
-                            response.getRequestId()
-
-                    );
-
-
-
         }
 
 
@@ -845,6 +848,8 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
+
+        // When donation completed
 
         if(
 
@@ -863,67 +868,9 @@ public DonationResponse acceptRecommendedDonor(
                     );
 
 
-
-
-
-
-
-            User donor =
-
-                    userRepository
-
-                            .findById(
-
-                                    response.getDonorId()
-
-                            )
-
-                            .orElseThrow(
-
-                                    () -> new ResourceNotFoundException(
-                                            "Donor not found"
-                                    )
-
-                            );
-
-
-
-
-
-
-
-            donor.setLastDonationDate(
-
-                    LocalDate.now()
-
-            );
-
-
-
-
-
-
-
-            donor.setAvailableForDonation(
-
-                    false
-
-            );
-
-
-
-
-
-
-
-            userRepository.save(
-
-                    donor
-
-            );
-
-
         }
+
+
 
 
 
@@ -947,8 +894,7 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
-
-    // Reject other pending donors
+    // Reject other donors after accepting one donor
 
 
     private void rejectOtherDonors(
@@ -961,6 +907,7 @@ public DonationResponse acceptRecommendedDonor(
 
         List<DonationResponse> donors =
 
+
                 donationResponseRepository
 
                         .findByRequestId(
@@ -974,50 +921,57 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
-        for(DonationResponse donor : donors){
 
 
 
-            if(
+        donors.forEach(
 
-                    !donor.getId()
-
-                    .equals(
-
-                            acceptedResponse.getId()
-
-                    )
-
-                    &&
-
-                    donor.getStatus()
-
-                    == DonationStatus.PENDING
-
-            ){
+                donor -> {
 
 
 
-                donor.setStatus(
+                    if(
 
-                        DonationStatus.REJECTED
+                        !donor.getId()
 
-                );
+                                .equals(
+
+                                    acceptedResponse.getId()
+
+                                )
+
+                        &&
+
+                        donor.getStatus()
+
+                                == DonationStatus.PENDING
+
+                    ){
 
 
 
-                donationResponseRepository.save(
+                        donor.setStatus(
 
-                        donor
+                                DonationStatus.REJECTED
 
-                );
-
-
-            }
+                        );
 
 
-        }
 
+                        donationResponseRepository.save(
+
+                                donor
+
+                        );
+
+
+                    }
+
+
+
+                }
+
+        );
 
 
     }
@@ -1034,28 +988,56 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
-    // Send accept/reject notifications
+    // Send notification after acceptance
 
 
     private void sendAcceptanceNotifications(
 
-            DonationResponse acceptedResponse
+            DonationResponse response
 
     ){
 
 
 
+        BloodRequest request =
+
+
+                bloodRequestRepository
+
+                        .findById(
+
+                                response.getRequestId()
+
+                        )
+
+                        .orElseThrow(
+
+                                () -> new ResourceNotFoundException(
+
+                                        "Blood request not found"
+
+                                )
+
+                        );
+
+
+
+
+
+
+
+
+
+        // Notify donor
+
+
         notificationService.createNotification(
 
+                response.getDonorId(),
 
-                acceptedResponse.getDonorId(),
-
-
-                "Your donation request has been accepted. Please contact the requester.",
-
+                "Your blood donation request has been accepted.",
 
                 "DONATION_ACCEPTED"
-
 
         );
 
@@ -1067,56 +1049,21 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
-        List<DonationResponse> donors =
-
-                donationResponseRepository
-
-                        .findByRequestId(
-
-                                acceptedResponse.getRequestId()
-
-                        );
+        // Notify requester
 
 
+        if(request.getUser()!=null){
 
 
+            notificationService.createNotification(
 
+                    request.getUser().getId(),
 
+                    "A donor has been accepted for your blood request.",
 
-        for(DonationResponse donor : donors){
+                    "DONOR_FOUND"
 
-
-
-            if(
-
-                    !donor.getId()
-
-                    .equals(
-
-                            acceptedResponse.getId()
-
-                    )
-
-            ){
-
-
-
-                notificationService.createNotification(
-
-
-                        donor.getDonorId(),
-
-
-                        "Another donor has been selected for this blood request.",
-
-
-                        "DONATION_REJECTED"
-
-
-                );
-
-
-            }
+            );
 
 
         }
@@ -1137,7 +1084,7 @@ public DonationResponse acceptRecommendedDonor(
 
 
 
-    // Delete response
+    // Delete donation response
 
 
     public void deleteResponse(
@@ -1147,10 +1094,39 @@ public DonationResponse acceptRecommendedDonor(
     ){
 
 
-        donationResponseRepository.deleteById(id);
+
+        DonationResponse response =
+
+
+                donationResponseRepository
+
+                        .findById(id)
+
+                        .orElseThrow(
+
+                                () -> new ResourceNotFoundException(
+
+                                        "Donation response not found"
+
+                                )
+
+                        );
+
+
+
+
+
+
+
+        donationResponseRepository.delete(
+
+                response
+
+        );
 
 
     }
+
 
 
 }
