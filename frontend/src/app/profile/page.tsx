@@ -36,6 +36,11 @@ export default function ProfilePage(){
 
 
 
+    const [bloodGroup,setBloodGroup] =
+        useState("");
+
+
+
     const [availableForDonation,setAvailableForDonation] =
         useState(false);
 
@@ -126,6 +131,12 @@ export default function ProfilePage(){
 
             setLocation(
                 data.location || ""
+            );
+
+
+
+            setBloodGroup(
+                data.bloodGroup || ""
             );
 
 
@@ -229,6 +240,8 @@ export default function ProfilePage(){
                         body:JSON.stringify({
 
                             location,
+
+                            bloodGroup,
 
                             availableForDonation,
 
@@ -513,6 +526,120 @@ export default function ProfilePage(){
 
 
                             </div>
+
+
+
+
+
+
+
+
+                            {/* Blood Group */}
+
+
+                            <div>
+
+
+                                <label className="font-semibold">
+
+                                    Blood Group
+
+                                </label>
+
+
+
+                                <select
+
+
+                                    value={bloodGroup}
+
+
+                                    onChange={(e)=>
+                                        setBloodGroup(
+                                            e.target.value
+                                        )
+                                    }
+
+
+                                    className="
+                                    mt-2
+                                    w-full
+                                    rounded-lg
+                                    border
+                                    p-3
+                                    "
+
+                                >
+
+
+                                    <option value="">
+
+                                        Select Blood Group
+
+                                    </option>
+
+
+                                    <option value="A_POSITIVE">
+
+                                        A+
+
+                                    </option>
+
+
+                                    <option value="A_NEGATIVE">
+
+                                        A-
+
+                                    </option>
+
+
+                                    <option value="B_POSITIVE">
+
+                                        B+
+
+                                    </option>
+
+
+                                    <option value="B_NEGATIVE">
+
+                                        B-
+
+                                    </option>
+
+
+                                    <option value="AB_POSITIVE">
+
+                                        AB+
+
+                                    </option>
+
+
+                                    <option value="AB_NEGATIVE">
+
+                                        AB-
+
+                                    </option>
+
+
+                                    <option value="O_POSITIVE">
+
+                                        O+
+
+                                    </option>
+
+
+                                    <option value="O_NEGATIVE">
+
+                                        O-
+
+                                    </option>
+
+
+                                </select>
+
+
+                            </div>
+
 
 
 

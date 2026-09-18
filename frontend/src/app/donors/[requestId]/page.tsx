@@ -37,6 +37,26 @@ type DonationResponse = {
 
 
 
+type RecommendedDonor = {
+
+    donorId:number;
+
+    name:string;
+
+    bloodGroup:string;
+
+    location:string;
+
+    score:number;
+
+    reason:string;
+
+};
+
+
+
+
+
 type BloodRequest = {
 
     patientName:string;
@@ -57,7 +77,10 @@ type BloodRequest = {
 
 
 
+
+
 export default function DonorPage(){
+
 
 
     const params = useParams();
@@ -65,8 +88,11 @@ export default function DonorPage(){
     const router = useRouter();
 
 
+
     const requestId =
         String(params.requestId);
+
+
 
 
 
@@ -76,8 +102,16 @@ export default function DonorPage(){
 
 
 
+
+    const [recommendedDonors,setRecommendedDonors] =
+        useState<RecommendedDonor[]>([]);
+
+
+
+
     const [request,setRequest] =
         useState<BloodRequest | null>(null);
+
 
 
 
@@ -93,6 +127,8 @@ export default function DonorPage(){
             loadDonors();
 
             loadRequest();
+
+            loadRecommendedDonors();
 
         }
 
@@ -193,6 +229,61 @@ export default function DonorPage(){
 
 
 
+    async function loadRecommendedDonors(){
+
+
+        try{
+
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/donor-matching/${requestId}/recommended-donors`
+                );
+
+
+
+            const data =
+                await response.json();
+
+
+
+
+            if(Array.isArray(data)){
+
+
+                setRecommendedDonors(data);
+
+
+            }
+            else{
+
+
+                setRecommendedDonors([]);
+
+
+            }
+
+
+
+        }
+        catch(error){
+
+
+            console.log(error);
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
 
     async function updateDonationStatus(
         id:number,
@@ -266,15 +357,6 @@ export default function DonorPage(){
             donor =>
             donor.status === "ACCEPTED"
         );
-
-
-
-
-
-
-
-
-
     return(
 
 
@@ -368,6 +450,184 @@ export default function DonorPage(){
 
 
 
+
+
+
+                {/* SMART RECOMMENDED DONORS */}
+
+
+                <div className="
+                mt-8
+                rounded-2xl
+                bg-white
+                p-6
+                shadow
+                ">
+
+
+
+                    <h1 className="text-3xl font-bold">
+
+                        🤖 Recommended Donors
+
+                    </h1>
+
+
+
+                    <p className="mt-2 text-slate-500">
+
+                        Donors ranked by blood compatibility, location and availability.
+
+                    </p>
+
+
+
+
+
+
+
+                    {
+                        recommendedDonors.length === 0 ?
+
+
+                        (
+
+                            <p className="mt-5 text-gray-500">
+
+                                No recommended donors found.
+
+                            </p>
+
+
+                        )
+
+
+                        :
+
+
+
+                        recommendedDonors.map(
+                            (donor)=>(
+
+
+                            <div
+
+                            key={donor.donorId}
+
+                            className="
+                            mt-5
+                            rounded-xl
+                            border
+                            border-emerald-200
+                            bg-emerald-50
+                            p-5
+                            "
+
+                            >
+
+
+
+                                <div className="flex justify-between">
+
+
+                                    <h2 className="text-xl font-bold">
+
+                                        🥇 {donor.name}
+
+                                    </h2>
+
+
+
+
+                                    <span className="
+                                    rounded-full
+                                    bg-emerald-700
+                                    px-3
+                                    py-1
+                                    text-white
+                                    ">
+
+                                        {donor.score}% Match
+
+                                    </span>
+
+
+
+                                </div>
+
+
+
+
+
+
+
+                                <p className="mt-3">
+
+                                    🩸 Blood Group:
+
+                                    <b>
+
+                                        {" "}
+                                        {donor.bloodGroup}
+
+                                    </b>
+
+                                </p>
+
+
+
+
+
+                                <p>
+
+                                    📍 Location:
+
+                                    <b>
+
+                                        {" "}
+                                        {donor.location}
+
+                                    </b>
+
+                                </p>
+
+
+
+
+
+
+                                <p className="mt-2 text-slate-600">
+
+                                    {donor.reason}
+
+                                </p>
+
+
+
+
+
+                            </div>
+
+
+                        ))
+
+
+                    }
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+                {/* INTERESTED DONORS */}
 
 
 

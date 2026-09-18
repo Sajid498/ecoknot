@@ -1,80 +1,167 @@
 "use client";
 
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+
 
 
 export default function SignupPage() {
 
 
+
     const router = useRouter();
 
 
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [role, setRole] = useState("USER");
+
+    const [name,setName] =
+        useState("");
+
+    const [email,setEmail] =
+        useState("");
+
+    const [password,setPassword] =
+        useState("");
+
+    const [role,setRole] =
+        useState("USER");
+
+
+    // NEW: Blood Group
+
+    const [bloodGroup,setBloodGroup] =
+        useState("");
 
 
 
-    const handleSignup = async (e: React.FormEvent) => {
+
+
+
+
+
+    const handleSignup = async (
+        e:React.FormEvent
+    )=>{
+
 
         e.preventDefault();
 
-if(!name || !email || !password){
-
-    alert("Please fill all fields");
-
-    return;
-
-}
-        try {
 
 
-            const response = await fetch(
-                "http://localhost:8080/api/users/signup",
-                {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
 
 
-                    body: JSON.stringify({
+        if(
+            !name ||
+            !email ||
+            !password ||
+            !bloodGroup
+        ){
 
-                        name,
-                        email,
-                        password,
-                        role
-
-                    }),
-
-                }
+            alert(
+                "Please fill all fields"
             );
+
+            return;
+
+        }
+
+
+
+
+
+
+
+
+        try{
+
+
+
+            const response =
+                await fetch(
+                    "http://localhost:8080/api/users/signup",
+                    {
+
+
+                        method:"POST",
+
+
+                        headers:{
+
+                            "Content-Type":
+                            "application/json"
+
+                        },
+
+
+
+                        body:JSON.stringify({
+
+
+                            name,
+
+
+                            email,
+
+
+                            password,
+
+
+                            role,
+
+
+                            bloodGroup
+
+
+                        })
+
+
+                    }
+                );
+
+
+
+
 
 
 
             if(!response.ok){
 
-                throw new Error("Signup failed");
+
+                throw new Error(
+                    "Signup failed"
+                );
+
 
             }
 
 
 
-            const data = await response.json();
+
+
+
+
+            const data =
+                await response.json();
+
 
 
             console.log(data);
 
 
 
-            alert("Signup successful");
 
 
-            router.push("/login");
+            alert(
+                "Signup successful"
+            );
+
+
+
+            router.push(
+                "/login"
+            );
+
+
 
 
 
@@ -85,10 +172,13 @@ if(!name || !email || !password){
             console.log(error);
 
 
-            alert("Signup failed");
+            alert(
+                "Signup failed"
+            );
 
 
         }
+
 
 
     };
@@ -97,21 +187,65 @@ if(!name || !email || !password){
 
 
 
+
+
+
+
     return (
 
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-6">
+
+        <div className="
+        min-h-screen
+        flex
+        items-center
+        justify-center
+        bg-gradient-to-br
+        from-emerald-50
+        via-white
+        to-teal-50
+        px-6
+        ">
 
 
-            <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl border border-slate-200">
+
+            <div className="
+            w-full
+            max-w-md
+            rounded-3xl
+            bg-white
+            p-8
+            shadow-xl
+            border
+            border-slate-200
+            ">
+
+
 
 
 
                 {/* Logo */}
 
-                <div className="text-center mb-8">
+
+                <div className="
+                text-center
+                mb-8
+                ">
 
 
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-700 text-2xl font-bold text-white">
+
+                    <div className="
+                    mx-auto
+                    flex
+                    h-14
+                    w-14
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-emerald-700
+                    text-2xl
+                    font-bold
+                    text-white
+                    ">
 
                         E
 
@@ -119,7 +253,14 @@ if(!name || !email || !password){
 
 
 
-                    <h1 className="mt-4 text-3xl font-bold text-slate-900">
+
+
+                    <h1 className="
+                    mt-4
+                    text-3xl
+                    font-bold
+                    text-slate-900
+                    ">
 
                         Create Account
 
@@ -127,11 +268,16 @@ if(!name || !email || !password){
 
 
 
-                    <p className="mt-2 text-slate-500">
+
+                    <p className="
+                    mt-2
+                    text-slate-500
+                    ">
 
                         Join EcoKnot community
 
                     </p>
+
 
 
                 </div>
@@ -140,20 +286,37 @@ if(!name || !email || !password){
 
 
 
-                <form 
-                    onSubmit={handleSignup}
-                    className="space-y-5"
+
+
+
+
+                <form
+
+                onSubmit={handleSignup}
+
+                className="
+                space-y-5
+                "
+
                 >
+
+
+
 
 
 
 
                     {/* Name */}
 
+
                     <div>
 
 
-                        <label className="text-sm font-medium text-slate-700">
+                        <label className="
+                        text-sm
+                        font-medium
+                        text-slate-700
+                        ">
 
                             Name
 
@@ -163,20 +326,45 @@ if(!name || !email || !password){
 
                         <input
 
+
                             type="text"
+
 
                             placeholder="Enter your name"
 
+
                             value={name}
 
-                            onChange={(e)=>setName(e.target.value)}
 
-                            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-emerald-600"
+                            onChange={(e)=>
+                                setName(
+                                    e.target.value
+                                )
+                            }
+
+
+                            className="
+                            mt-2
+                            w-full
+                            rounded-xl
+                            border
+                            border-slate-300
+                            px-4
+                            py-3
+                            outline-none
+                            transition
+                            focus:border-emerald-600
+                            "
+
 
                         />
 
 
                     </div>
+
+
+
+
 
 
 
@@ -184,10 +372,15 @@ if(!name || !email || !password){
 
                     {/* Email */}
 
+
                     <div>
 
 
-                        <label className="text-sm font-medium text-slate-700">
+                        <label className="
+                        text-sm
+                        font-medium
+                        text-slate-700
+                        ">
 
                             Email
 
@@ -195,22 +388,49 @@ if(!name || !email || !password){
 
 
 
+
                         <input
+
 
                             type="email"
 
+
                             placeholder="Enter your email"
+
 
                             value={email}
 
-                            onChange={(e)=>setEmail(e.target.value)}
 
-                            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-emerald-600"
+                            onChange={(e)=>
+                                setEmail(
+                                    e.target.value
+                                )
+                            }
+
+
+                            className="
+                            mt-2
+                            w-full
+                            rounded-xl
+                            border
+                            border-slate-300
+                            px-4
+                            py-3
+                            outline-none
+                            transition
+                            focus:border-emerald-600
+                            "
+
 
                         />
 
 
+
                     </div>
+
+
+
+
 
 
 
@@ -218,10 +438,15 @@ if(!name || !email || !password){
 
                     {/* Password */}
 
+
                     <div>
 
 
-                        <label className="text-sm font-medium text-slate-700">
+                        <label className="
+                        text-sm
+                        font-medium
+                        text-slate-700
+                        ">
 
                             Password
 
@@ -229,22 +454,174 @@ if(!name || !email || !password){
 
 
 
+
                         <input
+
 
                             type="password"
 
+
                             placeholder="Create password"
+
 
                             value={password}
 
-                            onChange={(e)=>setPassword(e.target.value)}
 
-                            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-emerald-600"
+                            onChange={(e)=>
+                                setPassword(
+                                    e.target.value
+                                )
+                            }
+
+
+
+                            className="
+                            mt-2
+                            w-full
+                            rounded-xl
+                            border
+                            border-slate-300
+                            px-4
+                            py-3
+                            outline-none
+                            transition
+                            focus:border-emerald-600
+                            "
+
 
                         />
 
 
                     </div>
+
+
+
+
+
+
+
+
+
+                    {/* Blood Group NEW */}
+
+
+                    <div>
+
+
+                        <label className="
+                        text-sm
+                        font-medium
+                        text-slate-700
+                        ">
+
+                            Blood Group
+
+                        </label>
+
+
+
+
+                        <select
+
+
+                            value={bloodGroup}
+
+
+                            onChange={(e)=>
+                                setBloodGroup(
+                                    e.target.value
+                                )
+                            }
+
+
+                            className="
+                            mt-2
+                            w-full
+                            rounded-xl
+                            border
+                            border-slate-300
+                            px-4
+                            py-3
+                            outline-none
+                            transition
+                            focus:border-emerald-600
+                            "
+
+
+                        >
+
+
+                            <option value="">
+
+                                Select Blood Group
+
+                            </option>
+
+
+                            <option value="A_POSITIVE">
+
+                                A+
+
+                            </option>
+
+
+                            <option value="A_NEGATIVE">
+
+                                A-
+
+                            </option>
+
+
+                            <option value="B_POSITIVE">
+
+                                B+
+
+                            </option>
+
+
+                            <option value="B_NEGATIVE">
+
+                                B-
+
+                            </option>
+
+
+                            <option value="AB_POSITIVE">
+
+                                AB+
+
+                            </option>
+
+
+                            <option value="AB_NEGATIVE">
+
+                                AB-
+
+                            </option>
+
+
+                            <option value="O_POSITIVE">
+
+                                O+
+
+                            </option>
+
+
+                            <option value="O_NEGATIVE">
+
+                                O-
+
+                            </option>
+
+
+
+                        </select>
+
+
+                    </div>
+
+
+
 
 
 
@@ -253,15 +630,30 @@ if(!name || !email || !password){
 
                     <button
 
+
                         type="submit"
 
-                        className="w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white transition hover:bg-emerald-800"
+
+                        className="
+                        w-full
+                        rounded-xl
+                        bg-emerald-700
+                        py-3
+                        font-semibold
+                        text-white
+                        transition
+                        hover:bg-emerald-800
+                        "
+
 
                     >
 
                         Signup
 
                     </button>
+
+
+
 
 
 
@@ -273,7 +665,15 @@ if(!name || !email || !password){
 
 
 
-                <p className="mt-6 text-center text-sm text-slate-600">
+
+
+
+                <p className="
+                mt-6
+                text-center
+                text-sm
+                text-slate-600
+                ">
 
 
                     Already have an account?
@@ -284,7 +684,12 @@ if(!name || !email || !password){
 
                         href="/login"
 
-                        className="ml-2 font-semibold text-emerald-700 hover:underline"
+                        className="
+                        ml-2
+                        font-semibold
+                        text-emerald-700
+                        hover:underline
+                        "
 
                     >
 
@@ -299,10 +704,13 @@ if(!name || !email || !password){
 
 
 
+
             </div>
 
 
+
         </div>
+
 
     );
 

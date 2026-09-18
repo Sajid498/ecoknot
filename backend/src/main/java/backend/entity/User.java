@@ -7,12 +7,13 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
 
 
 @Entity
@@ -44,16 +45,19 @@ public class User {
 
 
     // Donor profile information
+// Donor profile information
 
-    private String location;
-
-
-
-    private boolean availableForDonation = false;
+private String location;
 
 
+@Enumerated(EnumType.STRING)
+private BloodGroup bloodGroup;
 
-    private LocalDate lastDonationDate;
+
+private boolean availableForDonation = false;
+
+
+private LocalDate lastDonationDate;
 
 
 
@@ -126,7 +130,11 @@ public class User {
     }
 
 
+public BloodGroup getBloodGroup() {
 
+    return bloodGroup;
+
+}
 
 
     public boolean isAvailableForDonation() {
@@ -208,7 +216,11 @@ public class User {
 
     }
 
+public void setBloodGroup(BloodGroup bloodGroup) {
 
+    this.bloodGroup = bloodGroup;
+
+}
 
 
 
