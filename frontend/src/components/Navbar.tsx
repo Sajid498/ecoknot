@@ -2,15 +2,25 @@
 
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+
+import { 
+    useEffect, 
+    useState 
+} from "react";
+
+import { 
+    useRouter 
+} from "next/navigation";
 
 
 
 
 
 const API_URL =
+
     "http://localhost:8080";
+
+
 
 
 
@@ -21,58 +31,177 @@ export default function Navbar() {
 
 
 
-  const router = useRouter();
+    const router = useRouter();
 
 
 
 
 
-  const [user,setUser] =
-    useState<any>(null);
+    const [user,setUser] =
 
-
-
-  const [activeModule,setActiveModule] =
-    useState("");
-
-
-
-  const [unreadCount,setUnreadCount] =
-    useState(0);
+        useState<any>(null);
 
 
 
 
 
+    const [activeModule,setActiveModule] =
+
+        useState("");
 
 
 
 
-  useEffect(()=>{
 
+    const [unreadCount,setUnreadCount] =
 
-    const savedUser =
-      localStorage.getItem("user");
-
-
-
-    if(savedUser){
-
-
-      const userData =
-        JSON.parse(savedUser);
+        useState(0);
 
 
 
-      setUser(
-        userData
-      );
 
 
 
-      loadUnreadCount(
-        userData.id
-      );
+
+
+
+    useEffect(()=>{
+
+
+        const savedUser =
+
+            localStorage.getItem("user");
+
+
+
+
+
+        if(savedUser){
+
+
+            const userData =
+
+                JSON.parse(savedUser);
+
+
+
+
+
+            setUser(
+
+                userData
+
+            );
+
+
+
+
+
+            loadUnreadCount(
+
+                userData.id
+
+            );
+
+
+        }
+
+
+
+
+
+
+        const savedModule =
+
+            localStorage.getItem("activeModule");
+
+
+
+
+
+        if(savedModule){
+
+
+            setActiveModule(
+
+                savedModule
+
+            );
+
+
+        }
+
+
+
+
+
+    },[]);
+
+
+
+
+
+
+
+
+
+    async function loadUnreadCount(
+
+        userId:number
+
+    ){
+
+
+        try{
+
+
+            const response =
+
+                await fetch(
+
+                    `${API_URL}/api/notifications/unread-count/${userId}`
+
+                );
+
+
+
+
+
+            if(!response.ok){
+
+                return;
+
+            }
+
+
+
+
+
+            const data =
+
+                await response.json();
+
+
+
+
+
+            setUnreadCount(
+
+                data.count
+
+            );
+
+
+
+        }
+
+        catch(error){
+
+
+            console.log(error);
+
+
+        }
 
 
     }
@@ -83,24 +212,11 @@ export default function Navbar() {
 
 
 
-    const savedModule =
-      localStorage.getItem("activeModule");
 
 
+    const isBloodSection =
 
-    if(savedModule){
-
-
-      setActiveModule(
-        savedModule
-      );
-
-
-    }
-
-
-
-  },[]);
+        activeModule === "blood";
 
 
 
@@ -110,140 +226,92 @@ export default function Navbar() {
 
 
 
-  async function loadUnreadCount(
-      userId:number
-  ){
+    const handleLogout = () => {
 
 
-    try{
+        localStorage.removeItem("user");
+
+        localStorage.removeItem("activeModule");
 
 
-      const response =
-        await fetch(
 
-          `${API_URL}/api/notifications/unread-count/${userId}`
+        setUser(null);
+
+        setActiveModule("");
+
+        setUnreadCount(0);
+
+
+
+        router.push("/login");
+
+
+    };
+
+
+
+
+
+
+
+
+
+    const handleBackToMain = () => {
+
+
+        localStorage.removeItem(
+
+            "activeModule"
 
         );
 
 
 
-      if(!response.ok){
+        setActiveModule("");
 
-        return;
 
-      }
 
+        router.push("/");
 
 
+    };
 
-      const data =
-        await response.json();
 
 
 
 
-      setUnreadCount(
-        data.count
-      );
 
 
 
-    }
-    catch(error){
 
+    const handleLogoClick = () => {
 
-      console.log(error);
 
+        localStorage.removeItem(
 
-    }
+            "activeModule"
 
+        );
 
-  }
 
 
+        setActiveModule("");
 
 
 
+    };
 
 
 
 
-  const isBloodSection =
-      activeModule === "blood";
 
 
 
 
 
+    return (
 
 
-
-
-  const handleLogout = () => {
-
-
-    localStorage.removeItem("user");
-
-    localStorage.removeItem("activeModule");
-
-
-    setUser(null);
-
-    setActiveModule("");
-
-    setUnreadCount(0);
-
-
-
-    router.push("/login");
-
-
-  };
-
-
-
-
-
-
-
-
-
-  const handleBackToMain = () => {
-
-
-    localStorage.removeItem(
-      "activeModule"
-    );
-
-
-    setActiveModule("");
-
-    router.push("/");
-
-
-  };
-
-
-
-
-
-
-
-
-
-  const handleLogoClick = () => {
-
-
-    localStorage.removeItem(
-      "activeModule"
-    );
-
-
-    setActiveModule("");
-
-
-  };
-return (
 
 <header className="
 sticky
@@ -265,7 +333,6 @@ justify-between
 px-6
 py-4
 ">
-
 
 
 
@@ -299,6 +366,8 @@ text-white
 E
 
 </div>
+
+
 
 
 
@@ -351,6 +420,11 @@ lg:flex
 
 
 
+
+
+
+
+
 {
 
 isBloodSection ?
@@ -381,6 +455,7 @@ hover:text-emerald-700
 
 
 
+
 <Link
 
 href="/blood-donation"
@@ -396,6 +471,7 @@ text-emerald-700
 🩸 Blood Donation
 
 </Link>
+
 
 
 
@@ -424,6 +500,7 @@ hover:text-emerald-700
 
 
 
+
 <Link
 
 href="/my-donations"
@@ -440,6 +517,7 @@ hover:text-emerald-700
 ❤️ My Donations
 
 </Link>
+
 
 
 
@@ -468,6 +546,30 @@ hover:text-emerald-700
 
 
 
+
+<Link
+
+href="/resources"
+
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
+
+>
+
+🌎 Resources
+
+</Link>
+
+
+
+
+
+
+
 <Link
 
 href="/messages"
@@ -487,17 +589,15 @@ hover:text-emerald-700
 
 
 
+
 </>
-
-
 
 :
 
-
-
+<></>
 <>
-
-
+ 
+ 
 <Link
 
 href="/"
@@ -513,6 +613,8 @@ text-emerald-700
 Home
 
 </Link>
+
+
 
 
 
@@ -541,6 +643,8 @@ Blood Donation
 
 
 
+
+
 <Link
 
 href="#"
@@ -563,9 +667,11 @@ Campaigns
 
 
 
+
+
 <Link
 
-href="#"
+href="/resources"
 
 className="
 text-sm
@@ -576,9 +682,11 @@ hover:text-emerald-700
 
 >
 
-Resources
+🌎 Resources
 
 </Link>
+
+
 
 
 
@@ -601,6 +709,8 @@ hover:text-emerald-700
 Academic Hub
 
 </Link>
+
+
 
 
 
@@ -631,15 +741,14 @@ gap-3
 
 
 
+
 {
 
 user ?
 
 
+
 <>
-
-
-{/* Notification Bell with Badge */}
 
 
 <Link
@@ -666,7 +775,9 @@ title="Notifications"
 
 
 
+
 {
+
 
 unreadCount > 0 &&
 
@@ -790,14 +901,12 @@ Logout
 
 
 
-
 :
 
 
 
-
-
 <>
+
 
 
 <Link href="/login">
@@ -833,6 +942,7 @@ Log In
 
 
 
+
 <Link href="/signup">
 
 
@@ -858,10 +968,14 @@ Sign Up
 </Link>
 
 
+
 </>
 
 
+
 }
+
+
 
 
 
@@ -879,7 +993,6 @@ Sign Up
 
 
 );
-
 
 
 }

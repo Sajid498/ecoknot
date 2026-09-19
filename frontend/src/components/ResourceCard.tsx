@@ -1,20 +1,15 @@
-import { Resource } from "@/data/resourceData";
+import {Resource} from "@/types/resource";
 
 
-
-
-
-interface ResourceCardProps{
-
+interface Props{
 
     resource:Resource;
 
+    onLike:()=>void;
+
+    onShare:()=>void;
 
 }
-
-
-
-
 
 
 
@@ -22,121 +17,126 @@ export default function ResourceCard(
 
 {
 
-resource
+resource,
 
-}:ResourceCardProps
+onLike,
+
+onShare
+
+}:Props
 
 ){
 
 
 
-    return(
+return(
+
+
+<div className="
+rounded-xl
+bg-white
+p-5
+shadow
+">
+
+
+<h2 className="
+font-bold
+text-xl
+">
+
+{resource.userName}
+
+</h2>
 
 
 
-        <div className="
-        rounded-xl
-        bg-white
-        p-5
-        shadow-md
-        border
-        ">
+<p className="
+mt-3
+text-gray-700
+">
 
+{resource.content}
 
-
-
-
-            <h2 className="
-            text-xl
-            font-bold
-            ">
-
-                {resource.title}
-
-            </h2>
-
-
-
-
-
-
-
-            <p className="
-            mt-2
-            text-sm
-            text-gray-500
-            ">
-
-
-                Shared by:
-
-                <span className="
-                font-semibold
-                ">
-
-                    {" "}
-
-                    {resource.user}
-
-                </span>
-
-
-            </p>
+</p>
 
 
 
 
+{
+resource.imageUrl &&
+
+<img
+
+src={resource.imageUrl}
+
+alt="resource"
+
+className="
+mt-4
+rounded-lg
+"
+
+/>
+
+}
 
 
 
 
-
-            <p className="
-            mt-3
-            text-gray-700
-            ">
-
-
-                {resource.description}
+<div className="
+mt-5
+flex
+gap-5
+">
 
 
-            </p>
+<button
 
+onClick={onLike}
 
+className="
+rounded-lg
+bg-blue-100
+px-4
+py-2
+"
 
+>
 
+👍 {resource.likes}
 
-
-
-
-
-            <span className="
-            mt-4
-            inline-block
-            rounded-full
-            bg-blue-100
-            px-3
-            py-1
-            text-sm
-            text-blue-700
-            ">
-
-
-                {resource.category}
-
-
-            </span>
+</button>
 
 
 
+<button
+
+onClick={onShare}
+
+className="
+rounded-lg
+bg-green-100
+px-4
+py-2
+"
+
+>
+
+🔁 {resource.shares}
+
+</button>
 
 
 
-        </div>
+</div>
 
 
 
-    );
+</div>
+
+
+);
 
 
 }
