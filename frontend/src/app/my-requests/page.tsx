@@ -9,9 +9,15 @@ import toast from "react-hot-toast";
 
 
 
+
+
 const API_URL =
+
     process.env.NEXT_PUBLIC_API_URL ||
+
     "http://localhost:8080";
+
+
 
 
 
@@ -50,6 +56,8 @@ type BloodRequest = {
 
 
 
+
+
     donorId?:number;
 
 
@@ -63,12 +71,17 @@ type BloodRequest = {
 
 
 
+
+
     // Phase 4.1
 
     donationResponseId?:number;
 
 
+
 };
+
+
 
 
 
@@ -88,6 +101,10 @@ export default function MyRequestsPage(){
 
 
 
+
+
+
+
     const [requests,setRequests] =
 
         useState<BloodRequest[]>([]);
@@ -95,9 +112,15 @@ export default function MyRequestsPage(){
 
 
 
+
+
+
     const [loading,setLoading] =
 
         useState(true);
+
+
+
 
 
 
@@ -114,7 +137,12 @@ export default function MyRequestsPage(){
 
 
 
+
+
+
+
     useEffect(()=>{
+
 
 
         const savedUser =
@@ -125,7 +153,11 @@ export default function MyRequestsPage(){
 
 
 
+
+
+
         if(savedUser){
+
 
 
             const parsedUser =
@@ -134,7 +166,14 @@ export default function MyRequestsPage(){
 
 
 
+
+
+
             setUser(parsedUser);
+
+
+
+
 
 
 
@@ -145,7 +184,9 @@ export default function MyRequestsPage(){
             );
 
 
+
         }
+
 
 
 
@@ -162,9 +203,12 @@ export default function MyRequestsPage(){
 
 
 
+
     async function loadRequests(
 
+
         userId:number
+
 
     ){
 
@@ -173,7 +217,10 @@ export default function MyRequestsPage(){
         try{
 
 
+
             setLoading(true);
+
+
 
 
 
@@ -191,6 +238,27 @@ export default function MyRequestsPage(){
 
 
 
+
+
+            if(!response.ok){
+
+
+                throw new Error(
+
+                    "Failed to load requests"
+
+                );
+
+
+            }
+
+
+
+
+
+
+
+
             const data =
 
                 await response.json();
@@ -199,7 +267,13 @@ export default function MyRequestsPage(){
 
 
 
+
+
+
             setRequests(data);
+
+
+
 
 
 
@@ -220,6 +294,7 @@ export default function MyRequestsPage(){
             );
 
 
+
         }
 
         finally{
@@ -229,6 +304,7 @@ export default function MyRequestsPage(){
 
 
         }
+
 
 
     }
@@ -245,10 +321,11 @@ export default function MyRequestsPage(){
 
 
 
-
     async function cancelRequest(
 
+
         requestId:number
+
 
     ){
 
@@ -256,9 +333,12 @@ export default function MyRequestsPage(){
 
         if(!user){
 
+
             return;
 
+
         }
+
 
 
 
@@ -282,7 +362,9 @@ export default function MyRequestsPage(){
 
         if(!confirmCancel){
 
+
             return;
+
 
         }
 
@@ -306,11 +388,15 @@ export default function MyRequestsPage(){
 
                     {
 
+
                         method:"DELETE"
+
 
                     }
 
+
                 );
+
 
 
 
@@ -329,6 +415,7 @@ export default function MyRequestsPage(){
 
 
             }
+
 
 
 
@@ -357,6 +444,8 @@ export default function MyRequestsPage(){
 
 
 
+
+
         }
 
         catch(error){
@@ -374,18 +463,13 @@ export default function MyRequestsPage(){
             );
 
 
+
         }
 
 
 
     }
-
-
-
-
-
-
-
+    
 
 
 
@@ -410,7 +494,9 @@ export default function MyRequestsPage(){
 
         if(!user){
 
+
             return;
+
 
         }
 
@@ -435,9 +521,12 @@ export default function MyRequestsPage(){
 
 
 
+
         if(!confirmAction){
 
+
             return;
+
 
         }
 
@@ -508,11 +597,13 @@ export default function MyRequestsPage(){
 
 
 
+
             loadRequests(
 
                 user.id
 
             );
+
 
 
 
@@ -553,8 +644,6 @@ export default function MyRequestsPage(){
 
 
 
-
-
     // ==================================================
     // Phase 4.2
     // Status color handling
@@ -572,6 +661,7 @@ export default function MyRequestsPage(){
         if(status==="OPEN"){
 
 
+
             return "bg-green-100 text-green-700";
 
 
@@ -584,6 +674,7 @@ export default function MyRequestsPage(){
 
 
         if(status==="DONOR_FOUND"){
+
 
 
             return "bg-blue-100 text-blue-700";
@@ -600,6 +691,7 @@ export default function MyRequestsPage(){
         if(status==="FULFILLED"){
 
 
+
             return "bg-gray-100 text-gray-700";
 
 
@@ -612,6 +704,7 @@ export default function MyRequestsPage(){
 
 
         if(status==="EXPIRED"){
+
 
 
             return "bg-red-100 text-red-700";
@@ -654,11 +747,11 @@ export default function MyRequestsPage(){
 
 
 
-<div className="
-mt-5
-space-y-3
-text-sm
-">
+            <div className="
+            mt-5
+            space-y-3
+            text-sm
+            ">
 
 
 
@@ -666,124 +759,133 @@ text-sm
 
 
 
-<div className={
 
-status==="OPEN"
+                <div
 
-?
+                className={
 
-"text-green-600 font-bold"
+                status==="OPEN"
 
-:
+                ?
 
-"text-gray-400"
+                "text-green-600 font-bold"
 
-}
+                :
 
->
+                "text-gray-400"
 
-🟢 Request Created
+                }
 
-</div>
+                >
 
+                    🟢 Request Created
 
+                </div>
 
 
 
 
 
 
-<div className={
 
-status==="DONOR_FOUND"
 
-||
+                <div
 
-status==="FULFILLED"
+                className={
 
-?
+                status==="DONOR_FOUND"
 
-"text-blue-600 font-bold"
+                ||
 
-:
+                status==="FULFILLED"
 
-"text-gray-400"
+                ?
 
-}
+                "text-blue-600 font-bold"
 
->
+                :
 
-🔵 Donor Found
+                "text-gray-400"
 
-</div>
+                }
 
+                >
 
+                    🔵 Donor Found
 
+                </div>
 
 
 
 
 
-<div className={
 
-status==="FULFILLED"
 
-?
 
-"text-gray-700 font-bold"
+                <div
 
-:
+                className={
 
-"text-gray-400"
+                status==="FULFILLED"
 
-}
+                ?
 
->
+                "text-gray-700 font-bold"
 
-✅ Donation Completed
+                :
 
-</div>
+                "text-gray-400"
 
+                }
 
+                >
 
+                    ✅ Donation Completed
 
+                </div>
 
 
 
 
-<div className={
 
-status==="EXPIRED"
 
-?
 
-"text-red-600 font-bold"
 
-:
+                <div
 
-"text-gray-400"
+                className={
 
-}
+                status==="EXPIRED"
 
->
+                ?
 
-❌ Request Expired
+                "text-red-600 font-bold"
 
-</div>
+                :
 
+                "text-gray-400"
 
+                }
 
+                >
 
+                    ❌ Request Expired
 
+                </div>
 
 
-</div>
+
+
+
+
+            </div>
 
 
         );
 
 
     }
+
 
 
 
@@ -826,6 +928,7 @@ status==="EXPIRED"
 
 
 
+
         if(!request.donorName){
 
 
@@ -841,7 +944,10 @@ status==="EXPIRED"
 
 
 
+
         return (
+
+
 
             <div className="
             mt-6
@@ -851,6 +957,7 @@ status==="EXPIRED"
             bg-emerald-50
             p-5
             ">
+
 
 
 
@@ -870,11 +977,18 @@ status==="EXPIRED"
 
 
 
+
+
+
                 <div className="
                 mt-3
                 space-y-2
                 text-slate-700
                 ">
+
+
+
+
 
 
 
@@ -890,6 +1004,9 @@ status==="EXPIRED"
 
 
                     </p>
+
+
+
 
 
 
@@ -912,6 +1029,9 @@ status==="EXPIRED"
 
 
 
+
+
+
                     <p>
 
                         📍 Location:
@@ -927,17 +1047,37 @@ status==="EXPIRED"
 
 
 
+
+
+
                 </div>
+
+
+
 
 
 
             </div>
 
+
         );
 
 
     }
-        return(
+
+
+
+
+
+
+
+
+
+
+
+
+
+    return(
 
 
 
@@ -945,6 +1085,9 @@ status==="EXPIRED"
         min-h-screen
         bg-slate-50
         ">
+
+
+
 
 
 
@@ -967,12 +1110,15 @@ status==="EXPIRED"
 
 
 
+
+
                 <div className="
                 rounded-3xl
                 bg-white
                 p-8
                 shadow
                 ">
+
 
 
 
@@ -1009,534 +1155,105 @@ status==="EXPIRED"
 
 
 
-
                     {
-                        loading ?
+                    
+                    loading
 
-                        (
+                    ?
 
-                            <p className="
-                            mt-8
-                            ">
+                    (
 
-                                Loading...
+                    <p className="
+                    mt-8
+                    ">
 
-                            </p>
+                        Loading...
 
-                        )
-
-                        :
+                    </p>
 
 
-                        requests.length === 0 ?
+                    )
 
-                        (
+                    :
 
-                            <p className="
-                            mt-8
-                            text-gray-500
-                            ">
+                    requests.length === 0
 
-                                You have no blood requests.
+                    ?
 
-                            </p>
+                    (
 
-                        )
+                    <p className="
+                    mt-8
+                    text-gray-500
+                    ">
 
-                        :
+                        You have no blood requests.
+
+                    </p>
+
+
+                    )
+
+                    :
+
+
+
+                    <div className="
+                    mt-8
+                    space-y-5
+                    ">                    {
+
+
+                    requests.map(
+
+                    (request)=>(
+
+
+
+                    <div
+
+                    key={request.id}
+
+                    className="
+                    rounded-2xl
+                    border
+                    border-slate-200
+                    p-6
+                    ">
+
+
+
+
+
+
 
 
 
                         <div className="
-                        mt-8
-                        space-y-5
-                        ">
-
-
-
-                        {
-
-                        requests.map(
-
-                        (request)=>(
-
-
-                        <div
-
-                        key={request.id}
-
-                        className="
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        p-6
+                        flex
+                        items-start
+                        justify-between
                         ">
 
 
 
 
 
-                            <div className="
-                            flex
-                            items-start
-                            justify-between
-                            ">
 
+                            <div>
 
 
 
-
-                                <div>
-
-
-                                    <h2 className="
-                                    text-xl
-                                    font-bold
-                                    ">
-
-                                        {request.patientName}
-
-                                    </h2>
-
-
-
-
-
-                                    <p className="
-                                    mt-2
-                                    font-bold
-                                    text-red-600
-                                    ">
-
-                                        🩸 {request.bloodGroup}
-
-                                    </p>
-
-
-
-                                </div>
-
-
-
-
-
-
-
-
-                                <span
-
-                                className={`
-
-                                rounded-full
-
-                                px-4
-
-                                py-2
-
-                                text-sm
-
-                                font-semibold
-
-                                ${getStatusStyle(
-
-                                    request.status
-
-                                )}
-
-                                `}
-
-                                >
-
-                                    {request.status}
-
-                                </span>
-
-
-
-
-                            </div>
-
-
-
-
-
-
-
-
-
-                            {
-
-                                showTimeline(
-
-                                    request.status
-
-                                )
-
-                            }
-
-
-
-
-
-
-
-
-
-                            <div className="
-                            mt-5
-                            space-y-2
-                            text-slate-600
-                            ">
-
-
-
-
-
-                                <p>
-
-                                    🏥 Hospital:
-
-                                    <b className="ml-2">
-
-                                        {request.hospital}
-
-                                    </b>
-
-                                </p>
-
-
-
-
-
-
-
-                                <p>
-
-                                    📍 Location:
-
-                                    <b className="ml-2">
-
-                                        {request.location}
-
-                                    </b>
-
-                                </p>
-
-
-
-
-
-
-
-                                <p>
-
-                                    ⚠️ Urgency:
-
-                                    <b className="ml-2">
-
-                                        {request.urgency}
-
-                                    </b>
-
-                                </p>
-
-
-
-
-
-
-
-
-                                <p>
-
-                                    🩸 Units:
-
-                                    <b className="ml-2">
-
-                                        {request.unitsNeeded}
-
-                                    </b>
-
-                                </p>
-
-
-
-
-
-
-
-                                <p>
-
-                                    📅 Required Date:
-
-                                    <b className="ml-2">
-
-                                        {request.requiredDate}
-
-                                    </b>
-
-                                </p>
-
-
-
-
-
-                            </div>
-
-
-
-
-
-
-
-
-
-                            {
-
-                                showDonorInfo(
-
-                                    request
-
-                                )
-
-                            }
-
-
-
-
-
-
-
-
-
-                            <div className="
-                            mt-6
-                            flex
-                            flex-wrap
-                            gap-3
-                            ">
-
-
-
-
-
-
-
-
-
-                                {
-
-                                request.status !== "EXPIRED"
-
-                                &&
-
-                                (
-
-                                <button
-
-
-                                onClick={()=>{
-
-
-                                    router.push(
-
-                                        `/donors/${request.id}`
-
-                                    );
-
-
-                                }}
-
-
-
-                                className="
-                                rounded-xl
-                                bg-emerald-700
-                                px-5
-                                py-3
-                                font-semibold
-                                text-white
-                                hover:bg-emerald-800
-                                "
-
-
-                                >
-
-                                    👥 Manage Donors
-
-                                </button>
-
-
-                                )
-
-
-                                }
-
-
-
-
-
-
-
-
-
-                                {
-
-                                request.status === "DONOR_FOUND"
-
-                                &&
-
-                                request.donationResponseId
-
-                                &&
-
-
-                                (
-
-                                <button
-
-
-                                onClick={()=>{
-
-
-                                    confirmDonationCompleted(
-
-                                        request.donationResponseId!
-
-                                    );
-
-
-                                }}
-
-
-
-                                className="
-                                rounded-xl
-                                bg-blue-600
-                                px-5
-                                py-3
-                                font-semibold
-                                text-white
-                                hover:bg-blue-700
-                                "
-
-                                >
-
-                                    ✅ Confirm Donation Completed
-
-                                </button>
-
-
-                                )
-
-
-                                }
-
-
-
-
-
-
-
-
-
-
-
-
-                                {
-
-                                request.status !== "FULFILLED"
-
-                                &&
-
-                                request.status !== "CANCELLED"
-
-                                &&
-
-                                request.status !== "EXPIRED"
-
-                                &&
-
-
-                                (
-
-                                <button
-
-
-                                onClick={()=>{
-
-
-                                    cancelRequest(
-
-                                        request.id
-
-                                    );
-
-
-                                }}
-
-
-
-                                className="
-                                rounded-xl
-                                bg-red-600
-                                px-5
-                                py-3
-                                font-semibold
-                                text-white
-                                "
-
-                                >
-
-                                    ❌ Cancel
-
-                                </button>
-
-                                )
-
-
-                                }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                                {
-
-                                request.status === "FULFILLED"
-
-                                &&
-
-
-                                (
-
-                                <span className="
-                                rounded-xl
-                                bg-gray-100
-                                px-5
-                                py-3
-                                font-semibold
-                                text-gray-700
+                                <h2 className="
+                                text-xl
+                                font-bold
                                 ">
 
-                                    ✅ Completed
 
-                                </span>
-
-
-                                )
+                                    {request.patientName}
 
 
-                                }
+                                </h2>
 
 
 
@@ -1545,38 +1262,17 @@ status==="EXPIRED"
 
 
 
-
-
-
-
-                                {
-
-                                request.status === "EXPIRED"
-
-                                &&
-
-
-                                (
-
-                                <span className="
-                                rounded-xl
-                                bg-red-100
-                                px-5
-                                py-3
-                                font-semibold
-                                text-red-700
+                                <p className="
+                                mt-2
+                                font-bold
+                                text-red-600
                                 ">
 
-                                    ❌ Expired
 
-                                </span>
-
-
-                                )
+                                    🩸 {request.bloodGroup}
 
 
-                                }
-
+                                </p>
 
 
 
@@ -1585,6 +1281,41 @@ status==="EXPIRED"
 
                             </div>
 
+
+
+
+
+
+
+
+                            <span
+
+                            className={`
+
+                            rounded-full
+
+                            px-4
+
+                            py-2
+
+                            text-sm
+
+                            font-semibold
+
+                            ${getStatusStyle(
+
+                                request.status
+
+                            )}
+
+                            `}
+
+                            >
+
+                                {request.status}
+
+
+                            </span>
 
 
 
@@ -1594,18 +1325,565 @@ status==="EXPIRED"
 
 
 
+
+
+
+
+
+
+
+
+
+
+                        {
+
+                        showTimeline(
+
+                            request.status
+
                         )
 
+                        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        <div className="
+                        mt-5
+                        space-y-2
+                        text-slate-600
+                        ">
+
+
+
+
+
+
+
+                            <p>
+
+
+                                🏥 Hospital:
+
+                                <b className="ml-2">
+
+                                    {request.hospital}
+
+                                </b>
+
+
+                            </p>
+
+
+
+
+
+
+
+
+                            <p>
+
+
+                                📍 Location:
+
+                                <b className="ml-2">
+
+                                    {request.location}
+
+                                </b>
+
+
+                            </p>
+
+
+
+
+
+
+
+
+                            <p>
+
+
+                                ⚠️ Urgency:
+
+                                <b className="ml-2">
+
+                                    {request.urgency}
+
+                                </b>
+
+
+                            </p>
+
+
+
+
+
+
+
+
+                            <p>
+
+
+                                🩸 Units:
+
+                                <b className="ml-2">
+
+                                    {request.unitsNeeded}
+
+                                </b>
+
+
+                            </p>
+
+
+
+
+
+
+
+
+                            <p>
+
+
+                                📅 Required Date:
+
+                                <b className="ml-2">
+
+                                    {request.requiredDate}
+
+                                </b>
+
+
+                            </p>
+
+
+
+
+
+                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                        {
+
+
+                        showDonorInfo(
+
+                            request
 
                         )
-
 
 
                         }
 
 
 
+
+
+
+
+
+
+
+
+
+
+                        <div className="
+                        mt-6
+                        flex
+                        flex-wrap
+                        gap-3
+                        ">
+
+
+
+
+
+
+
+
+
+                            {/* Phase 4.4 */}
+
+                            <button
+
+
+                            onClick={()=>{
+
+
+                                router.push(
+
+                                    `/request-details/${request.id}`
+
+                                );
+
+
+                            }}
+
+
+
+                            className="
+                            rounded-xl
+                            bg-blue-600
+                            px-5
+                            py-3
+                            font-semibold
+                            text-white
+                            hover:bg-blue-700
+                            "
+
+
+                            >
+
+                                📄 View Details
+
+
+                            </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            {
+
+
+                            request.status !== "EXPIRED"
+
+                            &&
+
+
+                            (
+
+                            <button
+
+
+                            onClick={()=>{
+
+
+                                router.push(
+
+                                    `/donors/${request.id}`
+
+                                );
+
+
+                            }}
+
+
+
+                            className="
+                            rounded-xl
+                            bg-emerald-700
+                            px-5
+                            py-3
+                            font-semibold
+                            text-white
+                            hover:bg-emerald-800
+                            "
+
+
+                            >
+
+                                👥 Manage Donors
+
+
+                            </button>
+
+
+                            )
+
+
+                            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            {
+
+
+                            request.status === "DONOR_FOUND"
+
+                            &&
+
+                            request.donationResponseId
+
+                            &&
+
+
+                            (
+
+                            <button
+
+
+                            onClick={()=>{
+
+
+                                confirmDonationCompleted(
+
+                                    request.donationResponseId!
+
+                                );
+
+
+                            }}
+
+
+
+                            className="
+                            rounded-xl
+                            bg-blue-600
+                            px-5
+                            py-3
+                            font-semibold
+                            text-white
+                            hover:bg-blue-700
+                            "
+
+
+                            >
+
+                                ✅ Confirm Donation Completed
+
+
+                            </button>
+
+
+                            )
+
+
+                            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            {
+
+
+                            request.status !== "FULFILLED"
+
+                            &&
+
+                            request.status !== "CANCELLED"
+
+                            &&
+
+                            request.status !== "EXPIRED"
+
+                            &&
+
+
+                            (
+
+                            <button
+
+
+                            onClick={()=>{
+
+
+                                cancelRequest(
+
+                                    request.id
+
+                                );
+
+
+                            }}
+
+
+
+                            className="
+                            rounded-xl
+                            bg-red-600
+                            px-5
+                            py-3
+                            font-semibold
+                            text-white
+                            hover:bg-red-700
+                            "
+
+
+                            >
+
+                                ❌ Cancel
+
+
+                            </button>
+
+
+                            )
+
+
+                            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            {
+
+
+                            request.status === "FULFILLED"
+
+                            &&
+
+
+                            (
+
+                            <span className="
+                            rounded-xl
+                            bg-gray-100
+                            px-5
+                            py-3
+                            font-semibold
+                            text-gray-700
+                            ">
+
+
+                                ✅ Completed
+
+
+                            </span>
+
+
+                            )
+
+
+                            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            {
+
+
+                            request.status === "EXPIRED"
+
+                            &&
+
+
+                            (
+
+                            <span className="
+                            rounded-xl
+                            bg-red-100
+                            px-5
+                            py-3
+                            font-semibold
+                            text-red-700
+                            ">
+
+
+                                ❌ Expired
+
+
+                            </span>
+
+
+                            )
+
+
+                            }
+
+
+
+
+
+
+
+
+
                         </div>
+
+
+
+
+
+
+
+
+
+                    </div>
+
+
+
+                    )
+
+
+                    )
+
+
+                    }
+
+
+
+                    </div>
 
 
                     }
