@@ -173,7 +173,7 @@ export default function SignupPage() {
 
 
             alert(
-                "Signup failed"
+                "Signup failed. The local backend and MySQL database must be running for account creation. You can still view the fundraising sample demo from the Campaigns page."
             );
 
 

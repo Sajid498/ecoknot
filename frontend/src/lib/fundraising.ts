@@ -18,3 +18,12 @@ export const categoryLabels: Record<FundCategory, string> = {
 export const getFunds = (): Fund[] => typeof window === "undefined" ? [] : JSON.parse(localStorage.getItem(KEY) || "[]");
 export const saveFunds = (funds: Fund[]) => localStorage.setItem(KEY, JSON.stringify(funds));
 export const currency = (amount: number) => new Intl.NumberFormat("en-BD", { style: "currency", currency: "BDT", maximumFractionDigits: 0 }).format(amount);
+
+export const demoFunds = (): Fund[] => [{
+  id: "demo-flood-relief", title: "Emergency flood relief for Sunamganj families", category: "FLOOD_RELIEF",
+  description: "Support food, clean water, medicine, and temporary shelter for families affected by flooding. Every verified contribution is tracked against this campaign target.",
+  location: "Sunamganj, Bangladesh", beneficiary: "Sunamganj community families", contact: "Demo campaign", goalAmount: 250000,
+  raisedAmount: 96500, status: "APPROVED", authorId: 1, author: "EcoKnot Community Team", createdAt: new Date().toISOString(),
+  reactions: 42, reactedBy: [], comments: [{ id: "demo-comment", author: "Nusrat Ahmed", body: "Thank you for keeping the campaign progress transparent.", createdAt: new Date().toISOString() }],
+  contributions: [{ id: "demo-contribution", donor: "Anonymous donor", amount: 5000, method: "bKash", reference: "EKO-DEMO-001", createdAt: new Date().toISOString() }]
+}];
