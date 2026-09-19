@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import backend.dto.DonorProfileDTO;
 import backend.entity.BloodGroup;
 import backend.entity.User;
 import backend.service.EligibilityService;
 import backend.service.UserService;
-
 
 
 
@@ -36,6 +36,8 @@ public class UserController {
 
 
     private final EligibilityService eligibilityService;
+
+
 
 
 
@@ -71,6 +73,7 @@ public class UserController {
 
     // Signup
 
+
     @PostMapping("/signup")
     public User signup(
 
@@ -80,7 +83,9 @@ public class UserController {
 
 
         return userService.signup(
+
                 user
+
         );
 
 
@@ -95,6 +100,7 @@ public class UserController {
 
 
     // Login
+
 
     @PostMapping("/login")
     public User login(
@@ -123,7 +129,8 @@ public class UserController {
 
 
 
-    // Get profile
+    // Get user profile
+
 
     @GetMapping("/{id}")
     public User getUser(
@@ -134,7 +141,9 @@ public class UserController {
 
 
         return userService.getUserById(
+
                 id
+
         );
 
 
@@ -149,6 +158,7 @@ public class UserController {
 
 
     // Update donor profile
+
 
     @PutMapping("/{id}")
     public User updateProfile(
@@ -181,6 +191,7 @@ public class UserController {
 
     // Search available donors
 
+
     @GetMapping("/search-donors")
     public List<User> searchDonors(
 
@@ -204,7 +215,17 @@ public class UserController {
 
 
     }
+
+
+
+
+
+
+
+
+
     // Get donor dashboard
+
 
     @GetMapping("/{id}/donor-dashboard")
     public Map<String,Object> getDonorDashboard(
@@ -215,8 +236,42 @@ public class UserController {
 
 
         return userService
+
                 .getDonorDashboard(
+
                         id
+
+                );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // Phase 4.3
+    // Get public donor profile with reliability
+
+
+    @GetMapping("/donor-profile/{id}")
+    public DonorProfileDTO getDonorProfile(
+
+            @PathVariable Long id
+
+    ){
+
+
+        return userService
+
+                .getDonorProfile(
+
+                        id
+
                 );
 
 
@@ -232,10 +287,12 @@ public class UserController {
 
     // Update donor availability
 
+
     @PutMapping("/{id}/availability")
     public User updateAvailability(
 
             @PathVariable Long id,
+
 
             @RequestBody Map<String,Boolean> body
 
@@ -246,7 +303,9 @@ public class UserController {
         Boolean available =
 
                 body.get(
+
                         "available"
+
                 );
 
 
@@ -266,7 +325,6 @@ public class UserController {
 
 
         }
-
 
 
 
@@ -297,6 +355,7 @@ public class UserController {
 
     // Check donation eligibility
 
+
     @GetMapping("/{id}/eligibility")
     public Map<String,Object> checkEligibility(
 
@@ -311,6 +370,7 @@ public class UserController {
                 eligibilityService
 
                         .isEligible(id);
+
 
 
 
@@ -383,14 +443,16 @@ public class UserController {
 
 
 
+
             response.put(
 
                     "message",
 
                     "You can donate after "
-                            + nextDate
+                    + nextDate
 
             );
+
 
 
 
@@ -417,10 +479,13 @@ public class UserController {
 
 
 
+
         return response;
 
 
     }
+
+
 
 
 
