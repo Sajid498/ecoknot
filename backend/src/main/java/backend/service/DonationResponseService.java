@@ -23,7 +23,6 @@ public class DonationResponseService {
 
 
 
-
     private final DonationResponseRepository donationResponseRepository;
 
 
@@ -37,7 +36,6 @@ public class DonationResponseService {
 
 
     private final NotificationService notificationService;
-
 
 
 
@@ -60,25 +58,20 @@ public class DonationResponseService {
     ){
 
 
-
         this.donationResponseRepository =
                 donationResponseRepository;
-
 
 
         this.bloodRequestRepository =
                 bloodRequestRepository;
 
 
-
         this.bloodRequestService =
                 bloodRequestService;
 
 
-
         this.userRepository =
                 userRepository;
-
 
 
         this.notificationService =
@@ -86,10 +79,6 @@ public class DonationResponseService {
 
 
     }
-
-
-
-
 
 
 
@@ -109,7 +98,6 @@ public class DonationResponseService {
     ){
 
 
-
         BloodRequest request =
 
                 bloodRequestRepository
@@ -125,8 +113,6 @@ public class DonationResponseService {
                                 )
 
                         );
-
-
 
 
 
@@ -156,11 +142,9 @@ public class DonationResponseService {
 
 
 
-
-
         if(
 
-                request.getUser() != null
+                request.getUser()!=null
 
                 &&
 
@@ -189,7 +173,6 @@ public class DonationResponseService {
 
 
 
-
         boolean alreadyApplied =
 
 
@@ -202,8 +185,6 @@ public class DonationResponseService {
                                 response.getDonorId()
 
                         );
-
-
 
 
 
@@ -230,12 +211,12 @@ public class DonationResponseService {
 
 
 
-
         response.setStatus(
 
                 DonationStatus.PENDING
 
         );
+
 
 
 
@@ -249,7 +230,19 @@ public class DonationResponseService {
 
 
     }
-        // Accept recommended donor directly
+
+
+
+
+
+
+
+
+
+
+
+
+    // Accept recommended donor directly
 
 
     public DonationResponse acceptRecommendedDonor(
@@ -311,10 +304,6 @@ public class DonationResponseService {
 
 
 
-
-
-
-        // Validate donor exists
 
 
         userRepository
@@ -407,7 +396,6 @@ public class DonationResponseService {
 
 
 
-
         DonationResponse savedResponse =
 
 
@@ -425,9 +413,6 @@ public class DonationResponseService {
 
 
 
-        // Reject other pending donors
-
-
         rejectOtherDonors(
 
                 response
@@ -439,10 +424,6 @@ public class DonationResponseService {
 
 
 
-
-
-
-        // Send notifications
 
 
         sendAcceptanceNotifications(
@@ -457,9 +438,6 @@ public class DonationResponseService {
 
 
 
-
-
-        // Update blood request with accepted donor
 
 
         bloodRequestService
@@ -481,6 +459,226 @@ public class DonationResponseService {
 
         return savedResponse;
 
+
+    }
+    // ==================================================
+    // PHASE 4.1
+    // Requester confirms donation completion
+    // ==================================================
+
+    public DonationResponse confirmDonationCompletion(
+
+            Long donationId,
+
+            Long requesterId
+
+    ){
+
+
+
+        DonationResponse response =
+
+                donationResponseRepository
+
+                        .findById(donationId)
+
+                        .orElseThrow(
+
+                                () -> new ResourceNotFoundException(
+
+                                        "Donation response not found"
+
+                                )
+
+                        );
+
+
+
+
+
+
+
+
+
+        BloodRequest request =
+
+                bloodRequestRepository
+
+                        .findById(
+
+                                response.getRequestId()
+
+                        )
+
+                        .orElseThrow(
+
+                                () -> new ResourceNotFoundException(
+
+                                        "Blood request not found"
+
+                                )
+
+                        );
+
+
+
+
+
+
+
+
+
+        // Only requester can confirm completion
+
+        if(
+
+                request.getUser() == null
+
+                ||
+
+                !request.getUser()
+
+                        .getId()
+
+                        .equals(requesterId)
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "Only request owner can confirm donation"
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
+        // Donation must be accepted first
+
+        if(
+
+                response.getStatus()
+
+                != DonationStatus.ACCEPTED
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "Only accepted donation can be completed"
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
+        response.setStatus(
+
+                DonationStatus.COMPLETED
+
+        );
+
+
+
+
+
+
+
+
+
+        DonationResponse savedResponse =
+
+                donationResponseRepository.save(
+
+                        response
+
+                );
+
+
+
+
+
+
+
+
+
+        // Update blood request
+
+        bloodRequestService
+
+                .markFulfilled(
+
+                        request.getId()
+
+                );
+
+
+
+
+
+
+
+
+
+        // Notify donor
+
+        notificationService.createNotification(
+
+                response.getDonorId(),
+
+                "Your blood donation has been confirmed completed.",
+
+                "DONATION_COMPLETED"
+
+        );
+
+
+
+
+
+
+
+
+
+        // Notify requester
+
+        notificationService.createNotification(
+
+                requesterId,
+
+                "Donation completed successfully.",
+
+                "DONATION_COMPLETED"
+
+        );
+
+
+
+
+
+
+
+
+
+        return savedResponse;
 
 
     }
@@ -517,7 +715,6 @@ public class DonationResponseService {
                 .map(response -> {
 
 
-
                     BloodRequest request =
 
 
@@ -538,7 +735,6 @@ public class DonationResponseService {
                                             )
 
                                     );
-
 
 
 
@@ -577,7 +773,6 @@ public class DonationResponseService {
                             request.getUser().getName()
 
 
-
                     );
 
 
@@ -599,8 +794,7 @@ public class DonationResponseService {
 
 
 
-
-    // Get completed donation history
+    // Donation History
 
 
     public List<DonationHistoryDTO> getDonationHistory(
@@ -621,9 +815,9 @@ public class DonationResponseService {
 
                         response ->
 
-                                response.getStatus()
+                        response.getStatus()
 
-                                == DonationStatus.COMPLETED
+                        == DonationStatus.COMPLETED
 
                 )
 
@@ -686,10 +880,13 @@ public class DonationResponseService {
                             request.getHospital(),
 
 
+
                             request.getLocation(),
 
 
+
                             response.getStatus().toString(),
+
 
 
                             request.getCreatedAt()
@@ -705,7 +902,19 @@ public class DonationResponseService {
 
 
     }
-        // Get donors for specific blood request
+
+
+
+
+
+
+
+
+
+
+
+
+    // Get donors for request
 
 
     public List<DonationResponse> getDonorsByRequestId(
@@ -737,7 +946,9 @@ public class DonationResponseService {
 
 
 
+
     // Update donation status
+
 
     public DonationResponse updateStatus(
 
@@ -766,6 +977,31 @@ public class DonationResponseService {
 
                         );
 
+
+
+
+
+
+
+
+
+        // Prevent direct completion
+
+        if(
+
+                status == DonationStatus.COMPLETED
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "Use donation completion confirmation endpoint"
+
+            );
+
+
+        }
 
 
 
@@ -805,8 +1041,6 @@ public class DonationResponseService {
 
 
 
-        // When requester accepts donor
-
         if(
 
                 status == DonationStatus.ACCEPTED
@@ -838,38 +1072,7 @@ public class DonationResponseService {
             );
 
 
-
         }
-
-
-
-
-
-
-
-
-
-        // When donation completed
-
-        if(
-
-                status == DonationStatus.COMPLETED
-
-        ){
-
-
-
-            bloodRequestService
-
-                    .markFulfilled(
-
-                            response.getRequestId()
-
-                    );
-
-
-        }
-
 
 
 
@@ -894,7 +1097,7 @@ public class DonationResponseService {
 
 
 
-    // Reject other donors after accepting one donor
+    // Reject other donors
 
 
     private void rejectOtherDonors(
@@ -923,7 +1126,6 @@ public class DonationResponseService {
 
 
 
-
         donors.forEach(
 
                 donor -> {
@@ -932,22 +1134,21 @@ public class DonationResponseService {
 
                     if(
 
-                        !donor.getId()
+                            !donor.getId()
 
-                                .equals(
+                                    .equals(
 
-                                    acceptedResponse.getId()
+                                            acceptedResponse.getId()
 
-                                )
+                                    )
 
-                        &&
+                            &&
 
-                        donor.getStatus()
+                            donor.getStatus()
 
-                                == DonationStatus.PENDING
+                                    == DonationStatus.PENDING
 
                     ){
-
 
 
                         donor.setStatus(
@@ -955,7 +1156,6 @@ public class DonationResponseService {
                                 DonationStatus.REJECTED
 
                         );
-
 
 
                         donationResponseRepository.save(
@@ -966,7 +1166,6 @@ public class DonationResponseService {
 
 
                     }
-
 
 
                 }
@@ -988,7 +1187,7 @@ public class DonationResponseService {
 
 
 
-    // Send notification after acceptance
+    // Send acceptance notification
 
 
     private void sendAcceptanceNotifications(
@@ -1028,9 +1227,6 @@ public class DonationResponseService {
 
 
 
-        // Notify donor
-
-
         notificationService.createNotification(
 
                 response.getDonorId(),
@@ -1048,11 +1244,8 @@ public class DonationResponseService {
 
 
 
-
-        // Notify requester
-
-
         if(request.getUser()!=null){
+
 
 
             notificationService.createNotification(
@@ -1118,6 +1311,7 @@ public class DonationResponseService {
 
 
 
+
         donationResponseRepository.delete(
 
                 response
@@ -1126,7 +1320,6 @@ public class DonationResponseService {
 
 
     }
-
 
 
 }

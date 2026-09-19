@@ -29,7 +29,6 @@ public class DonationResponseController {
 
 
 
-
     private final DonationResponseService donationResponseService;
 
 
@@ -37,10 +36,15 @@ public class DonationResponseController {
 
 
     public DonationResponseController(
+
             DonationResponseService donationResponseService
+
     ){
 
-        this.donationResponseService = donationResponseService;
+
+        this.donationResponseService =
+                donationResponseService;
+
 
     }
 
@@ -52,15 +56,22 @@ public class DonationResponseController {
 
 
 
+    // ==================================================
     // Donor clicks "I Want To Donate"
+    // ==================================================
 
     @PostMapping
     public DonationResponse createResponse(
+
             @RequestBody DonationResponse response
+
     ){
 
+
         return donationResponseService
+
                 .createResponse(response);
+
 
     }
 
@@ -72,15 +83,22 @@ public class DonationResponseController {
 
 
 
+    // ==================================================
     // Accept recommended donor directly
+    // ==================================================
 
     @PostMapping("/accept-recommended")
     public DonationResponse acceptRecommendedDonor(
+
             @RequestBody DonationResponse response
+
     ){
 
+
         return donationResponseService
+
                 .acceptRecommendedDonor(response);
+
 
     }
 
@@ -92,15 +110,58 @@ public class DonationResponseController {
 
 
 
-    // Get donations made by a donor
+    // ==================================================
+    // PHASE 4.1
+    // Requester confirms donation completion
+    // ==================================================
+
+    @PutMapping("/{id}/complete")
+    public DonationResponse confirmDonationCompletion(
+
+            @PathVariable Long id,
+
+            @RequestParam Long requesterId
+
+    ){
+
+
+        return donationResponseService
+
+                .confirmDonationCompletion(
+
+                        id,
+
+                        requesterId
+
+                );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // ==================================================
+    // Get donations made by donor
+    // ==================================================
 
     @GetMapping("/donor/{donorId}")
     public List<DonationResponseDTO> getDonationsByDonor(
+
             @PathVariable Long donorId
+
     ){
 
+
         return donationResponseService
+
                 .getDonationsByDonor(donorId);
+
 
     }
 
@@ -112,15 +173,22 @@ public class DonationResponseController {
 
 
 
+    // ==================================================
     // Get completed donation history
+    // ==================================================
 
     @GetMapping("/history/{donorId}")
     public List<DonationHistoryDTO> getDonationHistory(
+
             @PathVariable Long donorId
+
     ){
 
+
         return donationResponseService
+
                 .getDonationHistory(donorId);
+
 
     }
 
@@ -132,15 +200,22 @@ public class DonationResponseController {
 
 
 
-    // Get donors for a specific blood request
+    // ==================================================
+    // Get donors for a blood request
+    // ==================================================
 
     @GetMapping("/request/{requestId}")
     public List<DonationResponse> getDonorsByRequest(
+
             @PathVariable Long requestId
+
     ){
 
+
         return donationResponseService
+
                 .getDonorsByRequestId(requestId);
+
 
     }
 
@@ -152,27 +227,48 @@ public class DonationResponseController {
 
 
 
-    // Accept / Reject / Complete donation
+    // ==================================================
+    // Update donation status
+    // Accept / Reject only
+    //
+    // COMPLETED is handled by:
+    // /{id}/complete
+    // ==================================================
 
     @PutMapping("/{id}")
     public DonationResponse updateStatus(
+
             @PathVariable Long id,
+
             @RequestParam DonationStatus status
+
     ){
 
+
         System.out.println(
+
                 "Donation ID: "
-                + id
-                + " Status: "
-                + status
+                +
+                id
+                +
+                " Status: "
+                +
+                status
+
         );
 
 
+
         return donationResponseService
+
                 .updateStatus(
+
                         id,
+
                         status
+
                 );
+
 
     }
 
@@ -184,16 +280,26 @@ public class DonationResponseController {
 
 
 
+    // ==================================================
     // Delete donation response
+    // ==================================================
 
     @DeleteMapping("/{id}")
     public String deleteResponse(
+
             @PathVariable Long id
+
     ){
 
-        donationResponseService.deleteResponse(id);
+
+        donationResponseService
+
+                .deleteResponse(id);
+
+
 
         return "Donation response deleted successfully";
+
 
     }
 
