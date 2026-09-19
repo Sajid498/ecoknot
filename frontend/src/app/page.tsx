@@ -411,7 +411,8 @@ export default function Home() {
 
 
 
-                <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5">
+                <Link href="/fundraising">
+                <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5 transition hover:-translate-y-1 hover:shadow-lg">
 
                   <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-amber-100 text-xl">
 
@@ -428,6 +429,7 @@ export default function Home() {
                   </p>
 
                 </div>
+                </Link>
 
 
 
