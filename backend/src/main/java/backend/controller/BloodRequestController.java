@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import backend.dto.BloodRequestResponseDTO;
 import backend.entity.BloodGroup;
 import backend.entity.BloodRequest;
@@ -27,17 +28,35 @@ public class BloodRequestController {
 
 
 
+
+
     private final BloodRequestService bloodRequestService;
 
 
 
+
+
+
+
     public BloodRequestController(
+
             BloodRequestService bloodRequestService
+
     ){
 
-        this.bloodRequestService = bloodRequestService;
+
+        this.bloodRequestService =
+
+                bloodRequestService;
+
 
     }
+
+
+
+
+
+
 
 
 
@@ -45,20 +64,38 @@ public class BloodRequestController {
 
 
     // Update blood request (only owner)
+
+
     @PutMapping("/{requestId}/user/{userId}")
     public BloodRequest updateRequest(
+
             @PathVariable Long requestId,
+
             @PathVariable Long userId,
+
             @RequestBody BloodRequest bloodRequest
+
     ){
 
-        return bloodRequestService.updateBloodRequest(
-                requestId,
-                userId,
-                bloodRequest
-        );
+
+        return bloodRequestService
+
+                .updateBloodRequest(
+
+                        requestId,
+
+                        userId,
+
+                        bloodRequest
+
+                );
+
 
     }
+
+
+
+
 
 
 
@@ -68,18 +105,34 @@ public class BloodRequestController {
 
 
     // Cancel blood request (only owner)
+
+
     @DeleteMapping("/{requestId}/user/{userId}")
     public BloodRequest cancelRequest(
+
             @PathVariable Long requestId,
+
             @PathVariable Long userId
+
     ){
 
-        return bloodRequestService.cancelBloodRequest(
-                requestId,
-                userId
-        );
+
+        return bloodRequestService
+
+                .cancelBloodRequest(
+
+                        requestId,
+
+                        userId
+
+                );
+
 
     }
+
+
+
+
 
 
 
@@ -89,16 +142,28 @@ public class BloodRequestController {
 
 
     // Create request for specific user
+
+
     @PostMapping("/user/{userId}")
     public BloodRequest createRequest(
+
             @PathVariable Long userId,
+
             @RequestBody BloodRequest bloodRequest
+
     ){
 
-        return bloodRequestService.createBloodRequest(
-                userId,
-                bloodRequest
-        );
+
+        return bloodRequestService
+
+                .createBloodRequest(
+
+                        userId,
+
+                        bloodRequest
+
+                );
+
 
     }
 
@@ -109,13 +174,27 @@ public class BloodRequestController {
 
 
 
-    // Get all requests with owner information
+
+
+
+
+    // Get all requests with owner + donor information
+
+
     @GetMapping
     public List<BloodRequestResponseDTO> getAllRequests(){
 
-        return bloodRequestService.getAllRequestDTO();
+
+        return bloodRequestService
+
+                .getAllRequestDTO();
+
 
     }
+
+
+
+
 
 
 
@@ -125,35 +204,98 @@ public class BloodRequestController {
 
 
     // Filter requests by blood group
+
+
     @GetMapping("/blood-group/{bloodGroup}")
     public List<BloodRequest> getByBloodGroup(
+
             @PathVariable BloodGroup bloodGroup
+
     ){
 
+
         return bloodRequestService
-                .getRequestsByBloodGroup(bloodGroup);
+
+                .getRequestsByBloodGroup(
+
+                        bloodGroup
+
+                );
+
 
     }
 
-// Get requests created by a specific user
-@GetMapping("/user/{userId}")
-public List<BloodRequest> getUserRequests(
-        @PathVariable Long userId
-){
 
-    return bloodRequestService
-            .getRequestsByUser(userId);
 
-}
-// Get single blood request details
 
-@GetMapping("/{requestId}")
-public BloodRequest getRequestById(
-        @PathVariable Long requestId
-){
 
-    return bloodRequestService
-            .getRequestById(requestId);
 
-}
+
+
+
+
+
+
+    // Get requests created by specific user
+
+
+    @GetMapping("/user/{userId}")
+    public List<BloodRequest> getUserRequests(
+
+            @PathVariable Long userId
+
+    ){
+
+
+        return bloodRequestService
+
+                .getRequestsByUser(
+
+                        userId
+
+                );
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    // Phase 4.4
+    // Get single request details
+    // Includes accepted donor information
+
+
+    @GetMapping("/{requestId}")
+    public BloodRequestResponseDTO getRequestDetails(
+
+            @PathVariable Long requestId
+
+    ){
+
+
+        return bloodRequestService
+
+                .getRequestDetails(
+
+                        requestId
+
+                );
+
+
+    }
+
+
+
+
+
+
 }
