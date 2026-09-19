@@ -17,6 +17,8 @@ const API_URL =
 
 
 
+
+
 type BloodRequest = {
 
 
@@ -75,6 +77,8 @@ type BloodRequest = {
 
 
 
+
+
 export default function MyRequestsPage(){
 
 
@@ -101,8 +105,6 @@ export default function MyRequestsPage(){
     const [user,setUser] =
 
         useState<any>(null);
-
-
 
 
 
@@ -157,6 +159,9 @@ export default function MyRequestsPage(){
 
 
 
+
+
+
     async function loadRequests(
 
         userId:number
@@ -169,6 +174,8 @@ export default function MyRequestsPage(){
 
 
             setLoading(true);
+
+
 
 
 
@@ -201,12 +208,15 @@ export default function MyRequestsPage(){
         catch(error){
 
 
+
             console.log(error);
 
 
 
             toast.error(
+
                 "Failed to load requests"
+
             );
 
 
@@ -222,6 +232,11 @@ export default function MyRequestsPage(){
 
 
     }
+
+
+
+
+
 
 
 
@@ -258,6 +273,7 @@ export default function MyRequestsPage(){
                 "Are you sure you want to cancel this request?"
 
             );
+
 
 
 
@@ -306,11 +322,15 @@ export default function MyRequestsPage(){
 
 
                 throw new Error(
+
                     "Cancel failed"
+
                 );
 
 
             }
+
+
 
 
 
@@ -322,6 +342,8 @@ export default function MyRequestsPage(){
                 "Blood request cancelled"
 
             );
+
+
 
 
 
@@ -369,6 +391,9 @@ export default function MyRequestsPage(){
 
 
 
+
+
+
     // ==================================================
     // PHASE 4.1
     // Requester confirms donation completion
@@ -403,7 +428,6 @@ export default function MyRequestsPage(){
                 "Confirm that blood donation has been completed?"
 
             );
-
 
 
 
@@ -529,6 +553,14 @@ export default function MyRequestsPage(){
 
 
 
+
+
+    // ==================================================
+    // Phase 4.2
+    // Status color handling
+    // ==================================================
+
+
     function getStatusStyle(
 
         status:string
@@ -548,6 +580,9 @@ export default function MyRequestsPage(){
 
 
 
+
+
+
         if(status==="DONOR_FOUND"){
 
 
@@ -560,6 +595,8 @@ export default function MyRequestsPage(){
 
 
 
+
+
         if(status==="FULFILLED"){
 
 
@@ -567,6 +604,22 @@ export default function MyRequestsPage(){
 
 
         }
+
+
+
+
+
+
+
+        if(status==="EXPIRED"){
+
+
+            return "bg-red-100 text-red-700";
+
+
+        }
+
+
 
 
 
@@ -585,6 +638,10 @@ export default function MyRequestsPage(){
 
 
 
+
+
+
+
     function showTimeline(
 
         status:string
@@ -592,13 +649,21 @@ export default function MyRequestsPage(){
     ){
 
 
+
         return (
+
+
 
 <div className="
 mt-5
 space-y-3
 text-sm
 ">
+
+
+
+
+
 
 
 <div className={
@@ -626,10 +691,14 @@ status==="OPEN"
 
 
 
+
+
 <div className={
 
 status==="DONOR_FOUND"
+
 ||
+
 status==="FULFILLED"
 
 ?
@@ -647,6 +716,9 @@ status==="FULFILLED"
 🔵 Donor Found
 
 </div>
+
+
+
 
 
 
@@ -676,6 +748,35 @@ status==="FULFILLED"
 
 
 
+
+
+
+<div className={
+
+status==="EXPIRED"
+
+?
+
+"text-red-600 font-bold"
+
+:
+
+"text-gray-400"
+
+}
+
+>
+
+❌ Request Expired
+
+</div>
+
+
+
+
+
+
+
 </div>
 
 
@@ -683,11 +784,24 @@ status==="FULFILLED"
 
 
     }
-        function showDonorInfo(
+
+
+
+
+
+
+
+
+
+
+
+
+    function showDonorInfo(
 
         request:BloodRequest
 
     ){
+
 
 
         if(
@@ -700,9 +814,13 @@ status==="FULFILLED"
 
         ){
 
+
             return null;
 
+
         }
+
+
 
 
 
@@ -710,9 +828,13 @@ status==="FULFILLED"
 
         if(!request.donorName){
 
+
             return null;
 
+
         }
+
+
 
 
 
@@ -729,6 +851,8 @@ status==="FULFILLED"
             bg-emerald-50
             p-5
             ">
+
+
 
 
 
@@ -813,19 +937,7 @@ status==="FULFILLED"
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-    return(
+        return(
 
 
 
@@ -918,7 +1030,6 @@ status==="FULFILLED"
 
                         requests.length === 0 ?
 
-
                         (
 
                             <p className="
@@ -932,7 +1043,6 @@ status==="FULFILLED"
 
                         )
 
-
                         :
 
 
@@ -945,7 +1055,6 @@ status==="FULFILLED"
 
 
                         {
-
 
                         requests.map(
 
@@ -962,6 +1071,8 @@ status==="FULFILLED"
                         border-slate-200
                         p-6
                         ">
+
+
 
 
 
@@ -1027,7 +1138,9 @@ status==="FULFILLED"
                                 font-semibold
 
                                 ${getStatusStyle(
+
                                     request.status
+
                                 )}
 
                                 `}
@@ -1210,7 +1323,17 @@ status==="FULFILLED"
 
 
 
+
+                                {
+
+                                request.status !== "EXPIRED"
+
+                                &&
+
+                                (
+
                                 <button
+
 
                                 onClick={()=>{
 
@@ -1225,6 +1348,7 @@ status==="FULFILLED"
                                 }}
 
 
+
                                 className="
                                 rounded-xl
                                 bg-emerald-700
@@ -1235,11 +1359,18 @@ status==="FULFILLED"
                                 hover:bg-emerald-800
                                 "
 
+
                                 >
 
                                     👥 Manage Donors
 
                                 </button>
+
+
+                                )
+
+
+                                }
 
 
 
@@ -1309,6 +1440,9 @@ status==="FULFILLED"
 
 
 
+
+
+
                                 {
 
                                 request.status !== "FULFILLED"
@@ -1316,6 +1450,10 @@ status==="FULFILLED"
                                 &&
 
                                 request.status !== "CANCELLED"
+
+                                &&
+
+                                request.status !== "EXPIRED"
 
                                 &&
 
@@ -1367,6 +1505,11 @@ status==="FULFILLED"
 
 
 
+
+
+
+
+
                                 {
 
                                 request.status === "FULFILLED"
@@ -1386,6 +1529,45 @@ status==="FULFILLED"
                                 ">
 
                                     ✅ Completed
+
+                                </span>
+
+
+                                )
+
+
+                                }
+
+
+
+
+
+
+
+
+
+
+
+
+                                {
+
+                                request.status === "EXPIRED"
+
+                                &&
+
+
+                                (
+
+                                <span className="
+                                rounded-xl
+                                bg-red-100
+                                px-5
+                                py-3
+                                font-semibold
+                                text-red-700
+                                ">
+
+                                    ❌ Expired
 
                                 </span>
 
