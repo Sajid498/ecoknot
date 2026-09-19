@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import backend.dto.BloodRequestResponseDTO;
 import backend.entity.BloodGroup;
 import backend.entity.BloodRequest;
+import backend.entity.DonationResponse;
+import backend.entity.DonationStatus;
 import backend.entity.RequestStatus;
 import backend.entity.User;
 import backend.exception.ResourceNotFoundException;
@@ -29,6 +31,7 @@ public class BloodRequestService {
 
 
     private final DonationResponseRepository donationResponseRepository;
+
 
 
 
@@ -262,7 +265,16 @@ public class BloodRequestService {
 
 
     }
-        // CANCEL BLOOD REQUEST
+
+
+
+
+
+
+
+
+
+    // CANCEL BLOOD REQUEST
 
 
     public BloodRequest cancelBloodRequest(
@@ -408,6 +420,55 @@ public class BloodRequestService {
 
 
 
+                    // Phase 4.1
+                    // Find accepted donation response
+
+
+                    DonationResponse acceptedDonation =
+
+                            donationResponseRepository
+
+                                    .findByRequestId(
+
+                                            request.getId()
+
+                                    )
+
+                                    .stream()
+
+                                    .filter(
+
+                                            donation ->
+
+                                            donation.getStatus()
+
+                                            == DonationStatus.ACCEPTED
+
+                                    )
+
+                                    .findFirst()
+
+                                    .orElse(null);
+
+
+
+
+
+                    Long donationResponseId =
+
+                            acceptedDonation != null
+
+                            ?
+
+                            acceptedDonation.getId()
+
+                            :
+
+                            null;
+
+
+
+
 
                     return new BloodRequestResponseDTO(
 
@@ -497,9 +558,6 @@ public class BloodRequestService {
 
 
 
-                            // Accepted donor information
-
-
                             donor!=null
 
                             ?
@@ -527,6 +585,7 @@ public class BloodRequestService {
                             donor!=null
 
                             &&
+
                             donor.getBloodGroup()!=null
 
                             ?
@@ -548,7 +607,11 @@ public class BloodRequestService {
 
                             :
 
-                            null
+                            null,
+
+
+
+                            donationResponseId
 
 
                     );
@@ -560,19 +623,7 @@ public class BloodRequestService {
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-    // GET ALL REQUESTS
+     // GET ALL REQUESTS
 
 
     public List<BloodRequest> getAllRequests(){
@@ -582,9 +633,6 @@ public class BloodRequestService {
 
 
     }
-
-
-
 
 
 
@@ -621,9 +669,6 @@ public class BloodRequestService {
 
 
 
-
-
-
     // GET USER REQUESTS
 
 
@@ -642,9 +687,6 @@ public class BloodRequestService {
 
 
     }
-
-
-
 
 
 
@@ -678,7 +720,16 @@ public class BloodRequestService {
 
 
     }
-        // UPDATE STATUS WHEN DONOR ACCEPTED
+
+
+
+
+
+
+
+
+
+    // UPDATE STATUS WHEN DONOR ACCEPTED
 
 
     public BloodRequest markDonorFound(
@@ -1013,4 +1064,4 @@ public class BloodRequestService {
 
 
 
-}
+}   

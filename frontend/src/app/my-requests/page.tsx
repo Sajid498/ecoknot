@@ -60,6 +60,12 @@ type BloodRequest = {
     donorLocation?:string;
 
 
+
+    // Phase 4.1
+
+    donationResponseId?:number;
+
+
 };
 
 
@@ -360,6 +366,169 @@ export default function MyRequestsPage(){
 
 
 
+
+
+
+    // ==================================================
+    // PHASE 4.1
+    // Requester confirms donation completion
+    // ==================================================
+
+
+    async function confirmDonationCompleted(
+
+        donationResponseId:number
+
+    ){
+
+
+
+        if(!user){
+
+            return;
+
+        }
+
+
+
+
+
+
+
+
+        const confirmAction =
+
+            window.confirm(
+
+                "Confirm that blood donation has been completed?"
+
+            );
+
+
+
+
+
+
+
+
+        if(!confirmAction){
+
+            return;
+
+        }
+
+
+
+
+
+
+
+
+
+        try{
+
+
+
+            const response =
+
+                await fetch(
+
+`${API_URL}/api/donation-response/${donationResponseId}/complete?requesterId=${user.id}`,
+
+                    {
+
+                        method:"PUT"
+
+                    }
+
+                );
+
+
+
+
+
+
+
+
+
+            if(!response.ok){
+
+
+                throw new Error(
+
+                    "Completion failed"
+
+                );
+
+
+            }
+
+
+
+
+
+
+
+
+
+            toast.success(
+
+                "Donation completed successfully"
+
+            );
+
+
+
+
+
+
+
+
+            loadRequests(
+
+                user.id
+
+            );
+
+
+
+
+
+        }
+
+        catch(error){
+
+
+
+            console.log(error);
+
+
+
+            toast.error(
+
+                "Failed to complete donation"
+
+            );
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
     function getStatusStyle(
 
         status:string
@@ -515,14 +684,20 @@ status==="FULFILLED"
 
     }
         function showDonorInfo(
+
         request:BloodRequest
+
     ){
 
 
         if(
+
             request.status !== "DONOR_FOUND"
+
             &&
+
             request.status !== "FULFILLED"
+
         ){
 
             return null;
@@ -638,6 +813,9 @@ status==="FULFILLED"
 
 
     }
+
+
+
 
 
 
@@ -1062,6 +1240,66 @@ status==="FULFILLED"
                                     👥 Manage Donors
 
                                 </button>
+
+
+
+
+
+
+
+
+
+                                {
+
+                                request.status === "DONOR_FOUND"
+
+                                &&
+
+                                request.donationResponseId
+
+                                &&
+
+
+                                (
+
+                                <button
+
+
+                                onClick={()=>{
+
+
+                                    confirmDonationCompleted(
+
+                                        request.donationResponseId!
+
+                                    );
+
+
+                                }}
+
+
+
+                                className="
+                                rounded-xl
+                                bg-blue-600
+                                px-5
+                                py-3
+                                font-semibold
+                                text-white
+                                hover:bg-blue-700
+                                "
+
+                                >
+
+                                    ✅ Confirm Donation Completed
+
+                                </button>
+
+
+                                )
+
+
+                                }
 
 
 

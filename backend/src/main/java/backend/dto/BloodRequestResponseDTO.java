@@ -8,7 +8,6 @@ import java.time.LocalDate;
 public class BloodRequestResponseDTO {
 
 
-
     private Long id;
 
 
@@ -46,8 +45,6 @@ public class BloodRequestResponseDTO {
 
 
 
-
-
     // Accepted donor information
 
     private Long donorId;
@@ -62,6 +59,11 @@ public class BloodRequestResponseDTO {
     private String donorLocation;
 
 
+
+    // Phase 4.1
+    // Donation response id required for completion confirmation
+
+    private Long donationResponseId;
 
 
 
@@ -101,7 +103,9 @@ public class BloodRequestResponseDTO {
 
             String donorBloodGroup,
 
-            String donorLocation
+            String donorLocation,
+
+            Long donationResponseId
 
     ){
 
@@ -141,6 +145,9 @@ public class BloodRequestResponseDTO {
         this.donorLocation = donorLocation;
 
 
+        this.donationResponseId = donationResponseId;
+
+
     }
 
 
@@ -160,13 +167,11 @@ public class BloodRequestResponseDTO {
 
 
 
-
     public String getPatientName(){
 
         return patientName;
 
     }
-
 
 
 
@@ -180,13 +185,11 @@ public class BloodRequestResponseDTO {
 
 
 
-
     public String getHospital(){
 
         return hospital;
 
     }
-
 
 
 
@@ -200,13 +203,11 @@ public class BloodRequestResponseDTO {
 
 
 
-
     public String getContactNumber(){
 
         return contactNumber;
 
     }
-
 
 
 
@@ -220,13 +221,11 @@ public class BloodRequestResponseDTO {
 
 
 
-
     public Integer getUnitsNeeded(){
 
         return unitsNeeded;
 
     }
-
 
 
 
@@ -240,13 +239,11 @@ public class BloodRequestResponseDTO {
 
 
 
-
     public String getDescription(){
 
         return description;
 
     }
-
 
 
 
@@ -260,17 +257,11 @@ public class BloodRequestResponseDTO {
 
 
 
-
     public Long getUserId(){
 
         return userId;
 
     }
-
-
-
-
-
 
 
 
@@ -284,13 +275,11 @@ public class BloodRequestResponseDTO {
 
 
 
-
     public String getDonorName(){
 
         return donorName;
 
     }
-
 
 
 
@@ -304,10 +293,19 @@ public class BloodRequestResponseDTO {
 
 
 
-
     public String getDonorLocation(){
 
         return donorLocation;
+
+    }
+
+
+
+
+
+    public Long getDonationResponseId(){
+
+        return donationResponseId;
 
     }
 
