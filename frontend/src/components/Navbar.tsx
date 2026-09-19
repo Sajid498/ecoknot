@@ -594,8 +594,8 @@ hover:text-emerald-700
 
 :
 
-<></>
 <>
+
  
  
 <Link
@@ -613,11 +613,6 @@ text-emerald-700
 Home
 
 </Link>
-
-
-
-
-
 
 
 
@@ -721,12 +716,6 @@ Academic Hub
 
 
 </nav>
-
-
-
-
-
-
 
 
 
