@@ -7,6 +7,9 @@ import {
 } from "react";
 
 
+import Link from "next/link";
+
+
 import ResourceCard from "@/components/ResourceCard";
 
 
@@ -303,188 +306,259 @@ export default function ResourcePage(){
 
 
     }
-        return(
 
 
-        <main className="
-        min-h-screen
-        bg-slate-50
-        p-6
-        md:p-10
-        ">
 
 
 
-            <div className="
-            mx-auto
-            max-w-4xl
-            ">
 
 
 
-                <h1 className="
-                text-3xl
-                font-bold
-                "
-                >
 
-                    🌎 Resource Sharing
 
-                </h1>
 
 
 
+return(
 
-                <p className="
-                mt-2
-                text-gray-600
-                "
-                >
 
-                    Share useful information with the EcoKnot community.
+<main className="
+min-h-screen
+bg-slate-50
+p-6
+md:p-10
+">
 
-                </p>
 
 
+<div className="
+mx-auto
+max-w-4xl
+">
 
 
 
 
 
 
+<div className="
+flex
+items-center
+justify-between
+">
 
-                <div className="
-                mt-8
-                space-y-6
-                ">
 
+<div>
 
 
+<h1 className="
+text-3xl
+font-bold
+">
 
+🌎 Resource Sharing
 
-                {
+</h1>
 
-                loading ?
 
 
-                (
 
-                    <div className="
-                    rounded-xl
-                    bg-white
-                    p-6
-                    shadow
-                    ">
 
-                        Loading resources...
+<p className="
+mt-2
+text-gray-600
+">
 
-                    </div>
+Share useful information with the EcoKnot community.
 
+</p>
 
-                )
 
+</div>
 
 
-                :
 
 
 
-                resources.length === 0 ?
 
 
-                (
 
-                    <div className="
-                    rounded-xl
-                    bg-white
-                    p-6
-                    shadow
-                    ">
+<Link
 
-                        No resources available.
+href="/resources/create"
 
-                    </div>
+className="
+rounded-xl
+bg-emerald-700
+px-5
+py-3
+font-semibold
+text-white
+hover:bg-emerald-800
+"
 
+>
 
-                )
++ Create Post
 
+</Link>
 
 
-                :
 
 
 
-                resources.map(
 
-                    (resource)=>(
+</div>
 
 
-                        <ResourceCard
 
 
-                            key={resource.id}
 
 
-                            resource={resource}
 
 
-                            onLike={()=>
 
+<div className="
+mt-8
+space-y-6
+">
 
-                                handleLike(
 
-                                    resource.id
 
-                                )
 
 
-                            }
+{
 
+loading ?
 
 
-                            onShare={()=>
+(
 
+<div className="
+rounded-xl
+bg-white
+p-6
+shadow
+">
 
-                                handleShare(
+Loading resources...
 
-                                    resource.id
+</div>
 
-                                )
 
+)
 
-                            }
 
 
+:
 
-                        />
 
 
-                    )
 
 
-                )
+resources.length === 0 ?
 
 
-                }
+(
 
+<div className="
+rounded-xl
+bg-white
+p-6
+shadow
+">
 
+No resources available.
 
-                </div>
+</div>
 
 
+)
 
 
 
+:
 
-            </div>
 
 
 
 
-        </main>
+resources.map(
 
+(resource)=>(
 
-    );
+
+<ResourceCard
+
+
+key={resource.id}
+
+
+resource={resource}
+
+
+onLike={()=>
+
+
+handleLike(
+
+resource.id
+
+)
+
+
+}
+
+
+
+onShare={()=>
+
+
+handleShare(
+
+resource.id
+
+)
+
+
+}
+
+
+
+/>
+
+
+
+)
+
+
+)
+
+
+
+}
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</main>
+
+
+);
 
 
 }
