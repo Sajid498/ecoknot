@@ -318,6 +318,141 @@ export default function ResourcePage(){
 
 
 
+    async function handleDelete(
+
+        id:number
+
+    ){
+
+
+
+        try{
+
+
+            const savedUser =
+
+                localStorage.getItem("user");
+
+
+
+
+
+            if(!savedUser){
+
+                return;
+
+            }
+
+
+
+
+
+
+            const user =
+
+                JSON.parse(savedUser);
+
+
+
+
+
+
+
+            const response =
+
+                await fetch(
+
+`${API_URL}/api/resources/${id}?userId=${user.id}`,
+
+                    {
+
+                        method:"DELETE"
+
+                    }
+
+                );
+
+
+
+
+
+
+
+
+            if(response.ok){
+
+
+
+                setResources(
+
+                    (previous)=>
+
+                    previous.filter(
+
+                        (resource)=>
+
+                        resource.id !== id
+
+                    )
+
+                );
+
+
+
+            }
+
+
+
+            else{
+
+
+                const error =
+
+                    await response.json();
+
+
+
+                alert(
+
+                    error.message ||
+
+                    "Delete failed"
+
+                );
+
+
+            }
+
+
+
+
+
+
+        }
+
+        catch(error){
+
+
+            console.log(error);
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 return(
 
@@ -346,6 +481,7 @@ flex
 items-center
 justify-between
 ">
+
 
 
 <div>
@@ -382,7 +518,6 @@ Share useful information with the EcoKnot community.
 
 
 
-
 <Link
 
 href="/resources/create"
@@ -402,6 +537,7 @@ hover:bg-emerald-800
 + Create Post
 
 </Link>
+
 
 
 
@@ -497,6 +633,7 @@ key={resource.id}
 resource={resource}
 
 
+
 onLike={()=>
 
 
@@ -511,6 +648,8 @@ resource.id
 
 
 
+
+
 onShare={()=>
 
 
@@ -522,6 +661,12 @@ resource.id
 
 
 }
+
+
+
+
+onDelete={handleDelete}
+
 
 
 

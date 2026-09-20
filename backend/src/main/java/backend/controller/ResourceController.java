@@ -204,29 +204,28 @@ public class ResourceController {
 
 
     // Delete post
+@DeleteMapping("/{id}")
+public String deleteResource(
 
-    @DeleteMapping("/{id}")
-    public String deleteResource(
+        @PathVariable Long id,
 
+        @RequestParam Long userId
 
-            @PathVariable Long id
-
-
-    ){
-
+){
 
 
-        resourceService
+    resourceService.deleteResource(
 
-                .deleteResource(id);
+            id,
+
+            userId
+
+    );
 
 
+    return "Resource deleted successfully";
 
-
-        return "Resource deleted successfully";
-
-
-    }
+}
 
 
 

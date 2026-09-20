@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-
 import backend.dto.ResourceDTO;
 import backend.entity.Resource;
 import backend.entity.User;
@@ -56,8 +55,6 @@ public class ResourceService {
 
 
 
-
-    // Create new social post
 
     public ResourceDTO createResource(
 
@@ -125,8 +122,6 @@ public class ResourceService {
 
 
 
-    // Get Facebook style feed
-
     public List<ResourceDTO> getAllResources(){
 
 
@@ -152,8 +147,6 @@ public class ResourceService {
 
 
 
-
-    // Get single post
 
     public ResourceDTO getResourceById(
 
@@ -195,8 +188,6 @@ public class ResourceService {
 
 
 
-
-    // Like a post
 
     public ResourceDTO likeResource(
 
@@ -261,8 +252,6 @@ public class ResourceService {
 
 
 
-    // Share a post
-
     public ResourceDTO shareResource(
 
             Long id
@@ -326,11 +315,13 @@ public class ResourceService {
 
 
 
-    // Delete post
+    // Delete only by owner
 
     public void deleteResource(
 
-            Long id
+            Long resourceId,
+
+            Long userId
 
     ){
 
@@ -340,7 +331,7 @@ public class ResourceService {
 
                 resourceRepository
 
-                        .findById(id)
+                        .findById(resourceId)
 
                         .orElseThrow(
 
@@ -349,6 +340,36 @@ public class ResourceService {
                                 )
 
                         );
+
+
+
+
+
+
+
+
+        if(
+
+            !resource.getUser()
+
+                    .getId()
+
+                    .equals(userId)
+
+        ){
+
+
+
+            throw new RuntimeException(
+
+                    "You are not allowed to delete this resource"
+
+            );
+
+
+        }
+
+
 
 
 
@@ -370,8 +391,6 @@ public class ResourceService {
 
 
 
-
-    // Entity -> DTO converter
 
     private ResourceDTO convertToDTO(
 
