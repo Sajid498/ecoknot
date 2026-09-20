@@ -39,8 +39,6 @@ export default function ResourcePage(){
 
 
 
-
-
     const [resources,setResources] =
 
         useState<Resource[]>([]);
@@ -52,6 +50,59 @@ export default function ResourcePage(){
     const [loading,setLoading] =
 
         useState(true);
+
+
+
+
+
+    const [user,setUser] =
+
+        useState<any>(null);
+
+
+
+
+
+    const [activeTab,setActiveTab] =
+
+        useState("community");
+
+
+
+
+
+
+
+
+
+    useEffect(()=>{
+
+
+        const savedUser =
+
+            localStorage.getItem("user");
+
+
+
+        if(savedUser){
+
+
+            setUser(
+
+                JSON.parse(savedUser)
+
+            );
+
+
+        }
+
+
+
+        loadResources();
+
+
+
+    },[]);
 
 
 
@@ -127,12 +178,7 @@ export default function ResourcePage(){
         catch(error){
 
 
-
-            console.log(
-
-                error
-
-            );
+            console.log(error);
 
 
         }
@@ -147,30 +193,6 @@ export default function ResourcePage(){
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-    useEffect(()=>{
-
-
-        loadResources();
-
-
-
-    },[]);
-
-
-
-
 
 
 
@@ -246,9 +268,6 @@ export default function ResourcePage(){
 
 
 
-
-
-
     async function handleShare(
 
         id:number
@@ -315,9 +334,6 @@ export default function ResourcePage(){
 
 
 
-
-
-
     async function handleDelete(
 
         id:number
@@ -348,9 +364,11 @@ export default function ResourcePage(){
 
 
 
-            const user =
+
+            const currentUser =
 
                 JSON.parse(savedUser);
+
 
 
 
@@ -362,7 +380,7 @@ export default function ResourcePage(){
 
                 await fetch(
 
-`${API_URL}/api/resources/${id}?userId=${user.id}`,
+`${API_URL}/api/resources/${id}?userId=${currentUser.id}`,
 
                     {
 
@@ -385,11 +403,11 @@ export default function ResourcePage(){
 
                 setResources(
 
-                    (previous)=>
+                    previous =>
 
                     previous.filter(
 
-                        (resource)=>
+                        resource =>
 
                         resource.id !== id
 
@@ -398,33 +416,7 @@ export default function ResourcePage(){
                 );
 
 
-
             }
-
-
-
-            else{
-
-
-                const error =
-
-                    await response.json();
-
-
-
-                alert(
-
-                    error.message ||
-
-                    "Delete failed"
-
-                );
-
-
-            }
-
-
-
 
 
 
@@ -439,10 +431,57 @@ export default function ResourcePage(){
         }
 
 
-
     }
 
 
+
+
+
+
+
+
+
+    const myPosts =
+
+        resources.filter(
+
+            resource =>
+
+            resource.userId === user?.id
+
+        );
+
+
+
+
+
+    const communityPosts =
+
+        resources.filter(
+
+            resource =>
+
+            resource.userId !== user?.id
+
+        );
+
+
+
+
+
+
+
+    const displayedPosts =
+
+        activeTab === "my"
+
+        ?
+
+        myPosts
+
+        :
+
+        communityPosts;
 
 
 
@@ -476,12 +515,12 @@ max-w-4xl
 
 
 
+
 <div className="
 flex
 items-center
 justify-between
 ">
-
 
 
 <div>
@@ -495,7 +534,6 @@ font-bold
 🌎 Resource Sharing
 
 </h1>
-
 
 
 
@@ -542,6 +580,82 @@ hover:bg-emerald-800
 
 
 
+</div>
+
+
+
+
+
+
+
+
+
+<div className="
+mt-8
+flex
+gap-4
+">
+
+
+
+
+
+<button
+
+onClick={()=>setActiveTab("my")}
+
+className={
+
+activeTab==="my"
+
+?
+
+"rounded-xl bg-emerald-700 px-5 py-3 text-white font-semibold"
+
+:
+
+"rounded-xl bg-white px-5 py-3 font-semibold"
+
+}
+
+>
+
+My Posts
+
+</button>
+
+
+
+
+
+
+
+<button
+
+onClick={()=>setActiveTab("community")}
+
+className={
+
+activeTab==="community"
+
+?
+
+"rounded-xl bg-emerald-700 px-5 py-3 text-white font-semibold"
+
+:
+
+"rounded-xl bg-white px-5 py-3 font-semibold"
+
+}
+
+>
+
+Community Posts
+
+</button>
+
+
+
 
 
 </div>
@@ -568,8 +682,6 @@ space-y-6
 loading ?
 
 
-(
-
 <div className="
 rounded-xl
 bg-white
@@ -582,7 +694,6 @@ Loading resources...
 </div>
 
 
-)
 
 
 
@@ -592,10 +703,8 @@ Loading resources...
 
 
 
-resources.length === 0 ?
+displayedPosts.length===0 ?
 
-
-(
 
 <div className="
 rounded-xl
@@ -604,12 +713,11 @@ p-6
 shadow
 ">
 
-No resources available.
+No posts available.
 
 </div>
 
 
-)
 
 
 
@@ -619,7 +727,7 @@ No resources available.
 
 
 
-resources.map(
+displayedPosts.map(
 
 (resource)=>(
 
@@ -633,45 +741,16 @@ key={resource.id}
 resource={resource}
 
 
-
-onLike={()=>
-
-
-handleLike(
-
-resource.id
-
-)
+onLike={()=>handleLike(resource.id)}
 
 
-}
-
-
-
-
-
-onShare={()=>
-
-
-handleShare(
-
-resource.id
-
-)
-
-
-}
-
-
+onShare={()=>handleShare(resource.id)}
 
 
 onDelete={handleDelete}
 
 
-
-
 />
-
 
 
 )
@@ -687,17 +766,16 @@ onDelete={handleDelete}
 
 
 
-</div>
-
-
-
-
-
 
 </div>
 
 
 
+
+
+
+
+</div>
 
 
 </main>
