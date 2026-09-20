@@ -104,6 +104,7 @@ useState(false);
 
 
 
+
 useEffect(()=>{
 
 
@@ -222,7 +223,6 @@ async function addComment(){
 
 
 
-
     const currentUser =
 
         JSON.parse(savedUser);
@@ -300,6 +300,96 @@ async function addComment(){
 
     }
 
+
+
+}
+
+
+
+
+
+
+
+
+
+async function deleteComment(
+
+    commentId:number
+
+){
+
+
+
+    if(!user){
+
+        return;
+
+    }
+
+
+
+
+
+    try{
+
+
+        const response =
+
+            await fetch(
+
+`${API_URL}/api/comments/${commentId}?userId=${user.id}`,
+
+                {
+
+
+                    method:"DELETE"
+
+
+                }
+
+            );
+
+
+
+
+
+
+
+        if(response.ok){
+
+
+
+            setComments(
+
+                (previous)=>
+
+                previous.filter(
+
+                    (comment)=>
+
+                    comment.id !== commentId
+
+                )
+
+            );
+
+
+
+        }
+
+
+
+
+
+    }
+
+    catch(error){
+
+
+        console.log(error);
+
+
+    }
 
 
 }
@@ -606,12 +696,16 @@ comments.map(
 key={comment.id}
 
 className="
+relative
 rounded-lg
 bg-slate-100
 p-3
 "
 
 >
+
+
+<div>
 
 
 <p className="
@@ -629,6 +723,44 @@ font-semibold
 {comment.content}
 
 </p>
+
+
+</div>
+
+
+
+
+
+
+
+{
+
+user?.id === comment.userId &&
+
+
+<button
+
+onClick={()=>deleteComment(comment.id)}
+
+className="
+absolute
+right-3
+top-3
+text-red-600
+hover:text-red-800
+"
+
+title="Delete comment"
+
+>
+
+🗑
+
+</button>
+
+
+}
+
 
 
 
