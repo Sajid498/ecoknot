@@ -410,21 +410,12 @@ Community Connected
 
 
 
-
-<nav className="
+< nav className="
 hidden
 items-center
 gap-7
 lg:flex
 ">
-
-
-
-
-
-
-
-
 {
 
 isBloodSection ?
@@ -570,6 +561,30 @@ hover:text-emerald-700
 
 
 
+
+<Link
+
+href="/rescue"
+
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
+
+>
+
+ Relief Hub
+
+</Link>
+
+
+
+
+
+
+
 <Link
 
 href="/messages"
@@ -613,6 +628,8 @@ text-emerald-700
 Home
 
 </Link>
+
+
 
 
 
@@ -678,6 +695,30 @@ hover:text-emerald-700
 >
 
 🌎 Resources
+
+</Link>
+
+
+
+
+
+
+
+
+<Link
+
+href="/rescue"
+
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
+
+>
+
+ Relief Hub
 
 </Link>
 
@@ -883,10 +924,7 @@ Logout
 
 </button>
 
-
-
 </>
-
 
 
 
@@ -986,6 +1024,3 @@ Sign Up
 
 
 }
-
-
-

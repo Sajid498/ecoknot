@@ -35,7 +35,8 @@ const API_URL =
 
 
 
-export default function RescuePage(){
+
+export default function ReliefHubPage(){
 
 
 
@@ -62,7 +63,7 @@ export default function RescuePage(){
     useEffect(()=>{
 
 
-        loadRescues();
+        loadReliefPosts();
 
 
     },[]);
@@ -75,7 +76,7 @@ export default function RescuePage(){
 
 
 
-    async function loadRescues(){
+    async function loadReliefPosts(){
 
 
         try{
@@ -106,7 +107,7 @@ export default function RescuePage(){
 
                 throw new Error(
 
-                    "Failed to load rescues"
+                    "Failed to load relief posts"
 
                 );
 
@@ -201,7 +202,9 @@ md:justify-between
 
 
 
+
 <div>
+
 
 
 <h1 className="
@@ -210,9 +213,10 @@ font-bold
 text-slate-900
 ">
 
-🍱 Food & Medicine Rescue
+🌱 Relief Hub
 
 </h1>
+
 
 
 
@@ -224,7 +228,7 @@ mt-2
 text-slate-600
 ">
 
-Rescue surplus food and medicine by connecting donors with the community.
+Connect surplus food and medicine with people who need them before resources go to waste.
 
 </p>
 
@@ -255,9 +259,11 @@ hover:bg-emerald-800
 
 >
 
-+ Create Rescue
++ Create Relief Post
 
 </Link>
+
+
 
 
 
@@ -296,7 +302,7 @@ p-6
 shadow
 ">
 
-Loading rescue posts...
+Loading relief posts...
 
 </div>
 
@@ -332,9 +338,10 @@ shadow
 text-5xl
 ">
 
-🍱
+🌱
 
 </div>
+
 
 
 
@@ -346,9 +353,10 @@ text-xl
 font-bold
 ">
 
-No rescue donation available
+No relief post available
 
 </h2>
+
 
 
 
@@ -360,9 +368,10 @@ mt-2
 text-slate-600
 ">
 
-Be the first person to create a rescue donation.
+Be the first person to share surplus food or medicine with the community.
 
 </p>
+
 
 
 
@@ -385,16 +394,16 @@ Be the first person to create a rescue donation.
 
 rescues.map(
 
-(rescue)=>(
+(relief)=>(
 
 
 <RescueCard
 
 
-key={rescue.id}
+key={relief.id}
 
 
-rescue={rescue}
+rescue={relief}
 
 
 />

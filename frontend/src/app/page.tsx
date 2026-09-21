@@ -44,7 +44,7 @@ export default function Home() {
 
         <div className="absolute -left-32 top-20 h-72 w-72 rounded-full bg-emerald-200/30 blur-3xl" />
 
-        <div className="absolute -right-32 bottom-10 h-80 w-80 rounded-full bg-teal-200/30 blur-3xl" />
+        <div className="absolute -right-32 bottom-10 h-80 h-80 rounded-full bg-teal-200/30 blur-3xl" />
 
 
 
@@ -130,7 +130,7 @@ export default function Home() {
 
                 :
 
-                "EcoKnot brings blood donation, transparent fundraising, academic collaboration, resource sharing, and real-time communication together in one trusted community platform."
+                "EcoKnot brings blood donation, transparent fundraising, academic collaboration, resource sharing, relief support, and real-time communication together in one trusted community platform."
 
               }
 
@@ -173,13 +173,13 @@ export default function Home() {
 
 
 
-                    <Link href="/blood-donation">
+                    <Link href="/rescue">
 
 
                       <button className="rounded-xl border border-slate-300 bg-white px-7 py-3.5 font-semibold text-slate-800 transition hover:border-emerald-600 hover:text-emerald-700">
 
 
-                        Explore Blood Donation
+                        Explore Relief Hub
 
 
                       </button>
@@ -218,7 +218,7 @@ export default function Home() {
 
 
 
-                    <Link href="/blood-donation">
+                    <Link href="/rescue">
 
 
                       <button className="rounded-xl border border-slate-300 bg-white px-7 py-3.5 font-semibold text-slate-800 transition hover:border-emerald-600 hover:text-emerald-700">
@@ -249,6 +249,7 @@ export default function Home() {
 
 
 
+
             {/* Statistics */}
 
 
@@ -270,6 +271,7 @@ export default function Home() {
 
 
 
+
               <div>
 
                 <p className="text-2xl font-bold text-slate-900">
@@ -281,6 +283,7 @@ export default function Home() {
                 </p>
 
               </div>
+
 
 
 
@@ -360,6 +363,7 @@ export default function Home() {
 
 
 
+
               <p className="mt-3 text-slate-600">
 
                 Find the service you need or choose how you want to help.
@@ -371,7 +375,11 @@ export default function Home() {
 
 
 
+
+
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
+
+
 
 
 
@@ -411,8 +419,12 @@ export default function Home() {
 
 
 
+
+
                 <Link href="/fundraising">
+
                 <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5 transition hover:-translate-y-1 hover:shadow-lg">
+
 
                   <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-amber-100 text-xl">
 
@@ -420,16 +432,25 @@ export default function Home() {
 
                   </div>
 
+
                   <h3 className="font-bold text-slate-900">
+
                     Fundraising
+
                   </h3>
 
+
                   <p className="mt-2 text-sm leading-6 text-slate-600">
+
                     Create and support transparent donation campaigns.
+
                   </p>
 
+
                 </div>
+
                 </Link>
+
 
 
 
@@ -438,19 +459,27 @@ export default function Home() {
 
                 <div className="rounded-2xl border border-blue-100 bg-blue-50 p-5">
 
+
                   <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-xl">
 
                     📚
 
                   </div>
 
+
                   <h3 className="font-bold text-slate-900">
+
                     Academic Hub
+
                   </h3>
 
+
                   <p className="mt-2 text-sm leading-6 text-slate-600">
+
                     Share notes, materials, and academic knowledge.
+
                   </p>
+
 
                 </div>
 
@@ -460,7 +489,11 @@ export default function Home() {
 
 
 
-                <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5">
+
+
+                <Link href="/resources">
+
+                <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5 transition hover:-translate-y-1 hover:shadow-lg">
 
 
                   <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-100 text-xl">
@@ -471,20 +504,69 @@ export default function Home() {
 
 
                   <h3 className="font-bold text-slate-900">
+
                     Resource Sharing
+
                   </h3>
 
 
                   <p className="mt-2 text-sm leading-6 text-slate-600">
+
                     Give useful community resources a second life.
+
+                  </p>
+
+
+                </div>
+
+                </Link>
+
+
+
+
+
+
+
+
+
+                <Link href="/rescue">
+
+
+                <div className="rounded-2xl border border-orange-100 bg-orange-50 p-5 transition hover:-translate-y-1 hover:shadow-lg">
+
+
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-orange-100 text-xl">
+
+                    🌱
+
+                  </div>
+
+
+                  <h3 className="font-bold text-slate-900">
+
+                    Relief Hub
+
+                  </h3>
+
+
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+
+                    Connect surplus food and medicine with people before resources go to waste.
+
                   </p>
 
 
                 </div>
 
 
+                </Link>
+
+
+
+
 
               </div>
+
 
 
 

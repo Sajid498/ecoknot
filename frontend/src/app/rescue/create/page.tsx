@@ -403,7 +403,7 @@ text-3xl
 font-bold
 ">
 
-🍱 Create Rescue Donation
+Create Relief Post
 
 </h1>
 
@@ -868,7 +868,8 @@ loading
 
 :
 
-"Create Rescue"
+
+"Create Relief Post"
 
 }
 

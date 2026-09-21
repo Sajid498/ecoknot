@@ -60,6 +60,29 @@ rescue
 
 
 
+
+    function getTypeName(){
+
+
+        if(rescue.type==="FOOD"){
+
+            return "Food Support";
+
+        }
+
+
+        return "Medicine Support";
+
+
+    }
+
+
+
+
+
+
+
+
     function getStatusStyle(){
 
 
@@ -107,6 +130,7 @@ rescue
 
 
 
+
 return(
 
 
@@ -125,14 +149,25 @@ hover:shadow-lg
 
 
 
+
 <div className="
 flex
-items-center
+items-start
 justify-between
 ">
 
 
+
+
+
 <div>
+
+
+<div className="
+flex
+items-center
+gap-3
+">
 
 
 <span className="
@@ -145,8 +180,34 @@ text-3xl
 
 
 
+
+
+<span className="
+rounded-full
+bg-emerald-100
+px-3
+py-1
+text-sm
+font-semibold
+text-emerald-700
+">
+
+{getTypeName()}
+
+</span>
+
+
+
+</div>
+
+
+
+
+
+
+
 <h2 className="
-mt-3
+mt-4
 text-xl
 font-bold
 text-slate-900
@@ -157,7 +218,9 @@ text-slate-900
 </h2>
 
 
+
 </div>
+
 
 
 
@@ -166,22 +229,32 @@ text-slate-900
 
 
 <span className={`
+
 rounded-full
+
 px-4
+
 py-2
+
 text-sm
+
 font-semibold
+
 ${getStatusStyle()}
+
 `}>
 
-{rescue.status}
+🌱 {rescue.status}
 
 </span>
 
 
 
 
+
+
 </div>
+
 
 
 
@@ -209,10 +282,15 @@ text-slate-600
 
 <div className="
 mt-5
-space-y-2
+space-y-3
+rounded-xl
+bg-slate-50
+p-4
 text-sm
 text-slate-600
 ">
+
+
 
 
 
@@ -221,7 +299,9 @@ text-slate-600
 📦 Quantity:
 
 <span className="
+ml-1
 font-semibold
+text-slate-900
 ">
 
 {rescue.quantity}
@@ -234,12 +314,16 @@ font-semibold
 
 
 
+
+
 <p>
 
 📍 Location:
 
 <span className="
+ml-1
 font-semibold
+text-slate-900
 ">
 
 {rescue.location}
@@ -253,12 +337,15 @@ font-semibold
 
 
 
+
 <p>
 
-⏳ Expiry:
+⏳ Available Until:
 
 <span className="
+ml-1
 font-semibold
+text-slate-900
 ">
 
 {new Date(
@@ -275,12 +362,16 @@ rescue.expiryTime
 
 
 
+
+
 <p>
 
-👤 Posted by:
+👤 Shared By:
 
 <span className="
+ml-1
 font-semibold
+text-slate-900
 ">
 
 {rescue.userName}
@@ -292,7 +383,11 @@ font-semibold
 
 
 
+
+
+
 </div>
+
 
 
 
