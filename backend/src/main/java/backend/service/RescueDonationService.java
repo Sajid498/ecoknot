@@ -47,6 +47,13 @@ public class RescueDonationService {
     public List<RescueDonationDTO> getAllDonations(){
 
 
+
+        updateExpiredStatus();
+
+
+
+
+
         return rescueDonationRepository
 
                 .findAll()
@@ -89,7 +96,10 @@ public class RescueDonationService {
 
 
 
+
+
         if(donation.getStatus()==null){
+
 
             donation.setStatus(
 
@@ -97,7 +107,9 @@ public class RescueDonationService {
 
             );
 
+
         }
+
 
 
 
@@ -116,7 +128,115 @@ public class RescueDonationService {
 
 
 
+
         return convertToDTO(saved);
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+        Automatically update expired donations
+
+        AVAILABLE
+              |
+              |
+        expiry time passed
+              |
+              |
+        EXPIRED
+
+    */
+
+
+    private void updateExpiredStatus(){
+
+
+
+
+
+        List<RescueDonation> donations =
+
+                rescueDonationRepository.findAll();
+
+
+
+
+
+
+
+        LocalDateTime now =
+
+                LocalDateTime.now();
+
+
+
+
+
+
+
+
+        for(RescueDonation donation : donations){
+
+
+
+
+
+
+            if(
+
+                donation.getExpiryTime()!=null
+
+                &&
+
+                donation.getExpiryTime().isBefore(now)
+
+                &&
+
+                donation.getStatus()!=RescueStatus.EXPIRED
+
+            ){
+
+
+
+
+
+                donation.setStatus(
+
+                        RescueStatus.EXPIRED
+
+                );
+
+
+
+
+
+
+                rescueDonationRepository.save(
+
+                        donation
+
+                );
+
+
+
+
+            }
+
+
+
+
+
+        }
+
 
 
 
@@ -162,6 +282,7 @@ public class RescueDonationService {
                 donation.getStatus(),
 
 
+
                 donation.getUser()!=null
 
                 ?
@@ -173,6 +294,8 @@ public class RescueDonationService {
                 null,
 
 
+
+
                 donation.getUser()!=null
 
                 ?
@@ -182,6 +305,8 @@ public class RescueDonationService {
                 :
 
                 null,
+
+
 
 
                 donation.getCreatedAt()

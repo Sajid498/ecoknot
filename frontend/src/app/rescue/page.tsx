@@ -56,6 +56,14 @@ export default function ReliefHubPage(){
 
 
 
+    const [filter,setFilter] =
+
+        useState("ALL");
+
+
+
+
+
 
 
 
@@ -163,6 +171,152 @@ export default function ReliefHubPage(){
 
 
 
+
+
+
+    function isUrgent(
+
+        relief:RescueDonation
+
+    ){
+
+
+
+        const now =
+
+            new Date().getTime();
+
+
+
+
+
+        const expiry =
+
+            new Date(
+
+                relief.expiryTime
+
+            ).getTime();
+
+
+
+
+
+
+
+        const remaining =
+
+            expiry - now;
+
+
+
+
+
+
+
+        const oneDay =
+
+            24 *
+
+            60 *
+
+            60 *
+
+            1000;
+
+
+
+
+
+
+
+        return(
+
+            remaining > 0
+
+            &&
+
+            remaining <= oneDay
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    const filteredReliefs =
+
+        rescues.filter(
+
+            (relief)=>{
+
+
+
+                if(filter==="URGENT"){
+
+
+                    return isUrgent(relief);
+
+
+                }
+
+
+
+
+
+
+                if(filter==="FOOD"){
+
+
+                    return relief.type==="FOOD";
+
+
+                }
+
+
+
+
+
+
+                if(filter==="MEDICINE"){
+
+
+                    return relief.type==="MEDICINE";
+
+
+                }
+
+
+
+
+
+
+                return true;
+
+
+
+            }
+
+        );
+
+
+
+
+
+
+
+
+
 return(
 
 
@@ -223,6 +377,7 @@ text-slate-900
 
 
 
+
 <p className="
 mt-2
 text-slate-600
@@ -235,6 +390,7 @@ Connect surplus food and medicine with people who need them before resources go 
 
 
 </div>
+
 
 
 
@@ -279,10 +435,156 @@ hover:bg-emerald-800
 
 
 
+
+
+
+<div className="
+mt-8
+flex
+flex-wrap
+gap-3
+">
+
+
+
+
+
+<button
+
+onClick={()=>setFilter("ALL")}
+
+className={
+
+filter==="ALL"
+
+?
+
+"rounded-full bg-emerald-700 px-5 py-2 text-white font-semibold"
+
+:
+
+"rounded-full bg-white px-5 py-2 font-semibold shadow"
+
+}
+
+>
+
+All
+
+</button>
+
+
+
+
+
+
+
+<button
+
+onClick={()=>setFilter("URGENT")}
+
+className={
+
+filter==="URGENT"
+
+?
+
+"rounded-full bg-red-600 px-5 py-2 text-white font-semibold"
+
+:
+
+"rounded-full bg-white px-5 py-2 font-semibold shadow"
+
+}
+
+>
+
+🔥 Urgent
+
+</button>
+
+
+
+
+
+
+
+
+<button
+
+onClick={()=>setFilter("FOOD")}
+
+className={
+
+filter==="FOOD"
+
+?
+
+"rounded-full bg-orange-600 px-5 py-2 text-white font-semibold"
+
+:
+
+"rounded-full bg-white px-5 py-2 font-semibold shadow"
+
+}
+
+>
+
+🍱 Food
+
+</button>
+
+
+
+
+
+
+
+
+<button
+
+onClick={()=>setFilter("MEDICINE")}
+
+className={
+
+filter==="MEDICINE"
+
+?
+
+"rounded-full bg-blue-600 px-5 py-2 text-white font-semibold"
+
+:
+
+"rounded-full bg-white px-5 py-2 font-semibold shadow"
+
+}
+
+>
+
+💊 Medicine
+
+</button>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
 <div className="
 mt-8
 space-y-6
 ">
+
+
 
 
 
@@ -312,13 +614,14 @@ Loading relief posts...
 
 
 
+
 :
 
 
 
 
 
-rescues.length===0 ?
+filteredReliefs.length===0 ?
 
 
 
@@ -347,6 +650,7 @@ text-5xl
 
 
 
+
 <h2 className="
 mt-4
 text-xl
@@ -368,7 +672,7 @@ mt-2
 text-slate-600
 ">
 
-Be the first person to share surplus food or medicine with the community.
+No matching relief post found.
 
 </p>
 
@@ -386,13 +690,14 @@ Be the first person to share surplus food or medicine with the community.
 
 
 
+
 :
 
 
 
 
 
-rescues.map(
+filteredReliefs.map(
 
 (relief)=>(
 
@@ -417,6 +722,7 @@ rescue={relief}
 
 
 }
+
 
 
 
