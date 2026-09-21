@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import backend.dto.PickupRequestDTO;
 import backend.entity.PickupRequest;
 import backend.entity.PickupStatus;
 import backend.entity.RescueDonation;
@@ -71,7 +72,7 @@ public class PickupRequestService {
 
     // Volunteer requests pickup
 
-    public PickupRequest createPickupRequest(
+    public PickupRequestDTO createPickupRequest(
 
             Long rescueId,
 
@@ -176,11 +177,22 @@ public class PickupRequestService {
 
 
 
-        return pickupRequestRepository.save(
 
-                request
+        PickupRequest saved =
 
-        );
+                pickupRequestRepository.save(
+
+                        request
+
+                );
+
+
+
+
+
+
+        return convertToDTO(saved);
+
 
 
     }
@@ -195,7 +207,7 @@ public class PickupRequestService {
 
     // Get volunteer pickup requests
 
-    public List<PickupRequest> getVolunteerRequests(
+    public List<PickupRequestDTO> getVolunteerRequests(
 
             Long volunteerId
 
@@ -226,11 +238,13 @@ public class PickupRequestService {
 
         return pickupRequestRepository
 
-                .findByVolunteer(
+                .findByVolunteer(volunteer)
 
-                        volunteer
+                .stream()
 
-                );
+                .map(this::convertToDTO)
+
+                .toList();
 
 
     }
@@ -245,7 +259,7 @@ public class PickupRequestService {
 
     // Get requests for a relief post
 
-    public List<PickupRequest> getReliefRequests(
+    public List<PickupRequestDTO> getReliefRequests(
 
             Long rescueId
 
@@ -255,11 +269,13 @@ public class PickupRequestService {
 
         return pickupRequestRepository
 
-                .findByRescueDonationId(
+                .findByRescueDonationId(rescueId)
 
-                        rescueId
+                .stream()
 
-                );
+                .map(this::convertToDTO)
+
+                .toList();
 
 
     }
@@ -274,7 +290,7 @@ public class PickupRequestService {
 
     // Approve pickup request
 
-    public PickupRequest approveRequest(
+    public PickupRequestDTO approveRequest(
 
             Long requestId
 
@@ -313,11 +329,16 @@ public class PickupRequestService {
 
 
 
-        return pickupRequestRepository.save(
+        PickupRequest saved =
 
-                request
+                pickupRequestRepository.save(request);
 
-        );
+
+
+
+
+
+        return convertToDTO(saved);
 
 
     }
@@ -332,7 +353,7 @@ public class PickupRequestService {
 
     // Reject pickup request
 
-    public PickupRequest rejectRequest(
+    public PickupRequestDTO rejectRequest(
 
             Long requestId
 
@@ -360,11 +381,16 @@ public class PickupRequestService {
 
 
 
-        return pickupRequestRepository.save(
+        PickupRequest saved =
 
-                request
+                pickupRequestRepository.save(request);
 
-        );
+
+
+
+
+
+        return convertToDTO(saved);
 
 
     }
@@ -377,9 +403,9 @@ public class PickupRequestService {
 
 
 
-    // Mark item picked up
+    // Mark picked up
 
-    public PickupRequest markPickedUp(
+    public PickupRequestDTO markPickedUp(
 
             Long requestId
 
@@ -407,11 +433,16 @@ public class PickupRequestService {
 
 
 
-        return pickupRequestRepository.save(
+        PickupRequest saved =
 
-                request
+                pickupRequestRepository.save(request);
 
-        );
+
+
+
+
+
+        return convertToDTO(saved);
 
 
     }
@@ -426,7 +457,7 @@ public class PickupRequestService {
 
     // Mark delivered
 
-    public PickupRequest markDelivered(
+    public PickupRequestDTO markDelivered(
 
             Long requestId
 
@@ -465,11 +496,16 @@ public class PickupRequestService {
 
 
 
-        return pickupRequestRepository.save(
+        PickupRequest saved =
 
-                request
+                pickupRequestRepository.save(request);
 
-        );
+
+
+
+
+
+        return convertToDTO(saved);
 
 
     }
@@ -503,6 +539,100 @@ public class PickupRequestService {
                         )
 
                 );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private PickupRequestDTO convertToDTO(
+
+            PickupRequest request
+
+    ){
+
+
+
+        User volunteer =
+
+                request.getVolunteer();
+
+
+
+
+        RescueDonation rescue =
+
+                request.getRescueDonation();
+
+
+
+
+
+
+
+        PickupRequestDTO.VolunteerDTO volunteerDTO =
+
+                new PickupRequestDTO.VolunteerDTO(
+
+                        volunteer.getId(),
+
+                        volunteer.getName(),
+
+                        volunteer.getEmail(),
+
+                        volunteer.getLocation()
+
+                );
+
+
+
+
+
+
+
+        PickupRequestDTO.RescueInfoDTO rescueDTO =
+
+                new PickupRequestDTO.RescueInfoDTO(
+
+                        rescue.getId(),
+
+                        rescue.getTitle(),
+
+                        rescue.getType().toString(),
+
+                        rescue.getLocation()
+
+                );
+
+
+
+
+
+
+
+        return new PickupRequestDTO(
+
+                request.getId(),
+
+                request.getStatus(),
+
+                request.getRequestedAt(),
+
+                request.getApprovedAt(),
+
+                request.getCompletedAt(),
+
+                volunteerDTO,
+
+                rescueDTO
+
+        );
 
 
     }

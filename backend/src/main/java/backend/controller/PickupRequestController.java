@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import backend.entity.PickupRequest;
+import backend.dto.PickupRequestDTO;
 import backend.service.PickupRequestService;
 
 
@@ -29,6 +29,8 @@ public class PickupRequestController {
 
 
     private final PickupRequestService pickupRequestService;
+
+
 
 
 
@@ -58,13 +60,14 @@ public class PickupRequestController {
 
     @PostMapping
 
-    public PickupRequest createPickup(
+    public PickupRequestDTO createPickup(
 
             @RequestParam Long rescueId,
 
             @RequestParam Long volunteerId
 
     ){
+
 
 
         return pickupRequestService
@@ -88,15 +91,16 @@ public class PickupRequestController {
 
 
 
-    // Get volunteer requests
+    // Get volunteer pickup requests
 
     @GetMapping("/volunteer/{id}")
 
-    public List<PickupRequest> getVolunteerRequests(
+    public List<PickupRequestDTO> getVolunteerRequests(
 
             @PathVariable Long id
 
     ){
+
 
 
         return pickupRequestService
@@ -114,15 +118,16 @@ public class PickupRequestController {
 
 
 
-    // Get requests for a relief post
+    // Get pickup requests for a relief post
 
     @GetMapping("/relief/{id}")
 
-    public List<PickupRequest> getReliefRequests(
+    public List<PickupRequestDTO> getReliefRequests(
 
             @PathVariable Long id
 
     ){
+
 
 
         return pickupRequestService
@@ -144,11 +149,12 @@ public class PickupRequestController {
 
     @PutMapping("/{id}/approve")
 
-    public PickupRequest approveRequest(
+    public PickupRequestDTO approveRequest(
 
             @PathVariable Long id
 
     ){
+
 
 
         return pickupRequestService
@@ -170,11 +176,12 @@ public class PickupRequestController {
 
     @PutMapping("/{id}/reject")
 
-    public PickupRequest rejectRequest(
+    public PickupRequestDTO rejectRequest(
 
             @PathVariable Long id
 
     ){
+
 
 
         return pickupRequestService
@@ -196,11 +203,12 @@ public class PickupRequestController {
 
     @PutMapping("/{id}/pickup")
 
-    public PickupRequest markPickedUp(
+    public PickupRequestDTO markPickedUp(
 
             @PathVariable Long id
 
     ){
+
 
 
         return pickupRequestService
@@ -222,11 +230,12 @@ public class PickupRequestController {
 
     @PutMapping("/{id}/deliver")
 
-    public PickupRequest markDelivered(
+    public PickupRequestDTO markDelivered(
 
             @PathVariable Long id
 
     ){
+
 
 
         return pickupRequestService
