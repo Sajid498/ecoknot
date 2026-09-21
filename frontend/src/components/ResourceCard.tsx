@@ -105,6 +105,7 @@ useState(false);
 
 
 
+
 useEffect(()=>{
 
 
@@ -361,11 +362,11 @@ async function deleteComment(
 
             setComments(
 
-                (previous)=>
+                previous =>
 
                 previous.filter(
 
-                    (comment)=>
+                    comment =>
 
                     comment.id !== commentId
 
@@ -382,6 +383,101 @@ async function deleteComment(
 
 
     }
+
+    catch(error){
+
+
+        console.log(error);
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+async function handleShareClick(){
+
+
+
+    const link =
+
+    `${window.location.origin}/resources/${resource.id}`;
+
+
+
+
+
+    try{
+
+
+
+        if(navigator.share){
+
+
+
+            await navigator.share({
+
+
+                title:
+                "EcoKnot Resource",
+
+
+
+                text:
+                resource.content,
+
+
+
+                url:
+                link
+
+
+
+            });
+
+
+
+        }
+
+
+        else{
+
+
+            await navigator.clipboard.writeText(
+
+                link
+
+            );
+
+
+
+            alert(
+
+                "Resource link copied!"
+
+            );
+
+
+        }
+
+
+
+
+
+        onShare();
+
+
+
+    }
+
 
     catch(error){
 
@@ -457,6 +553,12 @@ text-xl
 </h2>
 
 
+
+
+
+
+
+
 {
 
 resource.category &&
@@ -480,6 +582,11 @@ text-emerald-700
 
 
 }
+
+
+
+
+
 
 
 
@@ -528,7 +635,6 @@ rounded-lg
 
 
 
-
 <div className="
 mt-5
 flex
@@ -566,7 +672,7 @@ py-2
 
 <button
 
-onClick={onShare}
+onClick={handleShareClick}
 
 className="
 rounded-lg
@@ -577,7 +683,7 @@ py-2
 
 >
 
-🔁 {resource.shares}
+🔗 Share {resource.shares}
 
 </button>
 
@@ -727,9 +833,6 @@ p-3
 >
 
 
-<div>
-
-
 <p className="
 font-semibold
 ">
@@ -745,9 +848,6 @@ font-semibold
 {comment.content}
 
 </p>
-
-
-</div>
 
 
 
@@ -782,7 +882,6 @@ title="Delete comment"
 
 
 }
-
 
 
 
