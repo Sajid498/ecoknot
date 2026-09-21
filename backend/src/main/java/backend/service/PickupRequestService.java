@@ -41,6 +41,8 @@ public class PickupRequestService {
 
 
 
+
+
     public PickupRequestService(
 
             PickupRequestRepository pickupRequestRepository,
@@ -64,6 +66,7 @@ public class PickupRequestService {
 
 
     }
+
 
 
 
@@ -186,7 +189,6 @@ public class PickupRequestService {
 
 
 
-        // Notify donor
 
         notificationService.createNotification(
 
@@ -215,6 +217,9 @@ public class PickupRequestService {
 
 
     }
+
+
+
 
 
 
@@ -274,6 +279,9 @@ public class PickupRequestService {
 
 
 
+
+
+
     // Get requests for relief post
 
     public List<PickupRequestDTO> getReliefRequests(
@@ -304,18 +312,39 @@ public class PickupRequestService {
 
 
 
+
+
+
     // Approve pickup request
+    // Only donation owner can approve
 
     public PickupRequestDTO approveRequest(
 
-            Long requestId
+            Long requestId,
+
+            Long userId
 
     ){
+
 
 
         PickupRequest request =
 
                 getRequest(requestId);
+
+
+
+
+
+
+        checkDonationOwner(
+
+                request,
+
+                userId
+
+        );
+
 
 
 
@@ -355,6 +384,8 @@ public class PickupRequestService {
 
 
 
+
+
         notificationService.createNotification(
 
 
@@ -378,6 +409,7 @@ public class PickupRequestService {
 
 
 
+
         return convertToDTO(saved);
 
 
@@ -391,18 +423,40 @@ public class PickupRequestService {
 
 
 
+
+
+
     // Reject pickup request
+    // Only donation owner can reject
 
     public PickupRequestDTO rejectRequest(
 
-            Long requestId
+            Long requestId,
+
+            Long userId
 
     ){
+
 
 
         PickupRequest request =
 
                 getRequest(requestId);
+
+
+
+
+
+
+        checkDonationOwner(
+
+                request,
+
+                userId
+
+        );
+
+
 
 
 
@@ -418,6 +472,7 @@ public class PickupRequestService {
 
 
 
+
         PickupRequest saved =
 
                 pickupRequestRepository.save(
@@ -425,6 +480,8 @@ public class PickupRequestService {
                         request
 
                 );
+
+
 
 
 
@@ -455,10 +512,14 @@ public class PickupRequestService {
 
 
 
+
         return convertToDTO(saved);
 
 
     }
+
+
+
 
 
 
@@ -477,9 +538,11 @@ public class PickupRequestService {
     ){
 
 
+
         PickupRequest request =
 
                 getRequest(requestId);
+
 
 
 
@@ -495,6 +558,7 @@ public class PickupRequestService {
 
 
 
+
         PickupRequest saved =
 
                 pickupRequestRepository.save(
@@ -502,6 +566,7 @@ public class PickupRequestService {
                         request
 
                 );
+
 
 
 
@@ -548,6 +613,9 @@ public class PickupRequestService {
 
 
 
+
+
+
     // Mark delivered
 
     public PickupRequestDTO markDelivered(
@@ -555,6 +623,7 @@ public class PickupRequestService {
             Long requestId
 
     ){
+
 
 
         PickupRequest request =
@@ -565,11 +634,13 @@ public class PickupRequestService {
 
 
 
+
         request.setStatus(
 
                 PickupStatus.DELIVERED
 
         );
+
 
 
 
@@ -587,11 +658,11 @@ public class PickupRequestService {
 
 
 
-        // Update relief status
-
         RescueDonation rescue =
 
                 request.getRescueDonation();
+
+
 
 
 
@@ -601,6 +672,8 @@ public class PickupRequestService {
                 RescueStatus.DELIVERED
 
         );
+
+
 
 
 
@@ -632,7 +705,6 @@ public class PickupRequestService {
 
 
 
-        // Notify donor
 
         notificationService.createNotification(
 
@@ -671,11 +743,67 @@ public class PickupRequestService {
 
 
 
+
+
+
+    private void checkDonationOwner(
+
+            PickupRequest request,
+
+            Long userId
+
+    ){
+
+
+
+        Long ownerId =
+
+                request
+
+                .getRescueDonation()
+
+                .getUser()
+
+                .getId();
+
+
+
+
+
+
+
+        if(!ownerId.equals(userId)){
+
+
+            throw new RuntimeException(
+
+                    "You are not allowed to perform this action"
+
+            );
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     private PickupRequest getRequest(
 
             Long id
 
     ){
+
 
 
         return pickupRequestRepository
@@ -703,11 +831,15 @@ public class PickupRequestService {
 
 
 
+
+
+
     private PickupRequestDTO convertToDTO(
 
             PickupRequest request
 
     ){
+
 
 
         User volunteer =
@@ -718,9 +850,11 @@ public class PickupRequestService {
 
 
 
+
         RescueDonation rescue =
 
                 request.getRescueDonation();
+
 
 
 
@@ -739,6 +873,8 @@ public class PickupRequestService {
                         volunteer.getLocation()
 
                 );
+
+
 
 
 
@@ -764,6 +900,8 @@ public class PickupRequestService {
 
 
 
+
+
         return new PickupRequestDTO(
 
                 request.getId(),
@@ -784,6 +922,7 @@ public class PickupRequestService {
 
 
     }
+
 
 
 }

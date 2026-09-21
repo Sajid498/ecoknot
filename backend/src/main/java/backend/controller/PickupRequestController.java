@@ -18,7 +18,6 @@ import backend.service.PickupRequestService;
 
 
 
-
 @RestController
 @RequestMapping("/api/pickups")
 @CrossOrigin("*")
@@ -28,9 +27,7 @@ public class PickupRequestController {
 
 
 
-
     private final PickupRequestService pickupRequestService;
-
 
 
 
@@ -143,20 +140,28 @@ public class PickupRequestController {
 
 
 
-    // Approve pickup request
+    // Approve pickup request (Only donor)
 
     @PutMapping("/{id}/approve")
 
     public PickupRequestDTO approveRequest(
 
-            @PathVariable Long id
+            @PathVariable Long id,
+
+            @RequestParam Long userId
 
     ){
 
 
         return pickupRequestService
 
-                .approveRequest(id);
+                .approveRequest(
+
+                        id,
+
+                        userId
+
+                );
 
 
     }
@@ -169,20 +174,28 @@ public class PickupRequestController {
 
 
 
-    // Reject pickup request
+    // Reject pickup request (Only donor)
 
     @PutMapping("/{id}/reject")
 
     public PickupRequestDTO rejectRequest(
 
-            @PathVariable Long id
+            @PathVariable Long id,
+
+            @RequestParam Long userId
 
     ){
 
 
         return pickupRequestService
 
-                .rejectRequest(id);
+                .rejectRequest(
+
+                        id,
+
+                        userId
+
+                );
 
 
     }
