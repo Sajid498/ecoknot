@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class ResourceDTO {
 
 
+
     private Long id;
 
 
@@ -15,6 +16,9 @@ public class ResourceDTO {
 
 
     private String imageUrl;
+
+
+    private String category;
 
 
     private String userName;
@@ -35,6 +39,9 @@ public class ResourceDTO {
 
 
 
+
+
+
     public ResourceDTO(
 
             Long id,
@@ -42,6 +49,8 @@ public class ResourceDTO {
             String content,
 
             String imageUrl,
+
+            String category,
 
             String userName,
 
@@ -55,23 +64,38 @@ public class ResourceDTO {
 
     ){
 
+
         this.id = id;
+
 
         this.content = content;
 
+
         this.imageUrl = imageUrl;
+
+
+        this.category = category;
+
 
         this.userName = userName;
 
+
         this.userId = userId;
+
 
         this.likes = likes;
 
+
         this.shares = shares;
+
 
         this.createdAt = createdAt;
 
+
     }
+
+
+
 
 
 
@@ -87,11 +111,15 @@ public class ResourceDTO {
 
 
 
+
+
     public String getContent(){
 
         return content;
 
     }
+
+
 
 
 
@@ -107,11 +135,27 @@ public class ResourceDTO {
 
 
 
+
+
+    public String getCategory(){
+
+        return category;
+
+    }
+
+
+
+
+
+
+
     public String getUserName(){
 
         return userName;
 
     }
+
+
 
 
 
@@ -127,11 +171,15 @@ public class ResourceDTO {
 
 
 
+
+
     public int getLikes(){
 
         return likes;
 
     }
+
+
 
 
 
@@ -147,11 +195,14 @@ public class ResourceDTO {
 
 
 
+
+
     public LocalDateTime getCreatedAt(){
 
         return createdAt;
 
     }
+
 
 
 }

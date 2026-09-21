@@ -43,9 +43,11 @@ export default function CreateResourcePage(){
 
 
 
+
     const [content,setContent] =
 
         useState("");
+
 
 
 
@@ -57,6 +59,15 @@ export default function CreateResourcePage(){
 
 
 
+
+    const [category,setCategory] =
+
+        useState("Education");
+
+
+
+
+
     const [loading,setLoading] =
 
         useState(false);
@@ -64,9 +75,34 @@ export default function CreateResourcePage(){
 
 
 
+
     const [message,setMessage] =
 
         useState("");
+
+
+
+
+
+
+
+
+
+    const categories = [
+
+        "Education",
+
+        "Environment",
+
+        "Donation",
+
+        "Technology",
+
+        "Emergency",
+
+        "Others"
+
+    ];
 
 
 
@@ -107,6 +143,7 @@ export default function CreateResourcePage(){
 
 
                 return;
+
 
             }
 
@@ -154,7 +191,10 @@ export default function CreateResourcePage(){
 
 
                             imageUrl:
-                            imageUrl || null
+                            imageUrl || null,
+
+
+                            category
 
 
                         })
@@ -164,6 +204,7 @@ export default function CreateResourcePage(){
 
 
                 );
+
 
 
 
@@ -189,11 +230,14 @@ export default function CreateResourcePage(){
 
 
 
+
             setMessage(
 
                 "Resource posted successfully"
 
             );
+
+
 
 
 
@@ -270,12 +314,14 @@ bg-slate-50
 
 
 
+
 <div className="
 mx-auto
 max-w-3xl
 px-6
 py-10
 ">
+
 
 
 
@@ -306,6 +352,8 @@ font-bold
 
 
 
+
+
 <p className="
 mt-2
 text-slate-600
@@ -314,6 +362,7 @@ text-slate-600
 Share something useful with EcoKnot community.
 
 </p>
+
 
 
 
@@ -331,6 +380,9 @@ space-y-5
 
 
 
+
+
+
 <div>
 
 
@@ -341,6 +393,7 @@ font-semibold
 Content
 
 </label>
+
 
 
 
@@ -364,6 +417,7 @@ e.target.value
 
 placeholder="Write your resource..."
 
+
 className="
 mt-2
 h-40
@@ -378,7 +432,6 @@ p-4
 
 
 </div>
-
 
 
 
@@ -422,6 +475,7 @@ e.target.value
 
 placeholder="Paste image URL"
 
+
 className="
 mt-2
 w-full
@@ -432,6 +486,95 @@ p-3
 
 
 />
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div>
+
+
+<label className="
+font-semibold
+">
+
+Category
+
+</label>
+
+
+
+
+
+<select
+
+
+value={category}
+
+
+onChange={(e)=>
+
+setCategory(
+
+e.target.value
+
+)
+
+}
+
+
+className="
+mt-2
+w-full
+rounded-xl
+border
+p-3
+"
+
+
+>
+
+
+{
+
+categories.map(
+
+(item)=>(
+
+
+<option
+
+key={item}
+
+value={item}
+
+>
+
+{item}
+
+</option>
+
+
+)
+
+
+)
+
+}
+
+
+
+</select>
+
+
 
 
 
@@ -514,9 +657,6 @@ text-emerald-700
 
 
 
-
-
-
 </div>
 
 
@@ -524,7 +664,9 @@ text-emerald-700
 
 
 
+
 </div>
+
 
 
 

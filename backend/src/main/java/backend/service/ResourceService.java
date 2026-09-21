@@ -392,36 +392,38 @@ public class ResourceService {
 
 
 
-    private ResourceDTO convertToDTO(
+ private ResourceDTO convertToDTO(
 
-            Resource resource
+        Resource resource
 
-    ){
-
-
-
-        return new ResourceDTO(
-
-                resource.getId(),
-
-                resource.getContent(),
-
-                resource.getImageUrl(),
-
-                resource.getUser().getName(),
-
-                resource.getUser().getId(),
-
-                resource.getLikes(),
-
-                resource.getShares(),
-
-                resource.getCreatedAt()
-
-        );
+){
 
 
-    }
+
+    return new ResourceDTO(
+
+            resource.getId(),
+
+            resource.getContent(),
+
+            resource.getImageUrl(),
+
+            resource.getCategory(),
+
+            resource.getUser().getName(),
+
+            resource.getUser().getId(),
+
+            resource.getLikes(),
+
+            resource.getShares(),
+
+            resource.getCreatedAt()
+
+    );
+
+
+}
 
 
 

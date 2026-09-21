@@ -16,31 +16,58 @@ import jakarta.persistence.ManyToOne;
 public class Resource {
 
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
 
+
+
     private String content;
+
+
+
 
 
     private String imageUrl;
 
 
+
+
+
+    private String category;
+
+
+
+
+
     private int likes = 0;
 
 
+
+
+
     private int shares = 0;
+
+
+
 
 
     private LocalDateTime createdAt;
 
 
 
+
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+
+
+
 
 
 
@@ -56,11 +83,17 @@ public class Resource {
 
 
 
+
+
+
     public Long getId(){
 
         return id;
 
     }
+
+
+
 
 
 
@@ -74,11 +107,18 @@ public class Resource {
 
 
 
+
+
+
     public void setContent(String content){
 
         this.content = content;
 
     }
+
+
+
+
 
 
 
@@ -94,11 +134,44 @@ public class Resource {
 
 
 
+
+
     public void setImageUrl(String imageUrl){
 
         this.imageUrl = imageUrl;
 
     }
+
+
+
+
+
+
+
+
+
+    public String getCategory(){
+
+        return category;
+
+    }
+
+
+
+
+
+
+
+    public void setCategory(String category){
+
+        this.category = category;
+
+    }
+
+
+
+
+
 
 
 
@@ -112,6 +185,9 @@ public class Resource {
 
 
 
+
+
+
     public void setLikes(int likes){
 
         this.likes = likes;
@@ -121,11 +197,18 @@ public class Resource {
 
 
 
+
+
+
+
+
     public int getShares(){
 
         return shares;
 
     }
+
+
 
 
 
@@ -141,11 +224,17 @@ public class Resource {
 
 
 
+
+
+
+
     public LocalDateTime getCreatedAt(){
 
         return createdAt;
 
     }
+
+
 
 
 
@@ -161,6 +250,10 @@ public class Resource {
 
 
 
+
+
+
+
     public User getUser(){
 
         return user;
@@ -170,11 +263,15 @@ public class Resource {
 
 
 
+
+
+
     public void setUser(User user){
 
         this.user = user;
 
     }
+
 
 
 }
