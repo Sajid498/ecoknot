@@ -1,11 +1,12 @@
 "use client";
 
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
-import toast from "react-hot-toast";
 
+import Navbar from "@/components/Navbar";
+import BloodDonationNavbar from "@/components/BloodDonationNavbar";
+
+import toast from "react-hot-toast";
 
 
 const API_URL =
@@ -13,104 +14,73 @@ const API_URL =
     "http://localhost:8080";
 
 
-
-
-
 const initialForm = {
 
-    patientName:"",
+    patientName: "",
 
-    bloodGroup:"",
+    bloodGroup: "",
 
-    hospital:"",
+    hospital: "",
 
-    location:"",
+    location: "",
 
-    contactNumber:"",
+    contactNumber: "",
 
-    requiredDate:"",
+    requiredDate: "",
 
-    unitsNeeded:"",
+    unitsNeeded: "",
 
-    urgency:"NORMAL",
+    urgency: "NORMAL",
 
-    description:"",
+    description: "",
 
 };
 
 
-
-
-
-
-
-export default function CreateBloodRequestPage(){
-
+export default function CreateBloodRequestPage() {
 
     const router = useRouter();
 
 
-
-    const [formData,setFormData] =
+    const [formData, setFormData] =
         useState(initialForm);
 
 
-
-    const [loading,setLoading] =
+    const [loading, setLoading] =
         useState(false);
-
-
-
-
-
-
-
 
 
     function handleChange(
         e:
-        React.ChangeEvent<
-        HTMLInputElement |
-        HTMLSelectElement |
-        HTMLTextAreaElement
-        >
-    ){
+            React.ChangeEvent<
+                HTMLInputElement |
+                HTMLSelectElement |
+                HTMLTextAreaElement
+            >
+    ) {
 
-
-        const {name,value} =
+        const { name, value } =
             e.target;
-
 
 
         setFormData({
 
             ...formData,
 
-            [name]:value
+            [name]: value
 
         });
-
 
     }
 
 
-
-
-
-
-
-
-
-    async function createRequest(){
-
+    async function createRequest() {
 
         const savedUser =
             localStorage.getItem("user");
 
 
-
-        if(!savedUser){
-
+        if (!savedUser) {
 
             toast.error(
                 "Please login first"
@@ -122,21 +92,13 @@ export default function CreateBloodRequestPage(){
         }
 
 
-
-
         const user =
             JSON.parse(savedUser);
 
 
-
-
-
-
-        try{
-
+        try {
 
             setLoading(true);
-
 
 
             const response =
@@ -146,22 +108,22 @@ export default function CreateBloodRequestPage(){
 
                     {
 
-                        method:"POST",
+                        method: "POST",
 
-                        headers:{
+                        headers: {
 
                             "Content-Type":
-                            "application/json"
+                                "application/json"
 
                         },
 
 
-                        body:JSON.stringify({
+                        body: JSON.stringify({
 
                             ...formData,
 
                             unitsNeeded:
-                            Number(formData.unitsNeeded)
+                                Number(formData.unitsNeeded)
 
                         })
 
@@ -170,22 +132,13 @@ export default function CreateBloodRequestPage(){
                 );
 
 
-
-
-
-
-            if(!response.ok){
-
+            if (!response.ok) {
 
                 throw new Error(
                     "Request creation failed"
                 );
 
-
             }
-
-
-
 
 
             toast.success(
@@ -193,16 +146,13 @@ export default function CreateBloodRequestPage(){
             );
 
 
-
             router.push(
                 "/my-requests"
             );
 
-
-
         }
-        catch(error){
 
+        catch (error) {
 
             console.log(error);
 
@@ -211,435 +161,458 @@ export default function CreateBloodRequestPage(){
                 "Something went wrong"
             );
 
-
         }
-        finally{
 
+        finally {
 
             setLoading(false);
 
-
         }
-
 
     }
 
 
+    return (
+
+        <main
+            className="
+            min-h-screen
+            bg-slate-50
+            "
+        >
 
 
-
-
-
-
-
-    return(
-
-
-        <main className="
-        min-h-screen
-        bg-slate-50
-        ">
-
+            {/* ========================= */}
+            {/* PERMANENT MAIN NAVBAR */}
+            {/* ========================= */}
 
             <Navbar />
 
 
+            {/* ========================= */}
+            {/* BLOOD MODULE NAVBAR */}
+            {/* ========================= */}
+
+            <BloodDonationNavbar />
 
 
-            <div className="
-            mx-auto
-            max-w-3xl
-            px-6
-            py-10
-            ">
+            {/* ========================= */}
+            {/* PAGE CONTENT */}
+            {/* ========================= */}
+
+            <div
+                className="
+                mx-auto
+                max-w-3xl
+                px-6
+                py-10
+                "
+            >
 
 
+                <div
+                    className="
+                    rounded-3xl
+                    bg-white
+                    p-8
+                    shadow
+                    "
+                >
 
-                <div className="
-                rounded-3xl
-                bg-white
-                p-8
-                shadow
-                ">
 
-
-
-                    <h1 className="
-                    text-3xl
-                    font-bold
-                    ">
+                    <h1
+                        className="
+                        text-3xl
+                        font-bold
+                        "
+                    >
 
                         🩸 Request Blood
 
                     </h1>
 
 
-
-                    <p className="
-                    mt-2
-                    text-slate-500
-                    ">
+                    <p
+                        className="
+                        mt-2
+                        text-slate-500
+                        "
+                    >
 
                         Create a blood request for your patient
 
                     </p>
 
 
+                    <div
+                        className="
+                        mt-8
+                        space-y-5
+                        "
+                    >
 
 
-
-
-
-                    <div className="
-                    mt-8
-                    space-y-5
-                    ">
-
-
-
-
+                        {/* PATIENT NAME */}
 
                         <input
 
-                        name="patientName"
+                            name="patientName"
 
-                        value={formData.patientName}
+                            value={
+                                formData.patientName
+                            }
 
-                        onChange={handleChange}
+                            onChange={
+                                handleChange
+                            }
 
-                        placeholder="Patient Name"
+                            placeholder="Patient Name"
 
-                        className="
-                        w-full
-                        rounded-xl
-                        border
-                        p-3
-                        "
-
+                            className="
+                            w-full
+                            rounded-xl
+                            border
+                            p-3
+                            "
                         />
 
 
-
-
-
-
-
+                        {/* BLOOD GROUP */}
 
                         <select
 
-                        name="bloodGroup"
+                            name="bloodGroup"
 
-                        value={formData.bloodGroup}
+                            value={
+                                formData.bloodGroup
+                            }
 
-                        onChange={handleChange}
+                            onChange={
+                                handleChange
+                            }
 
-                        className="
-                        w-full
-                        rounded-xl
-                        border
-                        p-3
-                        "
-
+                            className="
+                            w-full
+                            rounded-xl
+                            border
+                            p-3
+                            "
                         >
 
                             <option value="">
+
                                 Select Blood Group
+
                             </option>
+
 
                             <option value="A_POSITIVE">
+
                                 A+
+
                             </option>
+
 
                             <option value="A_NEGATIVE">
+
                                 A-
+
                             </option>
+
 
                             <option value="B_POSITIVE">
+
                                 B+
+
                             </option>
+
 
                             <option value="B_NEGATIVE">
+
                                 B-
+
                             </option>
+
 
                             <option value="O_POSITIVE">
+
                                 O+
+
                             </option>
+
 
                             <option value="O_NEGATIVE">
+
                                 O-
+
                             </option>
+
 
                             <option value="AB_POSITIVE">
+
                                 AB+
+
                             </option>
+
 
                             <option value="AB_NEGATIVE">
-                                AB-
-                            </option>
 
+                                AB-
+
+                            </option>
 
                         </select>
 
 
-
-
-
-
-
+                        {/* HOSPITAL */}
 
                         <input
 
-                        name="hospital"
+                            name="hospital"
 
-                        value={formData.hospital}
+                            value={
+                                formData.hospital
+                            }
 
-                        onChange={handleChange}
+                            onChange={
+                                handleChange
+                            }
 
-                        placeholder="Hospital Name"
+                            placeholder="Hospital Name"
 
-                        className="
-                        w-full
-                        rounded-xl
-                        border
-                        p-3
-                        "
-
+                            className="
+                            w-full
+                            rounded-xl
+                            border
+                            p-3
+                            "
                         />
 
 
-
-
-
-
+                        {/* LOCATION */}
 
                         <input
 
-                        name="location"
+                            name="location"
 
-                        value={formData.location}
+                            value={
+                                formData.location
+                            }
 
-                        onChange={handleChange}
+                            onChange={
+                                handleChange
+                            }
 
-                        placeholder="Location"
+                            placeholder="Location"
 
-                        className="
-                        w-full
-                        rounded-xl
-                        border
-                        p-3
-                        "
-
+                            className="
+                            w-full
+                            rounded-xl
+                            border
+                            p-3
+                            "
                         />
 
 
-
-
-
-
-
+                        {/* CONTACT NUMBER */}
 
                         <input
 
-                        name="contactNumber"
+                            name="contactNumber"
 
-                        value={formData.contactNumber}
+                            value={
+                                formData.contactNumber
+                            }
 
-                        onChange={handleChange}
+                            onChange={
+                                handleChange
+                            }
 
-                        placeholder="Contact Number"
+                            placeholder="Contact Number"
 
-                        className="
-                        w-full
-                        rounded-xl
-                        border
-                        p-3
-                        "
-
+                            className="
+                            w-full
+                            rounded-xl
+                            border
+                            p-3
+                            "
                         />
 
 
-
-
-
-
-
+                        {/* REQUIRED DATE */}
 
                         <input
 
-                        type="date"
+                            type="date"
 
-                        name="requiredDate"
+                            name="requiredDate"
 
-                        value={formData.requiredDate}
+                            value={
+                                formData.requiredDate
+                            }
 
-                        onChange={handleChange}
+                            onChange={
+                                handleChange
+                            }
 
-                        className="
-                        w-full
-                        rounded-xl
-                        border
-                        p-3
-                        "
-
+                            className="
+                            w-full
+                            rounded-xl
+                            border
+                            p-3
+                            "
                         />
 
 
-
-
-
-
-
+                        {/* UNITS NEEDED */}
 
                         <input
 
-                        type="number"
+                            type="number"
 
-                        name="unitsNeeded"
+                            name="unitsNeeded"
 
-                        value={formData.unitsNeeded}
+                            value={
+                                formData.unitsNeeded
+                            }
 
-                        onChange={handleChange}
+                            onChange={
+                                handleChange
+                            }
 
-                        placeholder="Units Needed"
+                            placeholder="Units Needed"
 
-                        className="
-                        w-full
-                        rounded-xl
-                        border
-                        p-3
-                        "
-
+                            className="
+                            w-full
+                            rounded-xl
+                            border
+                            p-3
+                            "
                         />
 
 
-
-
-
-
-
+                        {/* URGENCY */}
 
                         <select
 
-                        name="urgency"
+                            name="urgency"
 
-                        value={formData.urgency}
+                            value={
+                                formData.urgency
+                            }
 
-                        onChange={handleChange}
+                            onChange={
+                                handleChange
+                            }
 
-                        className="
-                        w-full
-                        rounded-xl
-                        border
-                        p-3
-                        "
-
+                            className="
+                            w-full
+                            rounded-xl
+                            border
+                            p-3
+                            "
                         >
 
                             <option value="NORMAL">
+
                                 Normal
+
                             </option>
 
 
                             <option value="URGENT">
+
                                 Urgent
+
                             </option>
 
 
                             <option value="CRITICAL">
-                                Critical
-                            </option>
 
+                                Critical
+
+                            </option>
 
                         </select>
 
 
-
-
-
-
-
-
+                        {/* DESCRIPTION */}
 
                         <textarea
 
-                        name="description"
+                            name="description"
 
-                        value={formData.description}
+                            value={
+                                formData.description
+                            }
 
-                        onChange={handleChange}
+                            onChange={
+                                handleChange
+                            }
 
-                        placeholder="Additional information"
+                            placeholder="Additional information"
 
-                        rows={4}
+                            rows={4}
 
-                        className="
-                        w-full
-                        rounded-xl
-                        border
-                        p-3
-                        "
-
+                            className="
+                            w-full
+                            rounded-xl
+                            border
+                            p-3
+                            "
                         />
 
 
-
-
-
-
-
+                        {/* CREATE BUTTON */}
 
                         <button
 
-                        onClick={createRequest}
+                            onClick={
+                                createRequest
+                            }
 
-                        disabled={loading}
+                            disabled={
+                                loading
+                            }
 
-                        className="
-                        w-full
-                        rounded-xl
-                        bg-red-600
-                        py-3
-                        font-semibold
-                        text-white
-                        disabled:opacity-50
-                        "
-
+                            className="
+                            w-full
+                            rounded-xl
+                            bg-red-600
+                            py-3
+                            font-semibold
+                            text-white
+                            transition
+                            hover:bg-red-700
+                            disabled:cursor-not-allowed
+                            disabled:opacity-50
+                            "
                         >
 
                             {
-                                loading
-                                ?
-                                "Creating..."
-                                :
-                                "🩸 Create Request"
-                            }
 
+                                loading
+
+                                    ?
+
+                                    "Creating..."
+
+                                    :
+
+                                    "🩸 Create Request"
+
+                            }
 
                         </button>
 
-
-
-
-
                     </div>
-
-
-
-
 
                 </div>
 
-
-
             </div>
-
-
 
         </main>
 
-
     );
-
 
 }

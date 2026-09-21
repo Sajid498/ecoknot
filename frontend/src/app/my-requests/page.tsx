@@ -1,353 +1,167 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import Navbar from "@/components/Navbar";
+import BloodDonationNavbar from "@/components/BloodDonationNavbar";
+
 import toast from "react-hot-toast";
 
 
-
-
-
 const API_URL =
-
     process.env.NEXT_PUBLIC_API_URL ||
-
     "http://localhost:8080";
-
-
-
-
-
-
-
 
 
 type BloodRequest = {
 
+    id: number;
 
-    id:number;
+    patientName: string;
 
+    bloodGroup: string;
 
-    patientName:string;
+    hospital: string;
 
+    location: string;
 
-    bloodGroup:string;
+    unitsNeeded: number;
 
+    urgency: string;
 
-    hospital:string;
+    status: string;
 
-
-    location:string;
-
-
-    unitsNeeded:number;
-
-
-    urgency:string;
+    requiredDate: string;
 
 
-    status:string;
+    donorId?: number;
 
+    donorName?: string;
 
-    requiredDate:string;
+    donorBloodGroup?: string;
 
-
-
-
-
-    donorId?:number;
-
-
-    donorName?:string;
-
-
-    donorBloodGroup?:string;
-
-
-    donorLocation?:string;
-
-
-
+    donorLocation?: string;
 
 
     // Phase 4.1
 
-    donationResponseId?:number;
-
-
+    donationResponseId?: number;
 
 };
 
 
-
-
-
-
-
-
-
-
-
-
-export default function MyRequestsPage(){
-
-
+export default function MyRequestsPage() {
 
     const router = useRouter();
 
 
-
-
-
-
-
-
-    const [requests,setRequests] =
-
+    const [requests, setRequests] =
         useState<BloodRequest[]>([]);
 
 
-
-
-
-
-
-    const [loading,setLoading] =
-
+    const [loading, setLoading] =
         useState(true);
 
 
-
-
-
-
-
-    const [user,setUser] =
-
+    const [user, setUser] =
         useState<any>(null);
 
 
-
-
-
-
-
-
-
-
-
-
-
-    useEffect(()=>{
-
-
+    useEffect(() => {
 
         const savedUser =
-
             localStorage.getItem("user");
 
 
-
-
-
-
-
-
-        if(savedUser){
-
-
+        if (savedUser) {
 
             const parsedUser =
-
                 JSON.parse(savedUser);
-
-
-
-
 
 
             setUser(parsedUser);
 
 
-
-
-
-
-
             loadRequests(
-
                 parsedUser.id
-
             );
-
-
 
         }
 
-
-
-
-    },[]);
-
-
-
-
-
-
-
-
-
-
-
+    }, []);
 
 
     async function loadRequests(
 
+        userId: number
 
-        userId:number
+    ) {
 
-
-    ){
-
-
-
-        try{
-
-
+        try {
 
             setLoading(true);
 
 
-
-
-
-
-
             const response =
-
                 await fetch(
 
-`${API_URL}/api/blood-requests/user/${userId}`
+                    `${API_URL}/api/blood-requests/user/${userId}`
 
                 );
 
 
-
-
-
-
-
-            if(!response.ok){
-
+            if (!response.ok) {
 
                 throw new Error(
-
                     "Failed to load requests"
-
                 );
-
 
             }
 
 
-
-
-
-
-
-
             const data =
-
                 await response.json();
-
-
-
-
-
-
 
 
             setRequests(data);
 
-
-
-
-
-
         }
 
-        catch(error){
-
-
+        catch (error) {
 
             console.log(error);
 
 
-
             toast.error(
-
                 "Failed to load requests"
-
             );
-
-
 
         }
 
-        finally{
-
+        finally {
 
             setLoading(false);
 
-
         }
-
-
 
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
     async function cancelRequest(
 
+        requestId: number
 
-        requestId:number
+    ) {
 
-
-    ){
-
-
-
-        if(!user){
-
+        if (!user) {
 
             return;
-
 
         }
 
 
-
-
-
-
-
-
         const confirmCancel =
-
             window.confirm(
 
                 "Are you sure you want to cancel this request?"
@@ -355,127 +169,61 @@ export default function MyRequestsPage(){
             );
 
 
-
-
-
-
-
-        if(!confirmCancel){
-
+        if (!confirmCancel) {
 
             return;
-
 
         }
 
 
-
-
-
-
-
-
-
-        try{
-
-
+        try {
 
             const response =
-
                 await fetch(
 
-`${API_URL}/api/blood-requests/${requestId}/user/${user.id}`,
+                    `${API_URL}/api/blood-requests/${requestId}/user/${user.id}`,
 
                     {
 
-
-                        method:"DELETE"
-
+                        method: "DELETE"
 
                     }
 
-
                 );
 
 
-
-
-
-
-
-
-            if(!response.ok){
-
+            if (!response.ok) {
 
                 throw new Error(
-
                     "Cancel failed"
-
                 );
-
 
             }
 
 
-
-
-
-
-
-
-
             toast.success(
-
                 "Blood request cancelled"
-
             );
-
-
-
-
-
 
 
             loadRequests(
-
                 user.id
-
             );
-
-
-
-
 
         }
 
-        catch(error){
-
-
+        catch (error) {
 
             console.log(error);
 
 
-
             toast.error(
-
                 "Something went wrong"
-
             );
-
-
 
         }
 
-
-
     }
-    
-
-
-
-
-
-
 
 
     // ==================================================
@@ -483,32 +231,20 @@ export default function MyRequestsPage(){
     // Requester confirms donation completion
     // ==================================================
 
-
     async function confirmDonationCompleted(
 
-        donationResponseId:number
+        donationResponseId: number
 
-    ){
+    ) {
 
-
-
-        if(!user){
-
+        if (!user) {
 
             return;
-
 
         }
 
 
-
-
-
-
-
-
         const confirmAction =
-
             window.confirm(
 
                 "Confirm that blood donation has been completed?"
@@ -516,132 +252,61 @@ export default function MyRequestsPage(){
             );
 
 
-
-
-
-
-
-
-        if(!confirmAction){
-
+        if (!confirmAction) {
 
             return;
-
 
         }
 
 
-
-
-
-
-
-
-
-        try{
-
-
+        try {
 
             const response =
-
                 await fetch(
 
-`${API_URL}/api/donation-response/${donationResponseId}/complete?requesterId=${user.id}`,
+                    `${API_URL}/api/donation-response/${donationResponseId}/complete?requesterId=${user.id}`,
 
                     {
 
-                        method:"PUT"
+                        method: "PUT"
 
                     }
 
                 );
 
 
-
-
-
-
-
-
-
-            if(!response.ok){
-
+            if (!response.ok) {
 
                 throw new Error(
-
                     "Completion failed"
-
                 );
-
 
             }
 
 
-
-
-
-
-
-
-
             toast.success(
-
                 "Donation completed successfully"
-
             );
-
-
-
-
-
-
-
 
 
             loadRequests(
-
                 user.id
-
             );
-
-
-
-
-
 
         }
 
-        catch(error){
-
-
+        catch (error) {
 
             console.log(error);
 
 
-
             toast.error(
-
                 "Failed to complete donation"
-
             );
-
 
         }
 
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     // ==================================================
@@ -649,133 +314,73 @@ export default function MyRequestsPage(){
     // Status color handling
     // ==================================================
 
-
     function getStatusStyle(
 
-        status:string
+        status: string
 
-    ){
+    ) {
 
-
-
-        if(status==="OPEN"){
-
-
+        if (status === "OPEN") {
 
             return "bg-green-100 text-green-700";
 
-
         }
 
 
-
-
-
-
-
-        if(status==="DONOR_FOUND"){
-
-
+        if (status === "DONOR_FOUND") {
 
             return "bg-blue-100 text-blue-700";
 
-
         }
 
 
-
-
-
-
-
-        if(status==="FULFILLED"){
-
-
+        if (status === "FULFILLED") {
 
             return "bg-gray-100 text-gray-700";
 
-
         }
 
 
-
-
-
-
-
-        if(status==="EXPIRED"){
-
-
+        if (status === "EXPIRED") {
 
             return "bg-red-100 text-red-700";
 
-
         }
-
-
-
-
-
 
 
         return "bg-red-100 text-red-700";
 
-
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     function showTimeline(
 
-        status:string
+        status: string
 
-    ){
-
-
+    ) {
 
         return (
 
-
-
-            <div className="
-            mt-5
-            space-y-3
-            text-sm
-            ">
-
-
-
-
-
-
-
+            <div
+                className="
+                mt-5
+                space-y-3
+                text-sm
+                "
+            >
 
                 <div
+                    className={
+                        status === "OPEN"
 
-                className={
+                            ?
 
-                status==="OPEN"
+                            "text-green-600 font-bold"
 
-                ?
+                            :
 
-                "text-green-600 font-bold"
-
-                :
-
-                "text-gray-400"
-
-                }
-
+                            "text-gray-400"
+                    }
                 >
 
                     🟢 Request Created
@@ -783,32 +388,22 @@ export default function MyRequestsPage(){
                 </div>
 
 
-
-
-
-
-
-
                 <div
+                    className={
+                        status === "DONOR_FOUND"
 
-                className={
+                        ||
 
-                status==="DONOR_FOUND"
+                        status === "FULFILLED"
 
-                ||
+                            ?
 
-                status==="FULFILLED"
+                            "text-blue-600 font-bold"
 
-                ?
+                            :
 
-                "text-blue-600 font-bold"
-
-                :
-
-                "text-gray-400"
-
-                }
-
+                            "text-gray-400"
+                    }
                 >
 
                     🔵 Donor Found
@@ -816,28 +411,18 @@ export default function MyRequestsPage(){
                 </div>
 
 
-
-
-
-
-
-
                 <div
+                    className={
+                        status === "FULFILLED"
 
-                className={
+                            ?
 
-                status==="FULFILLED"
+                            "text-gray-700 font-bold"
 
-                ?
+                            :
 
-                "text-gray-700 font-bold"
-
-                :
-
-                "text-gray-400"
-
-                }
-
+                            "text-gray-400"
+                    }
                 >
 
                     ✅ Donation Completed
@@ -845,152 +430,90 @@ export default function MyRequestsPage(){
                 </div>
 
 
-
-
-
-
-
-
                 <div
+                    className={
+                        status === "EXPIRED"
 
-                className={
+                            ?
 
-                status==="EXPIRED"
+                            "text-red-600 font-bold"
 
-                ?
+                            :
 
-                "text-red-600 font-bold"
-
-                :
-
-                "text-gray-400"
-
-                }
-
+                            "text-gray-400"
+                    }
                 >
 
                     ❌ Request Expired
 
                 </div>
 
-
-
-
-
-
             </div>
 
-
         );
-
 
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
     function showDonorInfo(
 
-        request:BloodRequest
+        request: BloodRequest
 
-    ){
+    ) {
 
-
-
-        if(
-
+        if (
             request.status !== "DONOR_FOUND"
 
             &&
 
             request.status !== "FULFILLED"
-
-        ){
-
+        ) {
 
             return null;
-
 
         }
 
 
-
-
-
-
-
-
-        if(!request.donorName){
-
+        if (!request.donorName) {
 
             return null;
 
-
         }
-
-
-
-
-
-
-
 
 
         return (
 
+            <div
+                className="
+                mt-6
+                rounded-2xl
+                border
+                border-emerald-200
+                bg-emerald-50
+                p-5
+                "
+            >
 
-
-            <div className="
-            mt-6
-            rounded-2xl
-            border
-            border-emerald-200
-            bg-emerald-50
-            p-5
-            ">
-
-
-
-
-
-
-                <h3 className="
-                text-lg
-                font-bold
-                text-emerald-800
-                ">
+                <h3
+                    className="
+                    text-lg
+                    font-bold
+                    text-emerald-800
+                    "
+                >
 
                     🤝 Selected Donor
 
                 </h3>
 
 
-
-
-
-
-
-
-                <div className="
-                mt-3
-                space-y-2
-                text-slate-700
-                ">
-
-
-
-
-
-
+                <div
+                    className="
+                    mt-3
+                    space-y-2
+                    text-slate-700
+                    "
+                >
 
                     <p>
 
@@ -1002,14 +525,7 @@ export default function MyRequestsPage(){
 
                         </b>
 
-
                     </p>
-
-
-
-
-
-
 
 
                     <p>
@@ -1022,14 +538,7 @@ export default function MyRequestsPage(){
 
                         </b>
 
-
                     </p>
-
-
-
-
-
-
 
 
                     <p>
@@ -1042,874 +551,560 @@ export default function MyRequestsPage(){
 
                         </b>
 
-
                     </p>
-
-
-
-
-
 
                 </div>
 
-
-
-
-
-
             </div>
 
-
         );
-
 
     }
 
 
+    return (
 
+        <main
+            className="
+            min-h-screen
+            bg-slate-50
+            "
+        >
 
-
-
-
-
-
-
-
-
-
-    return(
-
-
-
-        <main className="
-        min-h-screen
-        bg-slate-50
-        ">
-
-
-
-
-
+            {/* ========================= */}
+            {/* PERMANENT MAIN NAVBAR */}
+            {/* ========================= */}
 
             <Navbar />
 
 
+            {/* ========================= */}
+            {/* BLOOD MODULE NAVBAR */}
+            {/* ========================= */}
+
+            <BloodDonationNavbar />
 
 
+            {/* ========================= */}
+            {/* PAGE CONTENT */}
+            {/* ========================= */}
 
+            <div
+                className="
+                mx-auto
+                max-w-5xl
+                px-6
+                py-10
+                "
+            >
 
+                <div
+                    className="
+                    rounded-3xl
+                    bg-white
+                    p-8
+                    shadow
+                    "
+                >
 
-            <div className="
-            mx-auto
-            max-w-5xl
-            px-6
-            py-10
-            ">
-
-
-
-
-
-
-
-                <div className="
-                rounded-3xl
-                bg-white
-                p-8
-                shadow
-                ">
-
-
-
-
-
-
-                    <h1 className="
-                    text-3xl
-                    font-bold
-                    ">
+                    <h1
+                        className="
+                        text-3xl
+                        font-bold
+                        "
+                    >
 
                         🩸 My Blood Requests
 
                     </h1>
 
 
-
-
-
-
-
-                    <p className="
-                    mt-2
-                    text-slate-500
-                    ">
+                    <p
+                        className="
+                        mt-2
+                        text-slate-500
+                        "
+                    >
 
                         Manage your created blood requests
 
                     </p>
 
 
-
-
-
-
-
-
                     {
-                    
-                    loading
 
-                    ?
+                        loading
 
-                    (
+                            ?
 
-                    <p className="
-                    mt-8
-                    ">
+                            (
 
-                        Loading...
+                                <p
+                                    className="
+                                    mt-8
+                                    "
+                                >
 
-                    </p>
-
-
-                    )
-
-                    :
-
-                    requests.length === 0
-
-                    ?
-
-                    (
-
-                    <p className="
-                    mt-8
-                    text-gray-500
-                    ">
-
-                        You have no blood requests.
-
-                    </p>
-
-
-                    )
-
-                    :
-
-
-
-                    <div className="
-                    mt-8
-                    space-y-5
-                    ">                    {
-
-
-                    requests.map(
-
-                    (request)=>(
-
-
-
-                    <div
-
-                    key={request.id}
-
-                    className="
-                    rounded-2xl
-                    border
-                    border-slate-200
-                    p-6
-                    ">
-
-
-
-
-
-
-
-
-
-                        <div className="
-                        flex
-                        items-start
-                        justify-between
-                        ">
-
-
-
-
-
-
-                            <div>
-
-
-
-                                <h2 className="
-                                text-xl
-                                font-bold
-                                ">
-
-
-                                    {request.patientName}
-
-
-                                </h2>
-
-
-
-
-
-
-
-
-                                <p className="
-                                mt-2
-                                font-bold
-                                text-red-600
-                                ">
-
-
-                                    🩸 {request.bloodGroup}
-
+                                    Loading...
 
                                 </p>
 
-
-
-
-
-
-                            </div>
-
-
-
-
-
-
-
-
-                            <span
-
-                            className={`
-
-                            rounded-full
-
-                            px-4
-
-                            py-2
-
-                            text-sm
-
-                            font-semibold
-
-                            ${getStatusStyle(
-
-                                request.status
-
-                            )}
-
-                            `}
-
-                            >
-
-                                {request.status}
-
-
-                            </span>
-
-
-
-
-
-                        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        {
-
-                        showTimeline(
-
-                            request.status
-
-                        )
-
-                        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <div className="
-                        mt-5
-                        space-y-2
-                        text-slate-600
-                        ">
-
-
-
-
-
-
-
-                            <p>
-
-
-                                🏥 Hospital:
-
-                                <b className="ml-2">
-
-                                    {request.hospital}
-
-                                </b>
-
-
-                            </p>
-
-
-
-
-
-
-
-
-                            <p>
-
-
-                                📍 Location:
-
-                                <b className="ml-2">
-
-                                    {request.location}
-
-                                </b>
-
-
-                            </p>
-
-
-
-
-
-
-
-
-                            <p>
-
-
-                                ⚠️ Urgency:
-
-                                <b className="ml-2">
-
-                                    {request.urgency}
-
-                                </b>
-
-
-                            </p>
-
-
-
-
-
-
-
-
-                            <p>
-
-
-                                🩸 Units:
-
-                                <b className="ml-2">
-
-                                    {request.unitsNeeded}
-
-                                </b>
-
-
-                            </p>
-
-
-
-
-
-
-
-
-                            <p>
-
-
-                                📅 Required Date:
-
-                                <b className="ml-2">
-
-                                    {request.requiredDate}
-
-                                </b>
-
-
-                            </p>
-
-
-
-
-
-                        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-                        {
-
-
-                        showDonorInfo(
-
-                            request
-
-                        )
-
-
-                        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <div className="
-                        mt-6
-                        flex
-                        flex-wrap
-                        gap-3
-                        ">
-
-
-
-
-
-
-
-
-
-                            {/* Phase 4.4 */}
-
-                            <button
-
-
-                            onClick={()=>{
-
-
-                                router.push(
-
-                                    `/request-details/${request.id}`
-
-                                );
-
-
-                            }}
-
-
-
-                            className="
-                            rounded-xl
-                            bg-blue-600
-                            px-5
-                            py-3
-                            font-semibold
-                            text-white
-                            hover:bg-blue-700
-                            "
-
-
-                            >
-
-                                📄 View Details
-
-
-                            </button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            {
-
-
-                            request.status !== "EXPIRED"
-
-                            &&
-
-
-                            (
-
-                            <button
-
-
-                            onClick={()=>{
-
-
-                                router.push(
-
-                                    `/donors/${request.id}`
-
-                                );
-
-
-                            }}
-
-
-
-                            className="
-                            rounded-xl
-                            bg-emerald-700
-                            px-5
-                            py-3
-                            font-semibold
-                            text-white
-                            hover:bg-emerald-800
-                            "
-
-
-                            >
-
-                                👥 Manage Donors
-
-
-                            </button>
-
-
                             )
 
+                            :
 
-                            }
+                            requests.length === 0
 
+                                ?
 
+                                (
 
+                                    <p
+                                        className="
+                                        mt-8
+                                        text-gray-500
+                                        "
+                                    >
 
+                                        You have no blood requests.
 
+                                    </p>
 
+                                )
 
+                                :
 
+                                <div
+                                    className="
+                                    mt-8
+                                    space-y-5
+                                    "
+                                >
 
+                                    {
 
+                                        requests.map(
 
+                                            (request) => (
 
+                                                <div
 
+                                                    key={
+                                                        request.id
+                                                    }
 
-                            {
+                                                    className="
+                                                    rounded-2xl
+                                                    border
+                                                    border-slate-200
+                                                    p-6
+                                                    "
+                                                >
 
+                                                    <div
+                                                        className="
+                                                        flex
+                                                        items-start
+                                                        justify-between
+                                                        gap-4
+                                                        "
+                                                    >
 
-                            request.status === "DONOR_FOUND"
+                                                        <div>
 
-                            &&
+                                                            <h2
+                                                                className="
+                                                                text-xl
+                                                                font-bold
+                                                                "
+                                                            >
 
-                            request.donationResponseId
+                                                                {
+                                                                    request.patientName
+                                                                }
 
-                            &&
+                                                            </h2>
 
 
-                            (
+                                                            <p
+                                                                className="
+                                                                mt-2
+                                                                font-bold
+                                                                text-red-600
+                                                                "
+                                                            >
 
-                            <button
+                                                                🩸 {
+                                                                    request.bloodGroup
+                                                                }
 
+                                                            </p>
 
-                            onClick={()=>{
+                                                        </div>
 
 
-                                confirmDonationCompleted(
+                                                        <span
+                                                            className={`
+                                                            rounded-full
+                                                            px-4
+                                                            py-2
+                                                            text-sm
+                                                            font-semibold
 
-                                    request.donationResponseId!
+                                                            ${
+                                                                getStatusStyle(
+                                                                    request.status
+                                                                )
+                                                            }
+                                                            `}
+                                                        >
 
-                                );
+                                                            {
+                                                                request.status
+                                                            }
 
+                                                        </span>
 
-                            }}
+                                                    </div>
 
 
+                                                    {
+                                                        showTimeline(
+                                                            request.status
+                                                        )
+                                                    }
 
-                            className="
-                            rounded-xl
-                            bg-blue-600
-                            px-5
-                            py-3
-                            font-semibold
-                            text-white
-                            hover:bg-blue-700
-                            "
 
+                                                    <div
+                                                        className="
+                                                        mt-5
+                                                        space-y-2
+                                                        text-slate-600
+                                                        "
+                                                    >
 
-                            >
+                                                        <p>
 
-                                ✅ Confirm Donation Completed
+                                                            🏥 Hospital:
 
+                                                            <b className="ml-2">
 
-                            </button>
+                                                                {
+                                                                    request.hospital
+                                                                }
 
+                                                            </b>
 
-                            )
+                                                        </p>
 
 
-                            }
+                                                        <p>
 
+                                                            📍 Location:
 
+                                                            <b className="ml-2">
 
+                                                                {
+                                                                    request.location
+                                                                }
 
+                                                            </b>
 
+                                                        </p>
 
 
+                                                        <p>
 
+                                                            ⚠️ Urgency:
 
+                                                            <b className="ml-2">
 
+                                                                {
+                                                                    request.urgency
+                                                                }
 
+                                                            </b>
 
+                                                        </p>
 
 
-                            {
+                                                        <p>
 
+                                                            🩸 Units:
 
-                            request.status !== "FULFILLED"
+                                                            <b className="ml-2">
 
-                            &&
+                                                                {
+                                                                    request.unitsNeeded
+                                                                }
 
-                            request.status !== "CANCELLED"
+                                                            </b>
 
-                            &&
+                                                        </p>
 
-                            request.status !== "EXPIRED"
 
-                            &&
+                                                        <p>
 
+                                                            📅 Required Date:
 
-                            (
+                                                            <b className="ml-2">
 
-                            <button
+                                                                {
+                                                                    request.requiredDate
+                                                                }
 
+                                                            </b>
 
-                            onClick={()=>{
+                                                        </p>
 
+                                                    </div>
 
-                                cancelRequest(
 
-                                    request.id
+                                                    {
+                                                        showDonorInfo(
+                                                            request
+                                                        )
+                                                    }
 
-                                );
 
+                                                    <div
+                                                        className="
+                                                        mt-6
+                                                        flex
+                                                        flex-wrap
+                                                        gap-3
+                                                        "
+                                                    >
 
-                            }}
+                                                        {/* Phase 4.4 */}
 
+                                                        <button
 
+                                                            onClick={() => {
 
-                            className="
-                            rounded-xl
-                            bg-red-600
-                            px-5
-                            py-3
-                            font-semibold
-                            text-white
-                            hover:bg-red-700
-                            "
+                                                                router.push(
 
+                                                                    `/request-details/${request.id}`
 
-                            >
+                                                                );
 
-                                ❌ Cancel
+                                                            }}
 
+                                                            className="
+                                                            rounded-xl
+                                                            bg-blue-600
+                                                            px-5
+                                                            py-3
+                                                            font-semibold
+                                                            text-white
+                                                            transition
+                                                            hover:bg-blue-700
+                                                            "
+                                                        >
 
-                            </button>
+                                                            📄 View Details
 
+                                                        </button>
 
-                            )
 
+                                                        {
+                                                            request.status !== "EXPIRED"
 
-                            }
+                                                            &&
 
+                                                            (
 
+                                                                <button
 
+                                                                    onClick={() => {
 
+                                                                        router.push(
 
+                                                                            `/donors/${request.id}`
 
+                                                                        );
 
+                                                                    }}
 
+                                                                    className="
+                                                                    rounded-xl
+                                                                    bg-emerald-700
+                                                                    px-5
+                                                                    py-3
+                                                                    font-semibold
+                                                                    text-white
+                                                                    transition
+                                                                    hover:bg-emerald-800
+                                                                    "
+                                                                >
 
+                                                                    👥 Manage Donors
 
+                                                                </button>
 
+                                                            )
+                                                        }
 
 
+                                                        {
+                                                            request.status === "DONOR_FOUND"
 
-                            {
+                                                            &&
 
+                                                            request.donationResponseId
 
-                            request.status === "FULFILLED"
+                                                            &&
 
-                            &&
+                                                            (
 
+                                                                <button
 
-                            (
+                                                                    onClick={() => {
 
-                            <span className="
-                            rounded-xl
-                            bg-gray-100
-                            px-5
-                            py-3
-                            font-semibold
-                            text-gray-700
-                            ">
+                                                                        confirmDonationCompleted(
 
+                                                                            request.donationResponseId!
 
-                                ✅ Completed
+                                                                        );
 
+                                                                    }}
 
-                            </span>
+                                                                    className="
+                                                                    rounded-xl
+                                                                    bg-blue-600
+                                                                    px-5
+                                                                    py-3
+                                                                    font-semibold
+                                                                    text-white
+                                                                    transition
+                                                                    hover:bg-blue-700
+                                                                    "
+                                                                >
 
+                                                                    ✅ Confirm Donation Completed
 
-                            )
+                                                                </button>
 
+                                                            )
+                                                        }
 
-                            }
 
+                                                        {
+                                                            request.status !== "FULFILLED"
 
+                                                            &&
 
+                                                            request.status !== "CANCELLED"
 
+                                                            &&
 
+                                                            request.status !== "EXPIRED"
 
+                                                            &&
 
+                                                            (
 
+                                                                <button
 
+                                                                    onClick={() => {
 
+                                                                        cancelRequest(
+                                                                            request.id
+                                                                        );
 
+                                                                    }}
 
+                                                                    className="
+                                                                    rounded-xl
+                                                                    bg-red-600
+                                                                    px-5
+                                                                    py-3
+                                                                    font-semibold
+                                                                    text-white
+                                                                    transition
+                                                                    hover:bg-red-700
+                                                                    "
+                                                                >
 
-                            {
+                                                                    ❌ Cancel
 
+                                                                </button>
 
-                            request.status === "EXPIRED"
+                                                            )
+                                                        }
 
-                            &&
 
+                                                        {
+                                                            request.status === "FULFILLED"
 
-                            (
+                                                            &&
 
-                            <span className="
-                            rounded-xl
-                            bg-red-100
-                            px-5
-                            py-3
-                            font-semibold
-                            text-red-700
-                            ">
+                                                            (
 
+                                                                <span
+                                                                    className="
+                                                                    rounded-xl
+                                                                    bg-gray-100
+                                                                    px-5
+                                                                    py-3
+                                                                    font-semibold
+                                                                    text-gray-700
+                                                                    "
+                                                                >
 
-                                ❌ Expired
+                                                                    ✅ Completed
 
+                                                                </span>
 
-                            </span>
+                                                            )
+                                                        }
 
 
-                            )
+                                                        {
+                                                            request.status === "EXPIRED"
 
+                                                            &&
 
-                            }
+                                                            (
 
+                                                                <span
+                                                                    className="
+                                                                    rounded-xl
+                                                                    bg-red-100
+                                                                    px-5
+                                                                    py-3
+                                                                    font-semibold
+                                                                    text-red-700
+                                                                    "
+                                                                >
 
+                                                                    ❌ Expired
 
+                                                                </span>
 
+                                                            )
+                                                        }
 
+                                                    </div>
 
+                                                </div>
 
+                                            )
 
+                                        )
 
-                        </div>
+                                    }
 
-
-
-
-
-
-
-
-
-                    </div>
-
-
-
-                    )
-
-
-                    )
-
+                                </div>
 
                     }
-
-
-
-                    </div>
-
-
-                    }
-
-
-
-
 
                 </div>
 
-
-
-
-
-
             </div>
-
-
-
-
-
 
         </main>
 
-
     );
-
 
 }

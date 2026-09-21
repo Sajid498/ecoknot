@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import {
     useEffect,
+    useRef,
     useState
 } from "react";
 
@@ -24,6 +25,9 @@ export default function Navbar() {
 
     const pathname = usePathname();
 
+    const profileMenuRef =
+        useRef<HTMLDivElement | null>(null);
+
 
     const [user, setUser] =
         useState<any>(null);
@@ -37,7 +41,10 @@ export default function Navbar() {
         useState(false);
 
 
-
+    /*
+     * Load logged-in user
+     * and notification count
+     */
     useEffect(() => {
 
         const savedUser =
@@ -51,51 +58,106 @@ export default function Navbar() {
         }
 
 
-        const userData =
-            JSON.parse(savedUser);
+        try {
+
+            const userData =
+                JSON.parse(savedUser);
 
 
-        setUser(userData);
+            setUser(userData);
 
-
-        loadUnreadCount(
-            userData.id
-        );
-
-
-        const interval =
-            setInterval(() => {
-
-                loadUnreadCount(
-                    userData.id
-                );
-
-            }, 10000);
-
-
-        const refreshHandler = () => {
 
             loadUnreadCount(
                 userData.id
             );
 
-        };
+
+            const interval =
+                setInterval(() => {
+
+                    loadUnreadCount(
+                        userData.id
+                    );
+
+                }, 10000);
 
 
-        window.addEventListener(
-            "notificationUpdate",
-            refreshHandler
+            const refreshHandler = () => {
+
+                loadUnreadCount(
+                    userData.id
+                );
+
+            };
+
+
+            window.addEventListener(
+                "notificationUpdate",
+                refreshHandler
+            );
+
+
+            return () => {
+
+                clearInterval(interval);
+
+
+                window.removeEventListener(
+                    "notificationUpdate",
+                    refreshHandler
+                );
+
+            };
+
+        }
+
+        catch (error) {
+
+            console.log(
+                "Failed to load user",
+                error
+            );
+
+        }
+
+    }, []);
+
+
+    /*
+     * Close profile menu
+     * when clicking outside
+     */
+    useEffect(() => {
+
+        function handleOutsideClick(
+            event: MouseEvent
+        ) {
+
+            if (
+                profileMenuRef.current &&
+                !profileMenuRef.current.contains(
+                    event.target as Node
+                )
+            ) {
+
+                setShowProfileMenu(false);
+
+            }
+
+        }
+
+
+        document.addEventListener(
+            "mousedown",
+            handleOutsideClick
         );
 
 
         return () => {
 
-            clearInterval(interval);
-
-
-            window.removeEventListener(
-                "notificationUpdate",
-                refreshHandler
+            document.removeEventListener(
+                "mousedown",
+                handleOutsideClick
             );
 
         };
@@ -103,7 +165,9 @@ export default function Navbar() {
     }, []);
 
 
-
+    /*
+     * Load unread notification count
+     */
     async function loadUnreadCount(
         userId: number
     ) {
@@ -142,40 +206,9 @@ export default function Navbar() {
     }
 
 
-
     /*
-        Blood Donation module routes.
-
-        If the user is inside any of these routes,
-        only Blood Donation navigation will appear.
-    */
-
-    const isBloodSection =
-
-        pathname.startsWith(
-            "/blood-donation"
-        )
-
-        ||
-
-        pathname.startsWith(
-            "/my-requests"
-        )
-
-        ||
-
-        pathname.startsWith(
-            "/my-donations"
-        )
-
-        ||
-
-        pathname.startsWith(
-            "/donation-history"
-        );
-
-
-
+     * Logout
+     */
     function handleLogout() {
 
         localStorage.removeItem(
@@ -202,31 +235,68 @@ export default function Navbar() {
     }
 
 
-
-    function handleHome() {
-
-        setShowProfileMenu(false);
-
-
-        localStorage.removeItem(
-            "activeModule"
-        );
-
-
-        router.push(
-            "/"
-        );
-
-    }
-
-
-
+    /*
+     * Close dropdown
+     */
     function closeProfileMenu() {
 
         setShowProfileMenu(false);
 
     }
 
+
+    /*
+     * Check whether a main navigation
+     * item is currently active
+     */
+    function isActive(
+        path: string
+    ) {
+
+        if (path === "/") {
+
+            return pathname === "/";
+
+        }
+
+
+        return pathname.startsWith(path);
+
+    }
+
+
+    /*
+     * Main navigation style
+     */
+    function navClass(
+        path: string
+    ) {
+
+        return `
+
+        whitespace-nowrap
+        rounded-lg
+        px-3
+        py-2
+        text-sm
+        font-medium
+        transition
+
+        ${
+            isActive(path)
+
+            ?
+
+            "bg-emerald-50 text-emerald-700"
+
+            :
+
+            "text-slate-600 hover:bg-slate-50 hover:text-emerald-700"
+        }
+
+        `;
+
+    }
 
 
     return (
@@ -238,7 +308,8 @@ export default function Navbar() {
             z-50
             border-b
             border-slate-200
-            bg-white/90
+            bg-white/95
+            shadow-sm
             backdrop-blur-md
             "
         >
@@ -250,20 +321,22 @@ export default function Navbar() {
                 max-w-7xl
                 items-center
                 justify-between
-                gap-6
+                gap-5
                 px-6
                 py-3
                 "
             >
 
 
+                {/* ========================= */}
                 {/* LOGO */}
+                {/* ========================= */}
 
                 <Link
 
                     href="/"
 
-                    onClick={handleHome}
+                    onClick={closeProfileMenu}
 
                     className="
                     flex
@@ -327,7 +400,9 @@ export default function Navbar() {
 
 
 
-                {/* NAVIGATION */}
+                {/* ========================= */}
+                {/* PERMANENT MAIN NAVBAR */}
+                {/* ========================= */}
 
                 <nav
                     className="
@@ -335,382 +410,136 @@ export default function Navbar() {
                     flex-1
                     items-center
                     justify-center
-                    gap-6
+                    gap-1
                     lg:flex
                     "
                 >
 
 
-                    {isBloodSection ? (
+                    {/* HOME */}
 
-                        <>
+                    <Link
 
-                            {/* HOME */}
+                        href="/"
 
-                            <button
+                        onClick={closeProfileMenu}
 
-                                onClick={handleHome}
+                        className={navClass("/")}
 
-                                className="
-                                whitespace-nowrap
-                                text-sm
-                                font-semibold
-                                text-slate-600
-                                transition
-                                hover:text-emerald-700
-                                "
-                            >
+                    >
 
-                                ← Home
+                        Home
 
-                            </button>
+                    </Link>
 
 
 
-                            {/* BLOOD DONATION */}
+                    {/* BLOOD DONATION */}
 
-                            <Link
+                    <Link
 
-                                href="/blood-donation"
+                        href="/blood-donation"
 
-                                className={`
-                                whitespace-nowrap
-                                rounded-lg
-                                px-2
-                                py-2
-                                text-sm
-                                font-semibold
-                                transition
+                        onClick={closeProfileMenu}
 
-                                ${
-                                    pathname === "/blood-donation"
+                        className={navClass(
+                            "/blood-donation"
+                        )}
 
-                                    ?
+                    >
 
-                                    "bg-emerald-50 text-emerald-700"
+                        🩸 Blood Donation
 
-                                    :
+                    </Link>
 
-                                    "text-slate-600 hover:text-emerald-700"
-                                }
-                                `}
-                            >
 
-                                🩸 Blood Donation
 
-                            </Link>
+                    {/* RESOURCES */}
 
+                    <Link
 
+                        href="/resources"
 
-                            {/* MY REQUESTS */}
+                        onClick={closeProfileMenu}
 
-                            <Link
+                        className={navClass(
+                            "/resources"
+                        )}
 
-                                href="/my-requests"
+                    >
 
-                                className={`
-                                whitespace-nowrap
-                                rounded-lg
-                                px-2
-                                py-2
-                                text-sm
-                                font-medium
-                                transition
+                        🌎 Resources
 
-                                ${
-                                    pathname.startsWith(
-                                        "/my-requests"
-                                    )
+                    </Link>
 
-                                    ?
 
-                                    "bg-emerald-50 text-emerald-700"
 
-                                    :
+                    {/* DASHBOARD */}
 
-                                    "text-slate-600 hover:text-emerald-700"
-                                }
-                                `}
-                            >
+                    <Link
 
-                                📋 My Requests
+                        href="/dashboard"
 
-                            </Link>
+                        onClick={closeProfileMenu}
 
+                        className={navClass(
+                            "/dashboard"
+                        )}
 
+                    >
 
-                            {/* MY DONATIONS */}
+                        📊 Dashboard
 
-                            <Link
+                    </Link>
 
-                                href="/my-donations"
 
-                                className={`
-                                whitespace-nowrap
-                                rounded-lg
-                                px-2
-                                py-2
-                                text-sm
-                                font-medium
-                                transition
 
-                                ${
-                                    pathname.startsWith(
-                                        "/my-donations"
-                                    )
+                    {/* RELIEF HUB */}
 
-                                    ?
+                    <Link
 
-                                    "bg-emerald-50 text-emerald-700"
+                        href="/rescue"
 
-                                    :
+                        onClick={closeProfileMenu}
 
-                                    "text-slate-600 hover:text-emerald-700"
-                                }
-                                `}
-                            >
+                        className={navClass(
+                            "/rescue"
+                        )}
 
-                                ❤️ My Donations
+                    >
 
-                            </Link>
+                        🌱 Relief Hub
 
+                    </Link>
 
-
-                            {/* DONATION HISTORY */}
-
-                            <Link
-
-                                href="/donation-history"
-
-                                className={`
-                                whitespace-nowrap
-                                rounded-lg
-                                px-2
-                                py-2
-                                text-sm
-                                font-medium
-                                transition
-
-                                ${
-                                    pathname.startsWith(
-                                        "/donation-history"
-                                    )
-
-                                    ?
-
-                                    "bg-emerald-50 text-emerald-700"
-
-                                    :
-
-                                    "text-slate-600 hover:text-emerald-700"
-                                }
-                                `}
-                            >
-
-                                🩸 Donation History
-
-                            </Link>
-
-                        </>
-
-                    ) : (
-
-                        <>
-
-                            {/* HOME */}
-
-                            <Link
-
-                                href="/"
-
-                                className={`
-                                whitespace-nowrap
-                                rounded-lg
-                                px-2
-                                py-2
-                                text-sm
-                                font-semibold
-                                transition
-
-                                ${
-                                    pathname === "/"
-
-                                    ?
-
-                                    "bg-emerald-50 text-emerald-700"
-
-                                    :
-
-                                    "text-slate-600 hover:text-emerald-700"
-                                }
-                                `}
-                            >
-
-                                Home
-
-                            </Link>
-
-
-
-                            {/* BLOOD DONATION */}
-
-                            <Link
-
-                                href="/blood-donation"
-
-                                className="
-                                whitespace-nowrap
-                                rounded-lg
-                                px-2
-                                py-2
-                                text-sm
-                                font-medium
-                                text-slate-600
-                                transition
-                                hover:text-emerald-700
-                                "
-                            >
-
-                                🩸 Blood Donation
-
-                            </Link>
-
-
-
-                            {/* RESOURCES */}
-
-                            <Link
-
-                                href="/resources"
-
-                                className={`
-                                whitespace-nowrap
-                                rounded-lg
-                                px-2
-                                py-2
-                                text-sm
-                                font-medium
-                                transition
-
-                                ${
-                                    pathname.startsWith(
-                                        "/resources"
-                                    )
-
-                                    ?
-
-                                    "bg-emerald-50 text-emerald-700"
-
-                                    :
-
-                                    "text-slate-600 hover:text-emerald-700"
-                                }
-                                `}
-                            >
-
-                                🌎 Resources
-
-                            </Link>
-
-
-
-                            {/* DASHBOARD */}
-
-                            <Link
-
-                                href="/dashboard"
-
-                                className={`
-                                whitespace-nowrap
-                                rounded-lg
-                                px-2
-                                py-2
-                                text-sm
-                                font-medium
-                                transition
-
-                                ${
-                                    pathname.startsWith(
-                                        "/dashboard"
-                                    )
-
-                                    ?
-
-                                    "bg-emerald-50 text-emerald-700"
-
-                                    :
-
-                                    "text-slate-600 hover:text-emerald-700"
-                                }
-                                `}
-                            >
-
-                                📊 Dashboard
-
-                            </Link>
-
-
-
-                            {/* RELIEF HUB */}
-
-                            <Link
-
-                                href="/rescue"
-
-                                className={`
-                                whitespace-nowrap
-                                rounded-lg
-                                px-2
-                                py-2
-                                text-sm
-                                font-medium
-                                transition
-
-                                ${
-                                    pathname.startsWith(
-                                        "/rescue"
-                                    )
-
-                                    ?
-
-                                    "bg-emerald-50 text-emerald-700"
-
-                                    :
-
-                                    "text-slate-600 hover:text-emerald-700"
-                                }
-                                `}
-                            >
-
-                                🌱 Relief Hub
-
-                            </Link>
-
-                        </>
-
-                    )}
 
                 </nav>
 
 
 
+                {/* ========================= */}
                 {/* RIGHT SIDE */}
+                {/* ========================= */}
 
                 <div
                     className="
                     flex
                     shrink-0
                     items-center
-                    gap-3
+                    gap-2
                     "
                 >
 
-                    {user ? (
+                    {
+
+                        user ?
 
                         <>
 
 
-                            {/* NOTIFICATION */}
+                            {/* ========================= */}
+                            {/* NOTIFICATIONS */}
+                            {/* ========================= */}
 
                             <Link
 
@@ -730,23 +559,21 @@ export default function Navbar() {
                                 transition
                                 hover:bg-emerald-50
                                 "
+
                                 title="Notifications"
+
                             >
 
-                                <span
-                                    className={
-                                        unreadCount > 0
-                                            ? "animate-pulse"
-                                            : ""
-                                    }
-                                >
+                                <span>
 
                                     🔔
 
                                 </span>
 
 
-                                {unreadCount > 0 && (
+                                {
+
+                                    unreadCount > 0 &&
 
                                     <span
                                         className="
@@ -767,31 +594,40 @@ export default function Navbar() {
                                         "
                                     >
 
-                                        {unreadCount > 9
-                                            ? "9+"
-                                            : unreadCount}
+                                        {
+                                            unreadCount > 9
+                                                ? "9+"
+                                                : unreadCount
+                                        }
 
                                     </span>
 
-                                )}
+                                }
 
                             </Link>
 
 
 
+                            {/* ========================= */}
                             {/* PROFILE DROPDOWN */}
+                            {/* ========================= */}
 
                             <div
+
+                                ref={profileMenuRef}
+
                                 className="
                                 relative
                                 "
                             >
 
+
                                 <button
 
                                     onClick={() =>
                                         setShowProfileMenu(
-                                            !showProfileMenu
+                                            previous =>
+                                                !previous
                                         )
                                     }
 
@@ -800,12 +636,15 @@ export default function Navbar() {
                                     items-center
                                     gap-2
                                     rounded-xl
-                                    px-3
+                                    px-2
                                     py-2
                                     transition
                                     hover:bg-slate-100
                                     "
                                 >
+
+
+                                    {/* USER AVATAR */}
 
                                     <div
                                         className="
@@ -825,11 +664,14 @@ export default function Navbar() {
                                             user?.name
                                                 ?.charAt(0)
                                                 ?.toUpperCase()
-                                                || "U"
+                                            ||
+                                            "U"
                                         }
 
                                     </div>
 
+
+                                    {/* USER NAME */}
 
                                     <span
                                         className="
@@ -848,6 +690,8 @@ export default function Navbar() {
                                     </span>
 
 
+                                    {/* ARROW */}
+
                                     <span
                                         className={`
                                         text-xs
@@ -856,8 +700,10 @@ export default function Navbar() {
 
                                         ${
                                             showProfileMenu
-                                                ? "rotate-180"
-                                                : ""
+                                            ?
+                                            "rotate-180"
+                                            :
+                                            ""
                                         }
                                         `}
                                     >
@@ -866,11 +712,18 @@ export default function Navbar() {
 
                                     </span>
 
+
                                 </button>
 
 
 
-                                {showProfileMenu && (
+                                {/* ========================= */}
+                                {/* DROPDOWN */}
+                                {/* ========================= */}
+
+                                {
+
+                                    showProfileMenu &&
 
                                     <div
                                         className="
@@ -927,7 +780,8 @@ export default function Navbar() {
                                                         user?.name
                                                             ?.charAt(0)
                                                             ?.toUpperCase()
-                                                            || "U"
+                                                        ||
+                                                        "U"
                                                     }
 
                                                 </div>
@@ -977,7 +831,9 @@ export default function Navbar() {
 
                                             href="/dashboard"
 
-                                            onClick={closeProfileMenu}
+                                            onClick={
+                                                closeProfileMenu
+                                            }
 
                                             className="
                                             mt-2
@@ -1006,7 +862,9 @@ export default function Navbar() {
 
                                             href="/profile"
 
-                                            onClick={closeProfileMenu}
+                                            onClick={
+                                                closeProfileMenu
+                                            }
 
                                             className="
                                             block
@@ -1034,7 +892,9 @@ export default function Navbar() {
 
                                             href="/saved-resources"
 
-                                            onClick={closeProfileMenu}
+                                            onClick={
+                                                closeProfileMenu
+                                            }
 
                                             className="
                                             block
@@ -1062,7 +922,9 @@ export default function Navbar() {
 
                                             href="/fundraising"
 
-                                            onClick={closeProfileMenu}
+                                            onClick={
+                                                closeProfileMenu
+                                            }
 
                                             className="
                                             block
@@ -1090,7 +952,9 @@ export default function Navbar() {
 
                                             href="#"
 
-                                            onClick={closeProfileMenu}
+                                            onClick={
+                                                closeProfileMenu
+                                            }
 
                                             className="
                                             block
@@ -1118,7 +982,9 @@ export default function Navbar() {
 
                                             href="/notifications"
 
-                                            onClick={closeProfileMenu}
+                                            onClick={
+                                                closeProfileMenu
+                                            }
 
                                             className="
                                             flex
@@ -1137,11 +1003,15 @@ export default function Navbar() {
                                         >
 
                                             <span>
+
                                                 🔔 Notifications
+
                                             </span>
 
 
-                                            {unreadCount > 0 && (
+                                            {
+
+                                                unreadCount > 0 &&
 
                                                 <span
                                                     className="
@@ -1159,7 +1029,7 @@ export default function Navbar() {
 
                                                 </span>
 
-                                            )}
+                                            }
 
                                         </Link>
 
@@ -1179,7 +1049,9 @@ export default function Navbar() {
 
                                         <button
 
-                                            onClick={handleLogout}
+                                            onClick={
+                                                handleLogout
+                                            }
 
                                             className="
                                             w-full
@@ -1199,17 +1071,23 @@ export default function Navbar() {
 
                                         </button>
 
+
                                     </div>
 
-                                )}
+                                }
 
                             </div>
 
                         </>
 
-                    ) : (
+
+                        :
+
 
                         <>
+
+
+                            {/* LOGIN */}
 
                             <Link
 
@@ -1233,6 +1111,9 @@ export default function Navbar() {
 
                             </Link>
 
+
+
+                            {/* SIGN UP */}
 
                             <Link
 
@@ -1258,7 +1139,7 @@ export default function Navbar() {
 
                         </>
 
-                    )}
+                    }
 
                 </div>
 

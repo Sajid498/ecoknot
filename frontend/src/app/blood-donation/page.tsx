@@ -1,8 +1,8 @@
 "use client";
 
-
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Navbar from "@/components/Navbar";
+import BloodDonationNavbar from "@/components/BloodDonationNavbar";
 
 import {
     useEffect,
@@ -16,184 +16,82 @@ import {
 import toast from "react-hot-toast";
 
 
-
-
-
 const API_URL =
-
     process.env.NEXT_PUBLIC_API_URL ||
-
     "http://localhost:8080";
-
-
-
-
-
-
-
 
 
 type BloodRequest = {
 
+    id: number;
 
-    id:number;
+    patientName: string;
 
+    bloodGroup: string;
 
-    patientName:string;
+    hospital: string;
 
+    location: string;
 
-    bloodGroup:string;
+    contactNumber: string;
 
+    requiredDate: string;
 
-    hospital:string;
+    unitsNeeded: number;
 
+    urgency: string;
 
-    location:string;
+    description: string;
 
+    status: string;
 
-    contactNumber:string;
-
-
-    requiredDate:string;
-
-
-    unitsNeeded:number;
-
-
-    urgency:string;
-
-
-    description:string;
-
-
-    status:string;
-
-
-    userId:number;
-
+    userId: number;
 
 };
 
 
-
-
-
-
-
-
-
-export default function BloodDonationPage(){
-
-
+export default function BloodDonationPage() {
 
     const router = useRouter();
 
 
-
-
-
-
-
-
-
-    const [currentUser,setCurrentUser] =
-
+    const [currentUser, setCurrentUser] =
         useState<any>(null);
 
 
-
-
-
-
-
-
-    const [requests,setRequests] =
-
+    const [requests, setRequests] =
         useState<BloodRequest[]>([]);
 
 
-
-
-
-
-
-
-    const [allRequests,setAllRequests] =
-
+    const [allRequests, setAllRequests] =
         useState<BloodRequest[]>([]);
 
 
-
-
-
-
-
-
-    const [isLoading,setIsLoading] =
-
+    const [isLoading, setIsLoading] =
         useState(true);
 
 
-
-
-
-
-
-
-    const [searchLocation,setSearchLocation] =
-
+    const [searchLocation, setSearchLocation] =
         useState("");
 
 
-
-
-
-
-
-
-    const [bloodGroupFilter,setBloodGroupFilter] =
-
+    const [bloodGroupFilter, setBloodGroupFilter] =
         useState("");
 
 
-
-
-
-
-
-
-    const [statusFilter,setStatusFilter] =
-
+    const [statusFilter, setStatusFilter] =
         useState("");
 
 
-
-
-
-
-
-
-    const [urgencyFilter,setUrgencyFilter] =
-
+    const [urgencyFilter, setUrgencyFilter] =
         useState("");
-
-
-
-
-
-
-
-
-
-
-
 
 
     const availableRequests =
 
         requests.filter(
 
-            (request)=>
+            (request) =>
 
                 request.userId !== currentUser?.id
 
@@ -208,29 +106,11 @@ export default function BloodDonationPage(){
         );
 
 
+    async function loadBloodRequests() {
 
-
-
-
-
-
-
-
-
-
-
-    async function loadBloodRequests(){
-
-
-        try{
-
+        try {
 
             setIsLoading(true);
-
-
-
-
-
 
 
             const response =
@@ -242,14 +122,7 @@ export default function BloodDonationPage(){
                 );
 
 
-
-
-
-
-
-
-            if(!response.ok){
-
+            if (!response.ok) {
 
                 throw new Error(
 
@@ -257,14 +130,7 @@ export default function BloodDonationPage(){
 
                 );
 
-
             }
-
-
-
-
-
-
 
 
             const data =
@@ -272,28 +138,13 @@ export default function BloodDonationPage(){
                 await response.json();
 
 
-
-
-
-
-
-
             setAllRequests(data);
-
 
             setRequests(data);
 
-
-
-
-
-
-
         }
 
-        catch(error){
-
-
+        catch (error) {
 
             console.log(error);
 
@@ -304,48 +155,31 @@ export default function BloodDonationPage(){
 
             );
 
-
         }
 
-        finally{
-
+        finally {
 
             setIsLoading(false);
 
-
         }
-
 
     }
 
 
+    useEffect(() => {
 
+        /*
+         * Old activeModule logic is no longer
+         * required for the navbar.
+         *
+         * The permanent Navbar always appears
+         * and BloodDonationNavbar is rendered
+         * separately below it.
+         */
 
-
-
-
-
-
-
-
-
-
-    useEffect(()=>{
-
-
-        localStorage.setItem(
-
-            "activeModule",
-
-            "blood"
-
+        localStorage.removeItem(
+            "activeModule"
         );
-
-
-
-
-
-
 
 
         const savedUser =
@@ -353,14 +187,7 @@ export default function BloodDonationPage(){
             localStorage.getItem("user");
 
 
-
-
-
-
-
-
-        if(savedUser){
-
+        if (savedUser) {
 
             setCurrentUser(
 
@@ -368,45 +195,19 @@ export default function BloodDonationPage(){
 
             );
 
-
         }
-
-
-
-
-
-
 
 
         loadBloodRequests();
 
+    }, []);
 
 
-
-
-
-    },[]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-    useEffect(()=>{
-
+    useEffect(() => {
 
         applyFilters();
 
-
-
-    },[
+    }, [
 
         searchLocation,
 
@@ -419,76 +220,45 @@ export default function BloodDonationPage(){
     ]);
 
 
-
-
-
-
-
-
-
-
-
-
-
-    function applyFilters(){
-
-
+    function applyFilters() {
 
         let filtered =
 
             [...allRequests];
 
 
-
-
-
-
-
-
-        if(searchLocation.trim()){
-
-
+        if (searchLocation.trim()) {
 
             filtered =
 
                 filtered.filter(
 
-                    (request)=>
+                    (request) =>
 
                         request.location
 
-                        .toLowerCase()
-
-                        .includes(
-
-                            searchLocation
-
                             .toLowerCase()
 
-                        )
+                            .includes(
+
+                                searchLocation
+
+                                    .toLowerCase()
+
+                            )
 
                 );
-
-
 
         }
 
 
-
-
-
-
-
-
-        if(bloodGroupFilter){
-
-
+        if (bloodGroupFilter) {
 
             filtered =
 
                 filtered.filter(
 
-                    (request)=>
+                    (request) =>
 
                         request.bloodGroup ===
 
@@ -496,27 +266,16 @@ export default function BloodDonationPage(){
 
                 );
 
-
-
         }
 
 
-
-
-
-
-
-
-
-        if(statusFilter){
-
-
+        if (statusFilter) {
 
             filtered =
 
                 filtered.filter(
 
-                    (request)=>
+                    (request) =>
 
                         request.status ===
 
@@ -524,26 +283,16 @@ export default function BloodDonationPage(){
 
                 );
 
-
         }
 
 
-
-
-
-
-
-
-
-        if(urgencyFilter){
-
-
+        if (urgencyFilter) {
 
             filtered =
 
                 filtered.filter(
 
-                    (request)=>
+                    (request) =>
 
                         request.urgency ===
 
@@ -551,37 +300,15 @@ export default function BloodDonationPage(){
 
                 );
 
-
         }
-
-
-
-
-
-
 
 
         setRequests(filtered);
 
-
-
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-    function resetFilters(){
-
-
+    function resetFilters() {
 
         setSearchLocation("");
 
@@ -592,39 +319,22 @@ export default function BloodDonationPage(){
         setUrgencyFilter("");
 
 
-
         setRequests(
 
             allRequests
 
         );
 
-
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     async function handleDonate(
 
-        requestId:number
+        requestId: number
 
-    ){
+    ) {
 
-
-
-        if(!currentUser){
-
-
+        if (!currentUser) {
 
             toast.error(
 
@@ -635,37 +345,22 @@ export default function BloodDonationPage(){
 
             return;
 
-
         }
 
 
+        try {
 
-
-
-
-
-
-
-        try{
-
-
-
-            // Check donor eligibility
-
+            /*
+             * Check donor eligibility
+             */
 
             const eligibilityResponse =
 
                 await fetch(
 
-`${API_URL}/api/users/${currentUser.id}/eligibility`
+                    `${API_URL}/api/users/${currentUser.id}/eligibility`
 
                 );
-
-
-
-
-
-
 
 
             const eligibilityData =
@@ -673,15 +368,7 @@ export default function BloodDonationPage(){
                 await eligibilityResponse.json();
 
 
-
-
-
-
-
-
-            if(!eligibilityData.eligible){
-
-
+            if (!eligibilityData.eligible) {
 
                 toast.error(
 
@@ -692,95 +379,61 @@ export default function BloodDonationPage(){
 
                 return;
 
-
             }
-
-
-
-
-
-
-
 
 
             const response =
 
                 await fetch(
 
-`${API_URL}/api/donation-response`,
+                    `${API_URL}/api/donation-response`,
 
                     {
 
+                        method: "POST",
 
-                        method:"POST",
 
-
-                        headers:{
-
+                        headers: {
 
                             "Content-Type":
-
-                            "application/json"
-
+                                "application/json"
 
                         },
 
 
-
-                        body:JSON.stringify({
-
+                        body: JSON.stringify({
 
                             requestId,
 
 
                             donorId:
-
-                            currentUser.id,
+                                currentUser.id,
 
 
                             donorName:
-
-                            currentUser.name,
+                                currentUser.name,
 
 
                             donorEmail:
-
-                            currentUser.email,
+                                currentUser.email,
 
 
                             donorPhone:
-
-                            currentUser.phone ||
-
-                            "Not provided"
-
-
+                                currentUser.phone ||
+                                "Not provided"
 
                         })
-
 
                     }
 
                 );
 
 
-
-
-
-
-
-
-
-            if(!response.ok){
-
-
+            if (!response.ok) {
 
                 const error =
 
                     await response.json();
-
-
-
 
 
                 throw new Error(
@@ -791,15 +444,7 @@ export default function BloodDonationPage(){
 
                 );
 
-
             }
-
-
-
-
-
-
-
 
 
             toast.success(
@@ -809,28 +454,13 @@ export default function BloodDonationPage(){
             );
 
 
-
-
-
-
-
-
             loadBloodRequests();
-
-
-
-
-
-
 
         }
 
-        catch(error:any){
-
-
+        catch (error: any) {
 
             console.log(error);
-
 
 
             toast.error(
@@ -841,38 +471,22 @@ export default function BloodDonationPage(){
 
             );
 
-
         }
 
-
     }
-    
-
-
-
-
 
 
     function formatBloodGroup(
 
-        bloodGroup:string
+        bloodGroup: string
 
-    ){
+    ) {
 
-
-
-        if(!bloodGroup){
-
+        if (!bloodGroup) {
 
             return "";
 
-
         }
-
-
-
-
-
 
 
         return bloodGroup
@@ -893,1420 +507,778 @@ export default function BloodDonationPage(){
 
             );
 
-
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     function getStatusStyle(
 
-        status:string
+        status: string
 
-    ){
+    ) {
 
-
-
-        if(status==="OPEN"){
-
-
+        if (status === "OPEN") {
 
             return "bg-green-100 text-green-700";
 
-
         }
 
 
-
-
-
-
-
-        if(status==="DONOR_FOUND"){
-
-
+        if (status === "DONOR_FOUND") {
 
             return "bg-blue-100 text-blue-700";
 
-
         }
 
 
-
-
-
-
-
-        if(status==="FULFILLED"){
-
-
+        if (status === "FULFILLED") {
 
             return "bg-gray-100 text-gray-700";
 
-
         }
 
 
-
-
-
-
-
-        if(status==="CANCELLED"){
-
-
+        if (status === "CANCELLED") {
 
             return "bg-red-100 text-red-700";
 
-
         }
-
-
-
-
-
 
 
         return "bg-red-100 text-red-700";
 
-
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     function getUrgencyStyle(
 
-        urgency:string
+        urgency: string
 
-    ){
+    ) {
 
-
-
-        if(urgency==="CRITICAL"){
-
-
+        if (urgency === "CRITICAL") {
 
             return "text-red-600 font-bold";
 
-
         }
 
 
-
-
-
-
-
-
-        if(urgency==="URGENT"){
-
-
+        if (urgency === "URGENT") {
 
             return "text-orange-600 font-bold";
 
-
         }
-
-
-
-
-
 
 
         return "text-green-600 font-semibold";
 
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     return (
 
+        <ProtectedRoute>
 
+            <>
 
-    <ProtectedRoute>
+                {/* ========================= */}
+                {/* PERMANENT MAIN NAVBAR */}
+                {/* ========================= */}
 
+                <Navbar />
 
-    <>
 
+                {/* ========================= */}
+                {/* BLOOD MODULE NAVBAR */}
+                {/* ========================= */}
 
+                <BloodDonationNavbar />
 
 
+                {/* ========================= */}
+                {/* PAGE CONTENT */}
+                {/* ========================= */}
 
+                <main
+                    className="
+                    min-h-screen
+                    bg-slate-50
+                    p-6
+                    md:p-10
+                    "
+                >
 
-    <Navbar />
+                    <div
+                        className="
+                        mx-auto
+                        max-w-7xl
+                        "
+                    >
 
 
+                        <h1
+                            className="
+                            text-3xl
+                            font-bold
+                            text-slate-900
+                            "
+                        >
 
+                            🩸 Blood Donation
 
+                        </h1>
 
 
+                        <p
+                            className="
+                            mt-2
+                            text-slate-600
+                            "
+                        >
 
+                            Find blood requests and help your community.
 
+                        </p>
 
-    <main className="
-    min-h-screen
-    bg-slate-50
-    p-6
-    md:p-10
-    ">
 
+                        <button
 
+                            onClick={() => {
 
+                                router.push(
 
+                                    "/blood-donation/create"
 
+                                );
 
+                            }}
 
+                            className="
+                            mt-5
+                            rounded-xl
+                            bg-red-600
+                            px-5
+                            py-3
+                            font-semibold
+                            text-white
+                            hover:bg-red-700
+                            "
+                        >
 
-    <div className="
-    mx-auto
-    max-w-7xl
-    ">
+                            🩸 Request Blood
 
+                        </button>
 
 
 
+                        {/* ========================= */}
+                        {/* FILTER SECTION */}
+                        {/* ========================= */}
 
+                        <div
+                            className="
+                            mt-8
+                            rounded-2xl
+                            bg-white
+                            p-6
+                            shadow
+                            "
+                        >
 
+                            <h2
+                                className="
+                                text-xl
+                                font-bold
+                                "
+                            >
 
+                                Search Blood Requests
 
+                            </h2>
 
-    <h1 className="
-    text-3xl
-    font-bold
-    text-slate-900
-    ">
 
+                            <div
+                                className="
+                                mt-5
+                                grid
+                                grid-cols-1
+                                gap-4
+                                md:grid-cols-4
+                                "
+                            >
 
-        🩸 Blood Donation
+                                <input
 
+                                    value={
+                                        searchLocation
+                                    }
 
-    </h1>
+                                    onChange={(e) =>
 
+                                        setSearchLocation(
 
+                                            e.target.value
 
+                                        )
 
+                                    }
 
+                                    placeholder="Search location"
 
+                                    className="
+                                    rounded-lg
+                                    border
+                                    p-3
+                                    "
+                                />
 
 
-    <p className="
-    mt-2
-    text-slate-600
-    ">
+                                <select
 
+                                    value={
+                                        bloodGroupFilter
+                                    }
 
-        Find blood requests and help your community.
+                                    onChange={(e) =>
 
+                                        setBloodGroupFilter(
 
-    </p>
+                                            e.target.value
 
+                                        )
 
+                                    }
 
+                                    className="
+                                    rounded-lg
+                                    border
+                                    p-3
+                                    "
+                                >
 
+                                    <option value="">
+                                        All Blood Groups
+                                    </option>
 
+                                    <option value="A_POSITIVE">
+                                        A+
+                                    </option>
 
+                                    <option value="A_NEGATIVE">
+                                        A-
+                                    </option>
 
+                                    <option value="B_POSITIVE">
+                                        B+
+                                    </option>
 
+                                    <option value="B_NEGATIVE">
+                                        B-
+                                    </option>
 
-    <button
+                                    <option value="O_POSITIVE">
+                                        O+
+                                    </option>
 
+                                    <option value="O_NEGATIVE">
+                                        O-
+                                    </option>
 
-    onClick={()=>{
+                                    <option value="AB_POSITIVE">
+                                        AB+
+                                    </option>
 
+                                    <option value="AB_NEGATIVE">
+                                        AB-
+                                    </option>
 
-        router.push(
+                                </select>
 
-            "/blood-donation/create"
 
-        );
+                                <select
 
+                                    value={
+                                        urgencyFilter
+                                    }
 
-    }}
+                                    onChange={(e) =>
 
+                                        setUrgencyFilter(
 
+                                            e.target.value
 
-    className="
-    mt-5
-    rounded-xl
-    bg-red-600
-    px-5
-    py-3
-    font-semibold
-    text-white
-    hover:bg-red-700
-    "
+                                        )
 
+                                    }
 
-    >
+                                    className="
+                                    rounded-lg
+                                    border
+                                    p-3
+                                    "
+                                >
 
+                                    <option value="">
+                                        All Urgency
+                                    </option>
 
-        🩸 Request Blood
+                                    <option value="NORMAL">
+                                        Normal
+                                    </option>
 
+                                    <option value="URGENT">
+                                        Urgent
+                                    </option>
 
-    </button>
+                                    <option value="CRITICAL">
+                                        Critical
+                                    </option>
 
+                                </select>
 
 
+                                <select
 
+                                    value={
+                                        statusFilter
+                                    }
 
+                                    onChange={(e) =>
 
+                                        setStatusFilter(
 
+                                            e.target.value
 
+                                        )
 
+                                    }
 
+                                    className="
+                                    rounded-lg
+                                    border
+                                    p-3
+                                    "
+                                >
 
+                                    <option value="">
+                                        All Status
+                                    </option>
 
+                                    <option value="OPEN">
+                                        Open
+                                    </option>
 
-    {/* FILTER SECTION */}
+                                    <option value="DONOR_FOUND">
+                                        Donor Found
+                                    </option>
 
+                                    <option value="FULFILLED">
+                                        Fulfilled
+                                    </option>
 
+                                    <option value="CANCELLED">
+                                        Cancelled
+                                    </option>
 
-    <div className="
-    mt-8
-    rounded-2xl
-    bg-white
-    p-6
-    shadow
-    ">
+                                </select>
 
+                            </div>
 
 
+                            <button
 
+                                onClick={
+                                    resetFilters
+                                }
 
+                                className="
+                                mt-5
+                                rounded-lg
+                                border
+                                px-5
+                                py-2
+                                transition
+                                hover:bg-slate-50
+                                "
+                            >
 
+                                Reset Filter
 
+                            </button>
 
-    <h2 className="
-    text-xl
-    font-bold
-    ">
+                        </div>
 
 
-        Search Blood Requests
 
+                        {/* ========================= */}
+                        {/* REQUEST LIST */}
+                        {/* ========================= */}
 
-    </h2>
+                        <div
+                            className="
+                            mt-10
+                            grid
+                            gap-6
+                            md:grid-cols-2
+                            lg:grid-cols-3
+                            "
+                        >
 
+                            {
 
+                                isLoading ?
 
+                                    (
 
+                                        <p>
 
+                                            Loading blood requests...
 
+                                        </p>
 
+                                    )
 
+                                    :
 
-    <div className="
-    mt-5
-    grid
-    grid-cols-1
-    gap-4
-    md:grid-cols-4
-    ">
+                                    availableRequests.length === 0 ?
 
+                                        (
 
+                                            <div
+                                                className="
+                                                rounded-xl
+                                                bg-white
+                                                p-6
+                                                shadow
+                                                "
+                                            >
 
+                                                No blood request found.
 
+                                            </div>
 
+                                        )
 
+                                        :
 
+                                        availableRequests.map(
 
+                                            (request) => (
 
-    <input
+                                                <div
 
+                                                    key={
+                                                        request.id
+                                                    }
 
+                                                    className="
+                                                    rounded-2xl
+                                                    bg-white
+                                                    p-6
+                                                    shadow
+                                                    transition
+                                                    hover:shadow-lg
+                                                    "
+                                                >
 
-    value={searchLocation}
+                                                    <div
+                                                        className="
+                                                        flex
+                                                        items-center
+                                                        justify-between
+                                                        "
+                                                    >
 
+                                                        <h2
+                                                            className="
+                                                            text-2xl
+                                                            font-bold
+                                                            text-red-600
+                                                            "
+                                                        >
 
+                                                            🩸{" "}
 
-    onChange={(e)=>
+                                                            {
+                                                                formatBloodGroup(
 
-        setSearchLocation(
+                                                                    request.bloodGroup
 
-            e.target.value
+                                                                )
+                                                            }
 
-        )
+                                                        </h2>
 
-    }
 
+                                                        <span
 
+                                                            className={`
+                                                            rounded-full
+                                                            px-3
+                                                            py-1
+                                                            text-sm
+                                                            font-semibold
 
-    placeholder="Search location"
+                                                            ${
+                                                                getStatusStyle(
 
+                                                                    request.status
 
+                                                                )
+                                                            }
+                                                            `}
+                                                        >
 
-    className="
-    rounded-lg
-    border
-    p-3
-    "
+                                                            {
+                                                                request.status
+                                                            }
 
+                                                        </span>
 
-    />
+                                                    </div>
 
 
+                                                    <h3
+                                                        className="
+                                                        mt-5
+                                                        text-xl
+                                                        font-bold
+                                                        "
+                                                    >
 
+                                                        {
+                                                            request.patientName
+                                                        }
 
+                                                    </h3>
 
 
+                                                    <div
+                                                        className="
+                                                        mt-4
+                                                        space-y-2
+                                                        text-slate-600
+                                                        "
+                                                    >
 
+                                                        <p>
 
+                                                            🏥 Hospital:
 
+                                                            <b
+                                                                className="
+                                                                ml-1
+                                                                "
+                                                            >
 
+                                                                {
+                                                                    request.hospital
+                                                                }
 
+                                                            </b>
 
+                                                        </p>
 
 
-    <select
+                                                        <p>
 
+                                                            📍 Location:
 
+                                                            <b
+                                                                className="
+                                                                ml-1
+                                                                "
+                                                            >
 
-    value={bloodGroupFilter}
+                                                                {
+                                                                    request.location
+                                                                }
 
+                                                            </b>
 
+                                                        </p>
 
-    onChange={(e)=>
 
-        setBloodGroupFilter(
+                                                        <p>
 
-            e.target.value
+                                                            🩸 Required Units:
 
-        )
+                                                            <b
+                                                                className="
+                                                                ml-1
+                                                                "
+                                                            >
 
-    }
+                                                                {
+                                                                    request.unitsNeeded
+                                                                }
 
+                                                            </b>
 
+                                                        </p>
 
-    className="
-    rounded-lg
-    border
-    p-3
-    "
 
+                                                        <p>
 
-    >
+                                                            📅 Required Date:
 
+                                                            <b
+                                                                className="
+                                                                ml-1
+                                                                "
+                                                            >
 
+                                                                {
+                                                                    request.requiredDate
+                                                                }
 
-    <option value="">
+                                                            </b>
 
+                                                        </p>
 
-        All Blood Groups
 
+                                                        <p>
 
-    </option>
+                                                            ⚠️ Urgency:
 
+                                                            <span
 
+                                                                className={
+                                                                    getUrgencyStyle(
 
+                                                                        request.urgency
 
+                                                                    )
+                                                                }
+                                                            >
 
-    <option value="A_POSITIVE">
+                                                                {" "}
 
+                                                                {
+                                                                    request.urgency
+                                                                }
 
-        A+
+                                                            </span>
 
+                                                        </p>
 
-    </option>
 
+                                                        <p>
 
+                                                            📞 Contact:
 
-    <option value="A_NEGATIVE">
+                                                            <b
+                                                                className="
+                                                                ml-1
+                                                                "
+                                                            >
 
+                                                                {
+                                                                    request.contactNumber
+                                                                }
 
-        A-
+                                                            </b>
 
+                                                        </p>
 
-    </option>
+                                                    </div>
 
 
+                                                    <div
+                                                        className="
+                                                        mt-6
+                                                        flex
+                                                        gap-3
+                                                        "
+                                                    >
 
+                                                        <button
 
+                                                            onClick={() => {
 
-    <option value="B_POSITIVE">
+                                                                router.push(
 
+                                                                    `/blood-donation/${request.id}`
 
-        B+
+                                                                );
 
+                                                            }}
 
-    </option>
+                                                            className="
+                                                            flex-1
+                                                            rounded-lg
+                                                            border
+                                                            py-2
+                                                            font-semibold
+                                                            transition
+                                                            hover:bg-slate-100
+                                                            "
+                                                        >
 
+                                                            View
 
+                                                        </button>
 
 
+                                                        {
 
-    <option value="B_NEGATIVE">
+                                                            request.status === "OPEN"
 
+                                                            &&
 
-        B-
+                                                            (
 
+                                                                <button
 
-    </option>
+                                                                    onClick={() =>
 
+                                                                        handleDonate(
 
+                                                                            request.id
 
+                                                                        )
 
+                                                                    }
 
-    <option value="O_POSITIVE">
+                                                                    className="
+                                                                    flex-1
+                                                                    rounded-lg
+                                                                    bg-emerald-700
+                                                                    py-2
+                                                                    font-semibold
+                                                                    text-white
+                                                                    transition
+                                                                    hover:bg-emerald-800
+                                                                    "
+                                                                >
 
+                                                                    Donate
 
-        O+
+                                                                </button>
 
+                                                            )
 
-    </option>
+                                                        }
 
+                                                    </div>
 
+                                                </div>
 
+                                            )
 
+                                        )
 
-    <option value="O_NEGATIVE">
+                            }
 
+                        </div>
 
-        O-
+                    </div>
 
+                </main>
 
-    </option>
+            </>
 
-
-
-
-
-    <option value="AB_POSITIVE">
-
-
-        AB+
-
-
-    </option>
-
-
-
-
-
-    <option value="AB_NEGATIVE">
-
-
-        AB-
-
-
-    </option>
-
-
-
-    </select>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <select
-
-
-
-    value={urgencyFilter}
-
-
-
-    onChange={(e)=>
-
-        setUrgencyFilter(
-
-            e.target.value
-
-        )
-
-    }
-
-
-
-    className="
-    rounded-lg
-    border
-    p-3
-    "
-
-
-    >
-
-
-
-    <option value="">
-
-
-        All Urgency
-
-
-    </option>
-
-
-
-
-
-    <option value="NORMAL">
-
-
-        Normal
-
-
-    </option>
-
-
-
-
-
-    <option value="URGENT">
-
-
-        Urgent
-
-
-    </option>
-
-
-
-
-
-    <option value="CRITICAL">
-
-
-        Critical
-
-
-    </option>
-
-
-
-    </select>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <select
-
-
-
-    value={statusFilter}
-
-
-
-    onChange={(e)=>
-
-        setStatusFilter(
-
-            e.target.value
-
-        )
-
-    }
-
-
-
-    className="
-    rounded-lg
-    border
-    p-3
-    "
-
-
-    >
-
-
-
-    <option value="">
-
-
-        All Status
-
-
-    </option>
-
-
-
-
-
-    <option value="OPEN">
-
-
-        Open
-
-
-    </option>
-
-
-
-
-
-    <option value="DONOR_FOUND">
-
-
-        Donor Found
-
-
-    </option>
-
-
-
-
-
-    <option value="FULFILLED">
-
-
-        Fulfilled
-
-
-    </option>
-
-
-
-
-
-    <option value="CANCELLED">
-
-
-        Cancelled
-
-
-    </option>
-
-
-
-    </select>
-
-
-
-
-
-
-
-    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-    <button
-
-
-    onClick={resetFilters}
-
-
-
-    className="
-    mt-5
-    rounded-lg
-    border
-    px-5
-    py-2
-    "
-
-
-    >
-
-
-        Reset Filter
-
-
-    </button>
-
-
-
-
-
-
-
-    </div>
-    
-
-
-
-
-
-
-
-
-    {/* REQUEST LIST */}
-
-
-
-    <div className="
-    mt-10
-    grid
-    gap-6
-    md:grid-cols-2
-    lg:grid-cols-3
-    ">
-
-
-
-
-
-
-
-
-
-    {
-
-
-    isLoading ?
-
-
-
-    (
-
-
-        <p>
-
-
-            Loading blood requests...
-
-
-        </p>
-
-
-    )
-
-
-
-    :
-
-
-
-
-
-    availableRequests.length===0 ?
-
-
-
-    (
-
-
-
-        <div className="
-        rounded-xl
-        bg-white
-        p-6
-        shadow
-        ">
-
-
-            No blood request found.
-
-
-        </div>
-
-
-
-    )
-
-
-
-
-
-    :
-
-
-
-
-
-
-    availableRequests.map(
-
-        (request)=>(
-
-
-
-
-
-        <div
-
-
-        key={request.id}
-
-
-
-        className="
-        rounded-2xl
-        bg-white
-        p-6
-        shadow
-        transition
-        hover:shadow-lg
-        "
-
-
-
-        >
-
-
-
-
-
-
-
-        <div className="
-        flex
-        items-center
-        justify-between
-        ">
-
-
-
-
-
-
-
-        <h2 className="
-        text-2xl
-        font-bold
-        text-red-600
-        ">
-
-
-
-            🩸
-
-            {
-
-            formatBloodGroup(
-
-                request.bloodGroup
-
-            )
-
-            }
-
-
-
-        </h2>
-
-
-
-
-
-
-
-
-
-        <span
-
-
-
-        className={`
-
-        rounded-full
-
-        px-3
-
-        py-1
-
-        text-sm
-
-        font-semibold
-
-
-        ${
-
-        getStatusStyle(
-
-            request.status
-
-        )
-
-
-        }
-
-
-        `}
-
-
-
-        >
-
-
-
-
-            {request.status}
-
-
-
-
-        </span>
-
-
-
-
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-        <h3 className="
-        mt-5
-        text-xl
-        font-bold
-        ">
-
-
-            {request.patientName}
-
-
-        </h3>
-
-
-
-
-
-
-
-
-
-        <div className="
-        mt-4
-        space-y-2
-        text-slate-600
-        ">
-
-
-
-
-
-
-
-
-        <p>
-
-
-            🏥 Hospital:
-
-
-            <b className="ml-1">
-
-
-                {request.hospital}
-
-
-            </b>
-
-
-
-        </p>
-
-
-
-
-
-
-
-
-        <p>
-
-
-            📍 Location:
-
-
-            <b className="ml-1">
-
-
-                {request.location}
-
-
-            </b>
-
-
-
-        </p>
-
-
-
-
-
-
-
-
-        <p>
-
-
-            🩸 Required Units:
-
-
-            <b className="ml-1">
-
-
-                {request.unitsNeeded}
-
-
-            </b>
-
-
-
-        </p>
-
-
-
-
-
-
-
-
-        <p>
-
-
-            📅 Required Date:
-
-
-            <b className="ml-1">
-
-
-                {request.requiredDate}
-
-
-            </b>
-
-
-
-        </p>
-
-
-
-
-
-
-
-
-        <p>
-
-
-            ⚠️ Urgency:
-
-
-            <span
-
-            className={
-
-                getUrgencyStyle(
-
-                    request.urgency
-
-                )
-
-            }
-
-
-            >
-
-
-                {" "}
-
-                {request.urgency}
-
-
-            </span>
-
-
-
-        </p>
-
-
-
-
-
-
-
-
-        <p>
-
-
-            📞 Contact:
-
-
-            <b className="ml-1">
-
-
-                {request.contactNumber}
-
-
-            </b>
-
-
-
-        </p>
-
-
-
-
-
-
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-        <div className="
-        mt-6
-        flex
-        gap-3
-        ">
-
-
-
-
-
-
-
-
-
-        <button
-
-
-
-        onClick={()=>{
-
-
-            router.push(
-
-                `/blood-donation/${request.id}`
-
-            );
-
-
-        }}
-
-
-
-        className="
-        flex-1
-        rounded-lg
-        border
-        py-2
-        font-semibold
-        hover:bg-slate-100
-        "
-
-
-
-        >
-
-
-            View
-
-
-        </button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        {
-
-
-        request.status==="OPEN"
-
-        &&
-
-
-
-        (
-
-
-
-        <button
-
-
-
-        onClick={()=>
-
-
-            handleDonate(
-
-                request.id
-
-            )
-
-
-        }
-
-
-
-        className="
-        flex-1
-        rounded-lg
-        bg-emerald-700
-        py-2
-        font-semibold
-        text-white
-        hover:bg-emerald-800
-        "
-
-
-
-        >
-
-
-
-            Donate
-
-
-
-        </button>
-
-
-
-        )
-
-
-        }
-
-
-
-
-
-
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-        </div>
-
-
-
-
-
-        )
-
-
-    )
-
-
-
-
-
-    }
-
-
-
-
-
-    </div>
-
-
-
-
-
-
-
-
-
-    </div>
-
-
-    </main>
-
-
-
-
-
-
-    </>
-
-    </ProtectedRoute>
-
+        </ProtectedRoute>
 
     );
-
-
 
 }

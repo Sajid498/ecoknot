@@ -1,12 +1,11 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Navbar from "@/components/Navbar";
-
+import BloodDonationNavbar from "@/components/BloodDonationNavbar";
 
 
 const API_URL =
@@ -14,204 +13,131 @@ const API_URL =
     "http://localhost:8080";
 
 
-
-
-
-
-
 type Donation = {
 
+    id: number;
 
-    id:number;
+    requestId: number;
 
-    requestId:number;
+    donorId: number;
 
-    donorId:number;
+    status: string;
 
-    status:string;
+    requestOwnerId: number;
 
-    requestOwnerId:number;
-
-    requestOwnerName:string;
-
+    requestOwnerName: string;
 
 };
 
 
-
-
-
-
-
-
-export default function MyDonationsPage(){
-
-
+export default function MyDonationsPage() {
 
     const router = useRouter();
 
 
-
-
-    const [donations,setDonations] =
+    const [donations, setDonations] =
         useState<Donation[]>([]);
 
 
-
-
-    useEffect(()=>{
-
+    useEffect(() => {
 
         const savedUser =
             localStorage.getItem("user");
 
 
-
-        if(savedUser){
-
+        if (savedUser) {
 
             const userData =
                 JSON.parse(savedUser);
-
 
 
             loadDonations(
                 userData.id
             );
 
-
         }
 
-
-    },[]);
-
-
-
-
-
-
-
+    }, []);
 
 
     async function loadDonations(
-        userId:number
-    ){
+        userId: number
+    ) {
 
-
-        try{
-
+        try {
 
             const response =
-
                 await fetch(
 
-`${API_URL}/api/donation-response/donor/${userId}`
+                    `${API_URL}/api/donation-response/donor/${userId}`
 
                 );
-
-
-
 
 
             const data =
                 await response.json();
 
 
-
-
-
-            if(Array.isArray(data)){
-
+            if (Array.isArray(data)) {
 
                 setDonations(data);
 
-
             }
 
-            else{
-
+            else {
 
                 setDonations([]);
 
-
             }
 
-
-
         }
-        catch(error){
 
+        catch (error) {
 
             console.log(error);
 
-
             setDonations([]);
 
-
         }
-
 
     }
 
 
-
-
-
-
-
-
-
     function getStatusStyle(
-        status:string
-    ){
+        status: string
+    ) {
 
-
-        if(status==="COMPLETED"){
-
+        if (status === "COMPLETED") {
 
             return "bg-green-100 text-green-700";
 
-
         }
 
 
-        if(status==="ACCEPTED"){
-
+        if (status === "ACCEPTED") {
 
             return "bg-blue-100 text-blue-700";
 
-
         }
 
 
-        if(status==="REJECTED"){
-
+        if (status === "REJECTED") {
 
             return "bg-red-100 text-red-700";
-
 
         }
 
 
         return "bg-yellow-100 text-yellow-700";
 
-
     }
 
 
-
-
-
-
-
-
     function getStatusText(
-        status:string
-    ){
+        status: string
+    ) {
 
-
-        switch(status){
-
+        switch (status) {
 
             case "PENDING":
 
@@ -237,532 +163,474 @@ export default function MyDonationsPage(){
 
                 return status;
 
-
         }
 
-
     }
-  return (
 
-<ProtectedRoute>
 
+    return (
 
-<main className="
-min-h-screen
-bg-slate-50
-">
+        <ProtectedRoute>
 
+            <main
+                className="
+                min-h-screen
+                bg-slate-50
+                "
+            >
 
-<Navbar />
+                {/* ========================= */}
+                {/* PERMANENT MAIN NAVBAR */}
+                {/* ========================= */}
 
+                <Navbar />
 
 
+                {/* ========================= */}
+                {/* BLOOD MODULE NAVBAR */}
+                {/* ========================= */}
 
+                <BloodDonationNavbar />
 
-<div className="
-mx-auto
-max-w-5xl
-px-6
-py-10
-">
 
+                {/* ========================= */}
+                {/* PAGE CONTENT */}
+                {/* ========================= */}
 
+                <div
+                    className="
+                    mx-auto
+                    max-w-5xl
+                    px-6
+                    py-10
+                    "
+                >
 
+                    <div
+                        className="
+                        rounded-3xl
+                        bg-white
+                        p-8
+                        shadow-lg
+                        "
+                    >
 
+                        <h1
+                            className="
+                            text-3xl
+                            font-bold
+                            text-slate-900
+                            "
+                        >
 
-<div className="
-rounded-3xl
-bg-white
-p-8
-shadow-lg
-">
+                            ❤️ My Donations
 
+                        </h1>
 
 
+                        <p
+                            className="
+                            mt-2
+                            text-slate-500
+                            "
+                        >
 
+                            Track your blood donation activities and request status.
 
+                        </p>
 
-<h1 className="
-text-3xl
-font-bold
-text-slate-900
-">
 
-❤️ My Donations
+                        {
 
-</h1>
+                            donations.length === 0
 
+                                ?
 
+                                (
 
+                                    <p
+                                        className="
+                                        mt-8
+                                        text-slate-500
+                                        "
+                                    >
 
+                                        You have not responded to any blood request.
 
-<p className="
-mt-2
-text-slate-500
-">
+                                    </p>
 
-Track your blood donation activities and request status.
+                                )
 
-</p>
+                                :
 
+                                (
 
+                                    <div
+                                        className="
+                                        mt-8
+                                        space-y-6
+                                        "
+                                    >
 
+                                        {
 
+                                            donations.map(
 
+                                                (donation) => (
 
+                                                    <div
+
+                                                        key={
+                                                            donation.id
+                                                        }
+
+                                                        className="
+                                                        rounded-2xl
+                                                        border
+                                                        border-slate-200
+                                                        p-6
+                                                        transition
+                                                        hover:shadow-md
+                                                        "
+                                                    >
 
+                                                        <div
+                                                            className="
+                                                            flex
+                                                            items-start
+                                                            justify-between
+                                                            gap-4
+                                                            "
+                                                        >
 
+                                                            <div>
 
-{
+                                                                <h2
+                                                                    className="
+                                                                    text-xl
+                                                                    font-bold
+                                                                    "
+                                                                >
+
+                                                                    🩸 Blood Request #{donation.requestId}
 
-donations.length === 0 ?
+                                                                </h2>
 
 
+                                                                <p
+                                                                    className="
+                                                                    mt-2
+                                                                    text-slate-600
+                                                                    "
+                                                                >
 
-(
+                                                                    Requester:
 
+                                                                    <span
+                                                                        className="
+                                                                        ml-2
+                                                                        font-semibold
+                                                                        "
+                                                                    >
 
-<p className="
-mt-8
-text-slate-500
-">
+                                                                        {
+                                                                            donation.requestOwnerName
+                                                                        }
 
-You have not responded to any blood request.
+                                                                    </span>
 
-</p>
+                                                                </p>
 
+                                                            </div>
 
-)
 
+                                                            <span
+                                                                className={`
+                                                                rounded-full
+                                                                px-4
+                                                                py-2
+                                                                text-sm
+                                                                font-semibold
 
+                                                                ${
+                                                                    getStatusStyle(
+                                                                        donation.status
+                                                                    )
+                                                                }
+                                                                `}
+                                                            >
 
-:
+                                                                {
+                                                                    donation.status
+                                                                }
 
+                                                            </span>
 
+                                                        </div>
 
-(
 
+                                                        {/* ========================= */}
+                                                        {/* STATUS TIMELINE */}
+                                                        {/* ========================= */}
 
-<div className="
-mt-8
-space-y-6
-">
+                                                        <div
+                                                            className="
+                                                            mt-6
+                                                            rounded-xl
+                                                            bg-slate-50
+                                                            p-5
+                                                            "
+                                                        >
 
+                                                            <h3
+                                                                className="
+                                                                font-semibold
+                                                                "
+                                                            >
 
+                                                                Donation Progress
 
-{
+                                                            </h3>
 
-donations.map((donation)=>(
 
+                                                            <div
+                                                                className="
+                                                                mt-4
+                                                                space-y-3
+                                                                "
+                                                            >
 
+                                                                {/* APPLIED */}
 
-<div
+                                                                <div
+                                                                    className="
+                                                                    flex
+                                                                    items-center
+                                                                    gap-3
+                                                                    "
+                                                                >
 
-key={donation.id}
+                                                                    <span>
 
-className="
-rounded-2xl
-border
-border-slate-200
-p-6
-hover:shadow-md
-transition
-"
+                                                                        🟡
 
->
+                                                                    </span>
 
 
+                                                                    <p
+                                                                        className={
+                                                                            donation.status
 
+                                                                                ?
 
+                                                                                "text-slate-700 font-medium"
 
+                                                                                :
 
+                                                                                "text-slate-400"
+                                                                        }
+                                                                    >
 
-<div className="
-flex
-items-start
-justify-between
-">
+                                                                        Applied for donation
 
+                                                                    </p>
 
-<div>
+                                                                </div>
 
 
-<h2 className="
-text-xl
-font-bold
-">
+                                                                {/* ACCEPTED */}
 
-🩸 Blood Request #{donation.requestId}
+                                                                <div
+                                                                    className="
+                                                                    flex
+                                                                    items-center
+                                                                    gap-3
+                                                                    "
+                                                                >
 
-</h2>
+                                                                    <span>
 
+                                                                        {
 
+                                                                            donation.status === "ACCEPTED"
 
+                                                                            ||
 
-<p className="
-mt-2
-text-slate-600
-">
+                                                                            donation.status === "COMPLETED"
 
-Requester:
+                                                                                ?
 
-<span className="
-ml-2
-font-semibold
-">
+                                                                                "🟢"
 
-{donation.requestOwnerName}
+                                                                                :
 
-</span>
+                                                                                "⚪"
 
+                                                                        }
 
-</p>
+                                                                    </span>
 
 
-</div>
+                                                                    <p
+                                                                        className={
+                                                                            donation.status === "ACCEPTED"
 
+                                                                            ||
 
+                                                                            donation.status === "COMPLETED"
 
+                                                                                ?
 
+                                                                                "font-medium text-slate-700"
 
+                                                                                :
 
+                                                                                "text-slate-400"
+                                                                        }
+                                                                    >
 
-<span className={`
+                                                                        Accepted by requester
 
-rounded-full
+                                                                    </p>
 
-px-4
+                                                                </div>
 
-py-2
 
-text-sm
+                                                                {/* COMPLETED */}
 
-font-semibold
+                                                                <div
+                                                                    className="
+                                                                    flex
+                                                                    items-center
+                                                                    gap-3
+                                                                    "
+                                                                >
 
-${getStatusStyle(
-    donation.status
-)}
+                                                                    <span>
 
-`}>
+                                                                        {
 
-{donation.status}
+                                                                            donation.status === "COMPLETED"
 
+                                                                                ?
 
-</span>
+                                                                                "✅"
 
+                                                                                :
 
+                                                                                "⚪"
 
-</div>
+                                                                        }
 
+                                                                    </span>
 
 
+                                                                    <p
+                                                                        className={
+                                                                            donation.status === "COMPLETED"
 
+                                                                                ?
 
+                                                                                "font-medium text-slate-700"
 
+                                                                                :
 
+                                                                                "text-slate-400"
+                                                                        }
+                                                                    >
 
+                                                                        Donation completed
 
-{/* Status Timeline */}
+                                                                    </p>
 
+                                                                </div>
 
-<div className="
-mt-6
-rounded-xl
-bg-slate-50
-p-5
-">
+                                                            </div>
 
+                                                        </div>
 
-<h3 className="
-font-semibold
-">
 
-Donation Progress
+                                                        {/* CURRENT STATUS MESSAGE */}
 
-</h3>
+                                                        <p
+                                                            className="
+                                                            mt-5
+                                                            font-semibold
+                                                            text-slate-700
+                                                            "
+                                                        >
 
+                                                            {
+                                                                getStatusText(
+                                                                    donation.status
+                                                                )
+                                                            }
 
+                                                        </p>
 
 
+                                                        {/* ACTIONS */}
 
+                                                        <div
+                                                            className="
+                                                            mt-5
+                                                            flex
+                                                            gap-3
+                                                            "
+                                                        >
 
-<div className="
-mt-4
-space-y-3
-">
+                                                            <button
 
+                                                                onClick={() => {
 
+                                                                    router.push(
 
+                                                                        `/chat/${donation.requestId}/${donation.requestOwnerId}`
 
+                                                                    );
 
-<div className="
-flex
-items-center
-gap-3
-">
+                                                                }}
 
-<span>
+                                                                className="
+                                                                rounded-xl
+                                                                bg-emerald-700
+                                                                px-5
+                                                                py-3
+                                                                font-semibold
+                                                                text-white
+                                                                transition
+                                                                hover:bg-emerald-800
+                                                                "
+                                                            >
 
-🟡
+                                                                💬 Chat
 
-</span>
+                                                            </button>
 
+                                                        </div>
 
-<p className={
+                                                    </div>
 
-donation.status
+                                                )
 
-?
+                                            )
 
-"text-slate-700 font-medium"
+                                        }
 
-:
+                                    </div>
 
-"text-slate-400"
+                                )
+
+                        }
+
+                    </div>
+
+                </div>
+
+            </main>
+
+        </ProtectedRoute>
+
+    );
 
 }
-
->
-
-Applied for donation
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div className="
-flex
-items-center
-gap-3
-">
-
-<span>
-
-{
-
-donation.status === "ACCEPTED"
-||
-donation.status === "COMPLETED"
-
-?
-
-"🟢"
-
-:
-
-"⚪"
-
-}
-
-</span>
-
-
-
-<p className="
-
-text-slate-700
-
-">
-
-Accepted by requester
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div className="
-flex
-items-center
-gap-3
-">
-
-
-<span>
-
-{
-
-donation.status === "COMPLETED"
-
-?
-
-"✅"
-
-:
-
-"⚪"
-
-}
-
-</span>
-
-
-
-
-<p className="text-slate-700">
-
-Donation completed
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<p className="
-mt-5
-font-semibold
-text-slate-700
-">
-
-{
-
-getStatusText(
-    donation.status
-)
-
-}
-
-</p>
-
-
-
-
-
-
-
-
-
-<div className="
-mt-5
-flex
-gap-3
-">
-
-
-
-
-
-<button
-
-
-onClick={()=>{
-
-
-router.push(
-
-`/chat/${donation.requestId}/${donation.requestOwnerId}`
-
-);
-
-
-}}
-
-
-className="
-rounded-xl
-bg-emerald-700
-px-5
-py-3
-font-semibold
-text-white
-hover:bg-emerald-800
-"
-
-
->
-
-
-💬 Chat
-
-</button>
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-))
-
-}
-
-
-
-
-</div>
-
-
-)
-
-
-}
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-</main>
-
-
-</ProtectedRoute>
-
-
-);
-
-
-
-}  
