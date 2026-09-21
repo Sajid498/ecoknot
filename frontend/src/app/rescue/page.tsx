@@ -13,9 +13,14 @@ import Link from "next/link";
 import RescueCard from "@/components/RescueCard";
 
 
+import ReliefMap from "@/components/ReliefMap";
+
+
 import {
     RescueDonation
 } from "@/types/rescue";
+
+
 
 
 
@@ -37,6 +42,8 @@ const API_URL =
 
 
 export default function ReliefHubPage(){
+
+
 
 
 
@@ -68,6 +75,9 @@ export default function ReliefHubPage(){
 
 
 
+
+
+
     useEffect(()=>{
 
 
@@ -75,6 +85,9 @@ export default function ReliefHubPage(){
 
 
     },[]);
+
+
+
 
 
 
@@ -128,6 +141,7 @@ export default function ReliefHubPage(){
 
 
 
+
             const data =
 
                 await response.json();
@@ -142,7 +156,9 @@ export default function ReliefHubPage(){
 
 
 
+
         }
+
 
         catch(error){
 
@@ -151,6 +167,7 @@ export default function ReliefHubPage(){
 
 
         }
+
 
         finally{
 
@@ -182,9 +199,12 @@ export default function ReliefHubPage(){
 
 
 
+
+
         const now =
 
             new Date().getTime();
+
 
 
 
@@ -214,6 +234,7 @@ export default function ReliefHubPage(){
 
 
 
+
         const oneDay =
 
             24 *
@@ -223,6 +244,7 @@ export default function ReliefHubPage(){
             60 *
 
             1000;
+
 
 
 
@@ -241,7 +263,9 @@ export default function ReliefHubPage(){
         );
 
 
+
     }
+
 
 
 
@@ -275,6 +299,7 @@ export default function ReliefHubPage(){
 
 
 
+
                 if(filter==="FOOD"){
 
 
@@ -282,6 +307,7 @@ export default function ReliefHubPage(){
 
 
                 }
+
 
 
 
@@ -301,11 +327,12 @@ export default function ReliefHubPage(){
 
 
 
+
                 return true;
 
 
-
             }
+
 
         );
 
@@ -317,7 +344,13 @@ export default function ReliefHubPage(){
 
 
 
+
+
+
+
+
 return(
+
 
 
 <main className="
@@ -334,7 +367,7 @@ md:p-10
 
 <div className="
 mx-auto
-max-w-5xl
+max-w-6xl
 ">
 
 
@@ -351,6 +384,7 @@ md:flex-row
 md:items-center
 md:justify-between
 ">
+
 
 
 
@@ -386,6 +420,9 @@ text-slate-600
 Connect surplus food and medicine with people who need them before resources go to waste.
 
 </p>
+
+
+
 
 
 
@@ -425,6 +462,7 @@ hover:bg-emerald-800
 
 
 
+
 </div>
 
 
@@ -438,12 +476,65 @@ hover:bg-emerald-800
 
 
 
+
+{/* MAP SECTION */}
+
+<div className="
+mt-10
+">
+
+
+<h2 className="
+mb-4
+text-2xl
+font-bold
+text-slate-900
+">
+
+🗺️ Relief Locations
+
+</h2>
+
+
+
+
+
+
+<ReliefMap
+
+rescues={rescues}
+
+/>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/* FILTER SECTION */}
+
 <div className="
 mt-8
 flex
 flex-wrap
 gap-3
 ">
+
+
+
 
 
 
@@ -479,6 +570,8 @@ All
 
 
 
+
+
 <button
 
 onClick={()=>setFilter("URGENT")}
@@ -502,6 +595,7 @@ filter==="URGENT"
 🔥 Urgent
 
 </button>
+
 
 
 
@@ -541,6 +635,7 @@ filter==="FOOD"
 
 
 
+
 <button
 
 onClick={()=>setFilter("MEDICINE")}
@@ -569,6 +664,7 @@ filter==="MEDICINE"
 
 
 
+
 </div>
 
 
@@ -578,6 +674,12 @@ filter==="MEDICINE"
 
 
 
+
+
+
+
+
+{/* CARD SECTION */}
 
 <div className="
 mt-8
@@ -615,11 +717,8 @@ Loading relief posts...
 
 
 
+
 :
-
-
-
-
 
 filteredReliefs.length===0 ?
 
@@ -637,6 +736,9 @@ shadow
 
 
 
+
+
+
 <div className="
 text-5xl
 ">
@@ -644,6 +746,7 @@ text-5xl
 🌱
 
 </div>
+
 
 
 
@@ -660,6 +763,7 @@ font-bold
 No relief post available
 
 </h2>
+
 
 
 
@@ -691,15 +795,15 @@ No matching relief post found.
 
 
 
+
 :
-
-
 
 
 
 filteredReliefs.map(
 
 (relief)=>(
+
 
 
 <RescueCard
@@ -714,10 +818,13 @@ rescue={relief}
 />
 
 
+
 )
 
 
 )
+
+
 
 
 
@@ -727,9 +834,6 @@ rescue={relief}
 
 
 
-
-
-
 </div>
 
 
@@ -740,12 +844,17 @@ rescue={relief}
 
 
 </div>
+
+
+
 
 
 </main>
 
 
+
 );
+
 
 
 }
