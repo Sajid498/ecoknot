@@ -28,6 +28,7 @@ public class PickupRequestController {
 
 
 
+
     private final PickupRequestService pickupRequestService;
 
 
@@ -69,7 +70,6 @@ public class PickupRequestController {
     ){
 
 
-
         return pickupRequestService
 
                 .createPickupRequest(
@@ -102,7 +102,6 @@ public class PickupRequestController {
     ){
 
 
-
         return pickupRequestService
 
                 .getVolunteerRequests(id);
@@ -127,7 +126,6 @@ public class PickupRequestController {
             @PathVariable Long id
 
     ){
-
 
 
         return pickupRequestService
@@ -156,7 +154,6 @@ public class PickupRequestController {
     ){
 
 
-
         return pickupRequestService
 
                 .approveRequest(id);
@@ -181,7 +178,6 @@ public class PickupRequestController {
             @PathVariable Long id
 
     ){
-
 
 
         return pickupRequestService
@@ -210,7 +206,6 @@ public class PickupRequestController {
     ){
 
 
-
         return pickupRequestService
 
                 .markPickedUp(id);
@@ -235,7 +230,6 @@ public class PickupRequestController {
             @PathVariable Long id
 
     ){
-
 
 
         return pickupRequestService

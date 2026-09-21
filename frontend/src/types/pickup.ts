@@ -1,10 +1,3 @@
-import {
-    RescueDonation
-} from "./rescue";
-
-
-
-
 export interface PickupRequest {
 
 
@@ -14,12 +7,51 @@ export interface PickupRequest {
 
 
 
-    rescueDonation:RescueDonation;
+    rescueDonation:{
+
+
+        id:number;
+
+
+        title:string;
+
+
+        type:string;
+
+
+        quantity:number;
+
+
+        location:string;
+
+
+    };
 
 
 
 
-    volunteerId:number;
+
+
+
+    volunteer:{
+
+
+        id:number;
+
+
+        name:string;
+
+
+        email:string;
+
+
+        location:string;
+
+
+    };
+
+
+
 
 
 
@@ -35,6 +67,8 @@ export interface PickupRequest {
         | "DELIVERED"
 
         | "REJECTED";
+
+
 
 
 

@@ -25,7 +25,6 @@ interface Props{
 
 
 
-
 const API_URL =
 
     process.env.NEXT_PUBLIC_API_URL ||
@@ -65,9 +64,7 @@ async function updateRequest(
 ){
 
 
-
     try{
-
 
 
         const response =
@@ -110,7 +107,6 @@ async function updateRequest(
     }
 
 
-
 }
 
 
@@ -124,9 +120,7 @@ async function updateRequest(
 function getStatusStyle(){
 
 
-
     switch(pickup.status){
-
 
 
         case "PENDING":
@@ -166,7 +160,6 @@ function getStatusStyle(){
 
     }
 
-
 }
 
 
@@ -187,6 +180,7 @@ bg-white
 p-6
 shadow-md
 ">
+
 
 
 
@@ -224,12 +218,19 @@ text-slate-900
 
 
 
-<p className="
+
+<div className="
 mt-3
+space-y-2
+text-sm
 text-slate-600
 ">
 
-Volunteer ID:
+
+
+<p>
+
+👤 Volunteer:
 
 <span className="
 ml-1
@@ -237,7 +238,7 @@ font-semibold
 text-slate-900
 ">
 
-{pickup.volunteerId}
+{pickup.volunteer.name}
 
 </span>
 
@@ -247,9 +248,53 @@ text-slate-900
 
 
 
+<p>
+
+📧 Email:
+
+<span className="
+ml-1
+font-semibold
+text-slate-900
+">
+
+{pickup.volunteer.email}
+
+</span>
+
+</p>
+
+
+
+
+
+<p>
+
+📍 Volunteer Location:
+
+<span className="
+ml-1
+font-semibold
+text-slate-900
+">
+
+{pickup.volunteer.location}
+
+</span>
+
+</p>
+
+
+
+
 
 </div>
 
+
+
+
+
+</div>
 
 
 
@@ -281,7 +326,6 @@ ${getStatusStyle()}
 
 
 
-
 </div>
 
 
@@ -297,9 +341,11 @@ mt-5
 rounded-xl
 bg-slate-50
 p-4
-space-y-2
+space-y-3
 text-sm
 ">
+
+
 
 
 
@@ -313,9 +359,33 @@ text-sm
 <span className="
 ml-1
 font-semibold
+text-slate-900
 ">
 
 {pickup.rescueDonation.title}
+
+</span>
+
+</p>
+
+
+
+
+
+
+
+
+<p>
+
+🏷️ Type:
+
+<span className="
+ml-1
+font-semibold
+text-slate-900
+">
+
+{pickup.rescueDonation.type}
 
 </span>
 
@@ -335,6 +405,7 @@ font-semibold
 <span className="
 ml-1
 font-semibold
+text-slate-900
 ">
 
 {pickup.rescueDonation.quantity}
@@ -352,11 +423,12 @@ font-semibold
 
 <p>
 
-📍 Location:
+📍 Pickup Location:
 
 <span className="
 ml-1
 font-semibold
+text-slate-900
 ">
 
 {pickup.rescueDonation.location}
@@ -364,7 +436,6 @@ font-semibold
 </span>
 
 </p>
-
 
 
 
@@ -425,7 +496,6 @@ hover:bg-emerald-800
 
 
 
-
 <button
 
 onClick={()=>updateRequest("reject")}
@@ -465,8 +535,8 @@ hover:bg-red-700
 
 
 
-
 </div>
+
 
 
 );

@@ -28,10 +28,7 @@ public class PickupRequestDTO {
 
 
 
-
-
     private VolunteerDTO volunteer;
-
 
 
     private RescueInfoDTO rescueDonation;
@@ -43,12 +40,11 @@ public class PickupRequestDTO {
 
 
 
-
     public PickupRequestDTO(){
 
 
-    }
 
+    }
 
 
 
@@ -75,6 +71,7 @@ public class PickupRequestDTO {
 
     ){
 
+
         this.id = id;
 
         this.status = status;
@@ -89,6 +86,7 @@ public class PickupRequestDTO {
 
         this.rescueDonation = rescueDonation;
 
+
     }
 
 
@@ -101,9 +99,12 @@ public class PickupRequestDTO {
 
     public Long getId(){
 
+
         return id;
 
+
     }
+
 
 
 
@@ -111,9 +112,12 @@ public class PickupRequestDTO {
 
     public PickupStatus getStatus(){
 
+
         return status;
 
+
     }
+
 
 
 
@@ -121,9 +125,12 @@ public class PickupRequestDTO {
 
     public LocalDateTime getRequestedAt(){
 
+
         return requestedAt;
 
+
     }
+
 
 
 
@@ -131,9 +138,12 @@ public class PickupRequestDTO {
 
     public LocalDateTime getApprovedAt(){
 
+
         return approvedAt;
 
+
     }
+
 
 
 
@@ -141,9 +151,12 @@ public class PickupRequestDTO {
 
     public LocalDateTime getCompletedAt(){
 
+
         return completedAt;
 
+
     }
+
 
 
 
@@ -151,9 +164,12 @@ public class PickupRequestDTO {
 
     public VolunteerDTO getVolunteer(){
 
+
         return volunteer;
 
+
     }
+
 
 
 
@@ -161,7 +177,9 @@ public class PickupRequestDTO {
 
     public RescueInfoDTO getRescueDonation(){
 
+
         return rescueDonation;
+
 
     }
 
@@ -172,7 +190,8 @@ public class PickupRequestDTO {
 
 
 
-    public static class VolunteerDTO{
+
+    public static class VolunteerDTO {
 
 
 
@@ -192,6 +211,8 @@ public class PickupRequestDTO {
 
 
 
+
+
         public VolunteerDTO(
 
                 Long id,
@@ -204,6 +225,7 @@ public class PickupRequestDTO {
 
         ){
 
+
             this.id = id;
 
             this.name = name;
@@ -212,7 +234,9 @@ public class PickupRequestDTO {
 
             this.location = location;
 
+
         }
+
 
 
 
@@ -222,9 +246,13 @@ public class PickupRequestDTO {
 
         public Long getId(){
 
+
             return id;
 
+
         }
+
+
 
 
 
@@ -232,9 +260,13 @@ public class PickupRequestDTO {
 
         public String getName(){
 
+
             return name;
 
+
         }
+
+
 
 
 
@@ -242,7 +274,9 @@ public class PickupRequestDTO {
 
         public String getEmail(){
 
+
             return email;
+
 
         }
 
@@ -250,9 +284,13 @@ public class PickupRequestDTO {
 
 
 
+
+
         public String getLocation(){
 
+
             return location;
+
 
         }
 
@@ -267,7 +305,7 @@ public class PickupRequestDTO {
 
 
 
-    public static class RescueInfoDTO{
+    public static class RescueInfoDTO {
 
 
 
@@ -280,7 +318,11 @@ public class PickupRequestDTO {
         private String type;
 
 
+        private Integer quantity;
+
+
         private String location;
+
 
 
 
@@ -296,19 +338,27 @@ public class PickupRequestDTO {
 
                 String type,
 
+                Integer quantity,
+
                 String location
 
         ){
 
-            this.id=id;
 
-            this.title=title;
+            this.id = id;
 
-            this.type=type;
+            this.title = title;
 
-            this.location=location;
+            this.type = type;
+
+            this.quantity = quantity;
+
+            this.location = location;
+
 
         }
+
+
 
 
 
@@ -317,9 +367,13 @@ public class PickupRequestDTO {
 
         public Long getId(){
 
+
             return id;
 
+
         }
+
+
 
 
 
@@ -327,9 +381,13 @@ public class PickupRequestDTO {
 
         public String getTitle(){
 
+
             return title;
 
+
         }
+
+
 
 
 
@@ -337,9 +395,27 @@ public class PickupRequestDTO {
 
         public String getType(){
 
+
             return type;
 
+
         }
+
+
+
+
+
+
+
+        public Integer getQuantity(){
+
+
+            return quantity;
+
+
+        }
+
+
 
 
 
@@ -347,13 +423,15 @@ public class PickupRequestDTO {
 
         public String getLocation(){
 
+
             return location;
+
 
         }
 
 
-
     }
+
 
 
 

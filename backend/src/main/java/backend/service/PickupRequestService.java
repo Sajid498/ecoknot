@@ -103,6 +103,7 @@ public class PickupRequestService {
 
 
 
+
         User volunteer =
 
                 userRepository
@@ -124,9 +125,11 @@ public class PickupRequestService {
 
 
 
+
         PickupRequest request =
 
                 new PickupRequest();
+
 
 
 
@@ -144,6 +147,7 @@ public class PickupRequestService {
 
 
 
+
         request.setVolunteer(
 
                 volunteer
@@ -155,11 +159,13 @@ public class PickupRequestService {
 
 
 
+
         request.setStatus(
 
                 PickupStatus.PENDING
 
         );
+
 
 
 
@@ -178,6 +184,7 @@ public class PickupRequestService {
 
 
 
+
         PickupRequest saved =
 
                 pickupRequestRepository.save(
@@ -185,6 +192,7 @@ public class PickupRequestService {
                         request
 
                 );
+
 
 
 
@@ -230,6 +238,7 @@ public class PickupRequestService {
                         )
 
                 );
+
 
 
 
@@ -307,11 +316,13 @@ public class PickupRequestService {
 
 
 
+
         request.setStatus(
 
                 PickupStatus.APPROVED
 
         );
+
 
 
 
@@ -329,9 +340,15 @@ public class PickupRequestService {
 
 
 
+
         PickupRequest saved =
 
-                pickupRequestRepository.save(request);
+                pickupRequestRepository.save(
+
+                        request
+
+                );
+
 
 
 
@@ -370,6 +387,7 @@ public class PickupRequestService {
 
 
 
+
         request.setStatus(
 
                 PickupStatus.REJECTED
@@ -381,9 +399,15 @@ public class PickupRequestService {
 
 
 
+
         PickupRequest saved =
 
-                pickupRequestRepository.save(request);
+                pickupRequestRepository.save(
+
+                        request
+
+                );
+
 
 
 
@@ -403,7 +427,7 @@ public class PickupRequestService {
 
 
 
-    // Mark picked up
+    // Mark item picked up
 
     public PickupRequestDTO markPickedUp(
 
@@ -422,6 +446,7 @@ public class PickupRequestService {
 
 
 
+
         request.setStatus(
 
                 PickupStatus.PICKED_UP
@@ -433,9 +458,15 @@ public class PickupRequestService {
 
 
 
+
         PickupRequest saved =
 
-                pickupRequestRepository.save(request);
+                pickupRequestRepository.save(
+
+                        request
+
+                );
+
 
 
 
@@ -474,11 +505,13 @@ public class PickupRequestService {
 
 
 
+
         request.setStatus(
 
                 PickupStatus.DELIVERED
 
         );
+
 
 
 
@@ -496,9 +529,15 @@ public class PickupRequestService {
 
 
 
+
         PickupRequest saved =
 
-                pickupRequestRepository.save(request);
+                pickupRequestRepository.save(
+
+                        request
+
+                );
+
 
 
 
@@ -566,6 +605,9 @@ public class PickupRequestService {
 
 
 
+
+
+
         RescueDonation rescue =
 
                 request.getRescueDonation();
@@ -605,6 +647,8 @@ public class PickupRequestService {
                         rescue.getTitle(),
 
                         rescue.getType().toString(),
+
+                        rescue.getQuantity(),
 
                         rescue.getLocation()
 
