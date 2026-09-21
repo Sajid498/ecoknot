@@ -75,6 +75,36 @@ public class RescueDonationService {
 
 
 
+    // Get posts created by a specific donor
+
+    public List<RescueDonationDTO> getUserDonations(
+
+            Long userId
+
+    ){
+
+
+        return rescueDonationRepository
+
+                .findByUserId(userId)
+
+                .stream()
+
+                .map(this::convertToDTO)
+
+                .toList();
+
+
+    }
+
+
+
+
+
+
+
+
+
     public RescueDonationDTO createDonation(
 
             RescueDonation donation,

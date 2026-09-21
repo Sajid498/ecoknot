@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,6 +67,37 @@ public class RescueDonationController {
         return ResponseEntity.ok(
 
                 rescueDonationService.getAllDonations()
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // Get donor's own relief posts
+
+    @GetMapping("/user/{userId}")
+
+    public ResponseEntity<List<RescueDonationDTO>> getUserRescues(
+
+            @PathVariable Long userId
+
+    ){
+
+
+
+        return ResponseEntity.ok(
+
+                rescueDonationService
+
+                .getUserDonations(userId)
 
         );
 
