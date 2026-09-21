@@ -17,11 +17,14 @@ import {
 
 
 
+
 const API_URL =
 
     process.env.NEXT_PUBLIC_API_URL ||
 
     "http://localhost:8080";
+
+
 
 
 
@@ -97,6 +100,9 @@ useState("");
 
 
 
+
+
+
 useEffect(()=>{
 
 
@@ -133,7 +139,11 @@ function calculateRemainingTime(){
 
 
 
-    const now = new Date().getTime();
+    const now =
+
+        new Date().getTime();
+
+
 
 
 
@@ -152,6 +162,7 @@ function calculateRemainingTime(){
     const difference =
 
         expiry - now;
+
 
 
 
@@ -179,6 +190,7 @@ function calculateRemainingTime(){
 
 
     }
+
 
 
 
@@ -234,7 +246,6 @@ function calculateRemainingTime(){
 
 
 
-
     if(hours < 24){
 
 
@@ -258,6 +269,7 @@ function calculateRemainingTime(){
 
 
     }
+
 
 
 }
@@ -286,6 +298,7 @@ useEffect(()=>{
             60000
 
         );
+
 
 
 
@@ -335,6 +348,31 @@ async function requestPickup(){
 
 
 
+    // Prevent owner from requesting own donation
+
+    if(user.id === rescue.userId){
+
+
+        setPickupMessage(
+
+            "You cannot request pickup for your own donation"
+
+        );
+
+
+        return;
+
+
+    }
+
+
+
+
+
+
+
+
+
     try{
 
 
@@ -359,6 +397,15 @@ async function requestPickup(){
 
 
 
+
+        const data = await response.json();
+
+
+
+
+
+
+
         if(response.ok){
 
 
@@ -376,6 +423,8 @@ async function requestPickup(){
 
             setPickupMessage(
 
+                data.message ||
+
                 "Pickup request failed"
 
             );
@@ -390,7 +439,9 @@ async function requestPickup(){
     catch(error){
 
 
+
         console.log(error);
+
 
 
         setPickupMessage(
@@ -570,8 +621,6 @@ hover:shadow-lg
 
 
 
-
-
 <div className="
 flex
 items-start
@@ -582,7 +631,9 @@ justify-between
 
 
 
+
 <div>
+
 
 
 <div className="
@@ -590,6 +641,7 @@ flex
 items-center
 gap-3
 ">
+
 
 
 <span className="
@@ -622,6 +674,7 @@ text-emerald-700
 
 
 </div>
+
 
 
 
@@ -678,7 +731,6 @@ ${getStatusStyle()}
 
 
 
-
 </div>
 
 
@@ -720,7 +772,6 @@ text-slate-600
 
 
 
-
 <p>
 
 📦 Quantity:
@@ -742,8 +793,6 @@ text-slate-900
 
 
 
-
-
 <p>
 
 📍 Location:
@@ -759,8 +808,6 @@ text-slate-900
 </span>
 
 </p>
-
-
 
 
 
@@ -804,7 +851,6 @@ ${getExpiryStyle()}
 
 
 
-
 <p>
 
 👤 Shared By:
@@ -825,8 +871,6 @@ text-slate-900
 
 
 
-
-
 </div>
 
 
@@ -835,6 +879,11 @@ text-slate-900
 
 
 
+
+
+{
+
+user?.id !== rescue.userId &&
 
 
 <button
@@ -866,6 +915,40 @@ disabled:bg-gray-300
 </button>
 
 
+}
+
+
+
+
+
+
+
+
+
+{
+
+user?.id === rescue.userId &&
+
+
+<div className="
+mt-5
+rounded-xl
+bg-slate-100
+p-3
+text-center
+font-semibold
+text-slate-600
+">
+
+👑 This is your donation
+
+</div>
+
+
+}
+
+
+
 
 
 
@@ -891,7 +974,6 @@ text-emerald-700
 
 
 }
-
 
 
 

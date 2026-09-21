@@ -13,7 +13,7 @@ import Link from "next/link";
 import RescueCard from "@/components/RescueCard";
 
 
-import ReliefMap from "@/components/ReliefMap";
+import dynamic from "next/dynamic";
 
 
 import {
@@ -22,7 +22,15 @@ import {
 
 
 
+const ReliefMap = dynamic(
 
+    ()=>import("@/components/ReliefMap"),
+
+    {
+        ssr:false
+    }
+
+);
 
 
 

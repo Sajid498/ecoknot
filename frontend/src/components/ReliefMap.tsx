@@ -2,6 +2,12 @@
 
 
 import {
+    useEffect,
+    useState
+} from "react";
+
+
+import {
     MapContainer,
     TileLayer,
     Marker,
@@ -10,13 +16,9 @@ import {
 
 
 import {
-    Icon
-} from "leaflet";
-
-
-import {
     RescueDonation
 } from "@/types/rescue";
+
 
 
 
@@ -39,48 +41,108 @@ interface Props{
 
 
 
-const markerIcon = new Icon({
-
-
-    iconUrl:
-
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-
-
-
-    iconRetinaUrl:
-
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-
-
-
-    shadowUrl:
-
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-
-
-
-    iconSize:[25,41],
-
-
-    iconAnchor:[12,41],
-
-
-});
-
-
-
-
-
-
-
-
 
 export default function ReliefMap({
 
     rescues
 
 }:Props){
+
+
+
+
+
+    const [markerIcon,setMarkerIcon] =
+
+        useState<any>(null);
+
+
+
+
+
+
+
+    useEffect(()=>{
+
+
+
+        async function loadIcon(){
+
+
+            const leaflet =
+
+                await import("leaflet");
+
+
+
+
+
+            const icon =
+
+                new leaflet.Icon({
+
+
+
+                    iconUrl:
+
+                    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+
+
+
+
+                    iconRetinaUrl:
+
+                    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+
+
+
+
+                    shadowUrl:
+
+                    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+
+
+
+
+                    iconSize:[25,41],
+
+
+
+
+                    iconAnchor:[12,41],
+
+
+
+                });
+
+
+
+
+
+            setMarkerIcon(icon);
+
+
+
+        }
+
+
+
+
+
+        loadIcon();
+
+
+
+    },[]);
+
+
+
+
+
+
+
+
+
 
 
 
@@ -95,6 +157,8 @@ overflow-hidden
 rounded-3xl
 shadow-lg
 ">
+
+
 
 
 
@@ -125,6 +189,7 @@ className="h-full w-full"
 
 
 
+
 <TileLayer
 
 
@@ -140,14 +205,19 @@ url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
 
 
+
 {
+
+markerIcon &&
 
 rescues.map((rescue)=>(
 
 
-rescue.latitude &&
 
-rescue.longitude &&
+rescue.latitude !== null &&
+
+rescue.longitude !== null &&
+
 
 
 
@@ -175,10 +245,14 @@ icon={markerIcon}
 
 
 
+
+
 <Popup>
 
 
 <div className="space-y-2">
+
+
 
 
 
@@ -195,6 +269,8 @@ text-lg
 
 
 
+
+
 <p>
 
 📦 Quantity:
@@ -202,6 +278,7 @@ text-lg
 {rescue.quantity}
 
 </p>
+
 
 
 
@@ -235,10 +312,12 @@ text-lg
 
 
 
+
 </div>
 
 
 </Popup>
+
 
 
 
@@ -253,6 +332,9 @@ text-lg
 
 
 }
+
+
+
 
 
 
