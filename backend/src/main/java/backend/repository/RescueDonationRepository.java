@@ -24,4 +24,14 @@ public interface RescueDonationRepository
     );
 
 
+
+
+
+    long countByType(
+
+            String type
+
+    );
+
+
 }

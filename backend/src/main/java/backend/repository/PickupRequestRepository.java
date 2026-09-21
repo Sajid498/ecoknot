@@ -6,9 +6,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import backend.entity.PickupRequest;
+import backend.entity.PickupStatus;
 import backend.entity.User;
-
-
 
 
 
@@ -18,10 +17,6 @@ public interface PickupRequestRepository
 
 
 
-
-
-
-    // Find all pickup requests by volunteer
 
     List<PickupRequest> findByVolunteer(
 
@@ -34,10 +29,6 @@ public interface PickupRequestRepository
 
 
 
-
-
-    // Find pickup requests for a specific relief post
-
     List<PickupRequest> findByRescueDonationId(
 
             Long rescueId
@@ -46,6 +37,14 @@ public interface PickupRequestRepository
 
 
 
+
+
+
+    long countByStatus(
+
+            PickupStatus status
+
+    );
 
 
 

@@ -639,7 +639,22 @@ text-slate-600
 
 </Link>
 
+<Link
 
+href="/dashboard"
+
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
+
+>
+
+📊 Dashboard
+
+</Link>
 
 
 
@@ -766,6 +781,22 @@ text-slate-600
 >
 
 🌎 Resources
+
+</Link>
+<Link
+
+href="/dashboard"
+
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
+
+>
+
+📊 Dashboard
 
 </Link>
 
