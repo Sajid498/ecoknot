@@ -138,6 +138,46 @@ useEffect(()=>{
 
 
 
+function formatDate(
+
+    date:string
+
+){
+
+
+    const created =
+
+        new Date(date);
+
+
+
+    return created.toLocaleDateString(
+
+        "en-US",
+
+        {
+
+            day:"numeric",
+
+            month:"short",
+
+            year:"numeric"
+
+        }
+
+    );
+
+
+}
+
+
+
+
+
+
+
+
+
 async function loadComments(){
 
 
@@ -254,6 +294,7 @@ async function addComment(){
 
 
                         "Content-Type":
+
                         "application/json"
 
 
@@ -375,7 +416,6 @@ async function deleteComment(
             );
 
 
-
         }
 
 
@@ -427,16 +467,19 @@ async function handleShareClick(){
 
 
                 title:
+
                 "EcoKnot Resource",
 
 
 
                 text:
+
                 resource.content,
 
 
 
                 url:
+
                 link
 
 
@@ -456,7 +499,6 @@ async function handleShareClick(){
                 link
 
             );
-
 
 
             alert(
@@ -532,10 +574,14 @@ return(
 
 
 <div className="
-rounded-xl
+rounded-2xl
+border
+border-slate-200
 bg-white
-p-5
-shadow
+p-6
+shadow-sm
+transition
+hover:shadow-lg
 ">
 
 
@@ -543,9 +589,22 @@ shadow
 
 
 
+
+<div className="
+flex
+items-center
+justify-between
+">
+
+
+
+<div>
+
+
 <h2 className="
-font-bold
 text-xl
+font-bold
+text-slate-900
 ">
 
 {resource.userName}
@@ -553,6 +612,20 @@ text-xl
 </h2>
 
 
+
+
+
+<p className="
+text-sm
+text-slate-500
+">
+
+{formatDate(resource.createdAt)}
+
+</p>
+
+
+</div>
 
 
 
@@ -565,8 +638,6 @@ resource.category &&
 
 
 <span className="
-mt-2
-inline-block
 rounded-full
 bg-emerald-100
 px-3
@@ -585,6 +656,10 @@ text-emerald-700
 
 
 
+</div>
+
+
+
 
 
 
@@ -592,13 +667,15 @@ text-emerald-700
 
 
 <p className="
-mt-3
-text-gray-700
+mt-5
+leading-relaxed
+text-slate-700
 ">
 
 {resource.content}
 
 </p>
+
 
 
 
@@ -619,8 +696,10 @@ src={resource.imageUrl}
 alt="resource"
 
 className="
-mt-4
-rounded-lg
+mt-5
+w-full
+rounded-xl
+object-cover
 "
 
 />
@@ -636,10 +715,10 @@ rounded-lg
 
 
 <div className="
-mt-5
+mt-6
 flex
-gap-5
 flex-wrap
+gap-3
 ">
 
 
@@ -651,10 +730,13 @@ flex-wrap
 onClick={onLike}
 
 className="
-rounded-lg
-bg-blue-100
+rounded-xl
+bg-blue-50
 px-4
 py-2
+font-semibold
+text-blue-700
+hover:bg-blue-100
 "
 
 >
@@ -675,10 +757,13 @@ py-2
 onClick={handleShareClick}
 
 className="
-rounded-lg
-bg-green-100
+rounded-xl
+bg-green-50
 px-4
 py-2
+font-semibold
+text-green-700
+hover:bg-green-100
 "
 
 >
@@ -699,10 +784,13 @@ py-2
 onClick={toggleComments}
 
 className="
-rounded-lg
-bg-yellow-100
+rounded-xl
+bg-yellow-50
 px-4
 py-2
+font-semibold
+text-yellow-700
+hover:bg-yellow-100
 "
 
 >
@@ -729,11 +817,13 @@ user?.id === resource.userId &&
 onClick={()=>onDelete(resource.id)}
 
 className="
-rounded-lg
-bg-red-100
+rounded-xl
+bg-red-50
 px-4
 py-2
+font-semibold
 text-red-700
+hover:bg-red-100
 "
 
 >
@@ -744,8 +834,6 @@ text-red-700
 
 
 }
-
-
 
 
 
@@ -765,9 +853,9 @@ showComments &&
 
 
 <div className="
-mt-6
+mt-8
 border-t
-pt-5
+pt-6
 ">
 
 
@@ -775,14 +863,14 @@ pt-5
 
 
 <h3 className="
+mb-4
 font-bold
-mb-3
+text-lg
 ">
 
 Comments
 
 </h3>
-
 
 
 
@@ -797,11 +885,11 @@ space-y-3
 
 {
 
-comments.length === 0 ?
+comments.length===0 ?
 
 
 <p className="
-text-gray-500
+text-slate-500
 ">
 
 No comments yet.
@@ -811,7 +899,6 @@ No comments yet.
 
 
 :
-
 
 
 comments.map(
@@ -825,9 +912,9 @@ key={comment.id}
 
 className="
 relative
-rounded-lg
-bg-slate-100
-p-3
+rounded-xl
+bg-slate-50
+p-4
 "
 
 >
@@ -843,7 +930,10 @@ font-semibold
 
 
 
-<p>
+
+<p className="
+text-slate-700
+">
 
 {comment.content}
 
@@ -857,7 +947,7 @@ font-semibold
 
 {
 
-user?.id === comment.userId &&
+user?.id===comment.userId &&
 
 
 <button
@@ -871,8 +961,6 @@ top-3
 text-red-600
 hover:text-red-800
 "
-
-title="Delete comment"
 
 >
 
@@ -894,7 +982,6 @@ title="Delete comment"
 )
 
 
-
 }
 
 
@@ -910,9 +997,9 @@ title="Delete comment"
 
 
 <div className="
-mt-4
+mt-5
 flex
-gap-2
+gap-3
 ">
 
 
@@ -938,9 +1025,10 @@ placeholder="Write a comment..."
 
 className="
 flex-1
-rounded-lg
+rounded-xl
 border
-p-2
+p-3
+focus:outline-none
 "
 
 />
@@ -954,10 +1042,12 @@ p-2
 onClick={addComment}
 
 className="
-rounded-lg
+rounded-xl
 bg-emerald-700
-px-4
+px-5
+font-semibold
 text-white
+hover:bg-emerald-800
 "
 
 >
