@@ -16,6 +16,19 @@ import {
 
 
 
+
+const API_URL =
+
+    process.env.NEXT_PUBLIC_API_URL ||
+
+    "http://localhost:8080";
+
+
+
+
+
+
+
 interface Props{
 
 
@@ -56,12 +69,57 @@ useState("");
 
 
 
-
-
 const [timeStatus,setTimeStatus] =
 
 useState("");
 
+
+
+
+
+const [user,setUser] =
+
+useState<any>(null);
+
+
+
+
+
+const [pickupMessage,setPickupMessage] =
+
+useState("");
+
+
+
+
+
+
+
+
+
+useEffect(()=>{
+
+
+    const savedUser =
+
+        localStorage.getItem("user");
+
+
+
+    if(savedUser){
+
+
+        setUser(
+
+            JSON.parse(savedUser)
+
+        );
+
+
+    }
+
+
+},[]);
 
 
 
@@ -94,7 +152,6 @@ function calculateRemainingTime(){
     const difference =
 
         expiry - now;
-
 
 
 
@@ -220,7 +277,6 @@ useEffect(()=>{
 
 
 
-
     const timer =
 
         setInterval(
@@ -230,7 +286,6 @@ useEffect(()=>{
             60000
 
         );
-
 
 
 
@@ -245,6 +300,111 @@ useEffect(()=>{
 
 
 },[]);
+
+
+
+
+
+
+
+
+
+async function requestPickup(){
+
+
+
+    if(!user){
+
+
+        setPickupMessage(
+
+            "Please login first"
+
+        );
+
+
+        return;
+
+
+    }
+
+
+
+
+
+
+
+
+    try{
+
+
+
+        const response =
+
+            await fetch(
+
+`${API_URL}/api/pickups?rescueId=${rescue.id}&volunteerId=${user.id}`,
+
+                {
+
+                    method:"POST"
+
+                }
+
+            );
+
+
+
+
+
+
+
+        if(response.ok){
+
+
+            setPickupMessage(
+
+                "Pickup request sent successfully 🚚"
+
+            );
+
+
+        }
+
+        else{
+
+
+            setPickupMessage(
+
+                "Pickup request failed"
+
+            );
+
+
+        }
+
+
+
+    }
+
+    catch(error){
+
+
+        console.log(error);
+
+
+        setPickupMessage(
+
+            "Something went wrong"
+
+        );
+
+
+    }
+
+
+
+}
 
 
 
@@ -410,6 +570,8 @@ hover:shadow-lg
 
 
 
+
+
 <div className="
 flex
 items-start
@@ -437,7 +599,6 @@ text-3xl
 {getTypeIcon()}
 
 </span>
-
 
 
 
@@ -483,8 +644,8 @@ text-slate-900
 
 
 
-</div>
 
+</div>
 
 
 
@@ -613,7 +774,6 @@ items-center
 gap-2
 ">
 
-
 ⏳ Remaining Time:
 
 
@@ -631,11 +791,7 @@ ${getExpiryStyle()}
 
 `}>
 
-{
-
-remainingTime
-
-}
+{remainingTime}
 
 </span>
 
@@ -671,8 +827,71 @@ text-slate-900
 
 
 
-
 </div>
+
+
+
+
+
+
+
+
+
+<button
+
+onClick={requestPickup}
+
+disabled={
+    rescue.status !== "AVAILABLE"
+}
+
+className="
+mt-5
+w-full
+rounded-xl
+bg-emerald-700
+px-5
+py-3
+font-semibold
+text-white
+transition
+hover:bg-emerald-800
+disabled:bg-gray-300
+"
+
+>
+
+🚚 Request Pickup
+
+</button>
+
+
+
+
+
+
+
+
+{
+
+pickupMessage &&
+
+
+<p className="
+mt-3
+text-center
+text-sm
+font-semibold
+text-emerald-700
+">
+
+{pickupMessage}
+
+</p>
+
+
+}
+
 
 
 
