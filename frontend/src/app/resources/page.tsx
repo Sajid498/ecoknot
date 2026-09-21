@@ -35,6 +35,85 @@ const API_URL =
 
 
 
+function LoadingCard(){
+
+
+    return(
+
+        <div className="
+        animate-pulse
+        rounded-2xl
+        bg-white
+        p-6
+        shadow-sm
+        ">
+
+
+            <div className="
+            h-5
+            w-32
+            rounded
+            bg-slate-200
+            ">
+            </div>
+
+
+
+
+
+            <div className="
+            mt-4
+            h-4
+            w-full
+            rounded
+            bg-slate-200
+            ">
+            </div>
+
+
+
+
+
+            <div className="
+            mt-2
+            h-4
+            w-2/3
+            rounded
+            bg-slate-200
+            ">
+            </div>
+
+
+
+
+
+            <div className="
+            mt-6
+            h-10
+            w-40
+            rounded
+            bg-slate-200
+            ">
+            </div>
+
+
+
+        </div>
+
+
+    );
+
+
+}
+
+
+
+
+
+
+
+
+
 export default function ResourcePage(){
 
 
@@ -147,9 +226,6 @@ export default function ResourcePage(){
 
 
     },[]);
-
-
-
 
 
 
@@ -280,7 +356,6 @@ export default function ResourcePage(){
 
 
 
-
             if(response.ok){
 
 
@@ -288,8 +363,6 @@ export default function ResourcePage(){
 
 
             }
-
-
 
 
 
@@ -346,7 +419,6 @@ export default function ResourcePage(){
 
 
 
-
             if(response.ok){
 
 
@@ -354,8 +426,6 @@ export default function ResourcePage(){
 
 
             }
-
-
 
 
 
@@ -410,12 +480,9 @@ export default function ResourcePage(){
 
 
 
-
-
             const currentUser =
 
                 JSON.parse(savedUser);
-
 
 
 
@@ -436,7 +503,6 @@ export default function ResourcePage(){
                     }
 
                 );
-
 
 
 
@@ -520,7 +586,6 @@ export default function ResourcePage(){
 
 
 
-
     const displayedPosts =
 
         activeTab === "my"
@@ -532,7 +597,6 @@ export default function ResourcePage(){
         :
 
         communityPosts;
-
 
 
 
@@ -557,15 +621,11 @@ export default function ResourcePage(){
 
         displayedPosts.filter(
 
-
             resource =>
-
 
             resource.category === selectedCategory
 
-
         );
-
 
 
 
@@ -579,9 +639,7 @@ export default function ResourcePage(){
 
         filteredPosts.filter(
 
-
             resource =>
-
 
 
             resource.content
@@ -627,7 +685,6 @@ export default function ResourcePage(){
             )
 
 
-
         );
 
 
@@ -654,8 +711,9 @@ md:p-10
 
 <div className="
 mx-auto
-max-w-4xl
+max-w-5xl
 ">
+
 
 
 
@@ -665,8 +723,11 @@ max-w-4xl
 
 <div className="
 flex
-items-center
-justify-between
+flex-col
+gap-5
+md:flex-row
+md:items-center
+md:justify-between
 ">
 
 
@@ -679,6 +740,7 @@ justify-between
 <h1 className="
 text-3xl
 font-bold
+text-slate-900
 ">
 
 🌎 Resource Sharing
@@ -691,7 +753,7 @@ font-bold
 
 <p className="
 mt-2
-text-gray-600
+text-slate-600
 ">
 
 Share useful information with the EcoKnot community.
@@ -743,10 +805,8 @@ hover:bg-emerald-800
 
 
 <div className="
-mt-6
+mt-8
 ">
-
-
 
 
 <input
@@ -766,7 +826,7 @@ e.target.value
 }
 
 
-placeholder="Search resources..."
+placeholder="🔍 Search resources..."
 
 
 className="
@@ -774,12 +834,13 @@ w-full
 rounded-xl
 border
 bg-white
-p-3
+p-4
 shadow-sm
+focus:outline-none
 "
 
-/>
 
+/>
 
 
 
@@ -794,11 +855,11 @@ shadow-sm
 
 
 <div className="
-mt-8
+mt-6
 flex
+flex-wrap
 gap-4
 ">
-
 
 
 
@@ -818,7 +879,7 @@ activeTab==="my"
 
 :
 
-"rounded-xl bg-white px-5 py-3 font-semibold"
+"rounded-xl bg-white px-5 py-3 font-semibold shadow-sm"
 
 }
 
@@ -849,7 +910,7 @@ activeTab==="community"
 
 :
 
-"rounded-xl bg-white px-5 py-3 font-semibold"
+"rounded-xl bg-white px-5 py-3 font-semibold shadow-sm"
 
 }
 
@@ -858,6 +919,7 @@ activeTab==="community"
 Community Posts
 
 </button>
+
 
 
 
@@ -875,7 +937,7 @@ Community Posts
 
 
 <div className="
-mt-6
+mt-5
 flex
 flex-wrap
 gap-3
@@ -912,7 +974,7 @@ selectedCategory===category
 
 :
 
-"rounded-full bg-white px-4 py-2 font-semibold shadow"
+"rounded-full bg-white px-4 py-2 font-semibold shadow-sm"
 
 }
 
@@ -932,8 +994,6 @@ selectedCategory===category
 
 
 }
-
-
 
 
 
@@ -965,16 +1025,13 @@ loading ?
 
 
 
-<div className="
-rounded-xl
-bg-white
-p-6
-shadow
-">
+<>
 
-Loading resources...
+<LoadingCard />
 
-</div>
+<LoadingCard />
+
+</>
 
 
 
@@ -991,13 +1048,76 @@ searchedPosts.length===0 ?
 
 
 <div className="
-rounded-xl
+rounded-2xl
 bg-white
-p-6
-shadow
+p-8
+text-center
+shadow-sm
 ">
 
-No posts available.
+
+<div className="
+text-4xl
+">
+
+🌱
+
+</div>
+
+
+
+<h2 className="
+mt-3
+text-xl
+font-bold
+">
+
+No resources found
+
+</h2>
+
+
+
+
+
+<p className="
+mt-2
+text-slate-600
+">
+
+Try another keyword or create a new resource.
+
+</p>
+
+
+
+
+
+
+
+<Link
+
+href="/resources/create"
+
+className="
+mt-5
+inline-block
+rounded-xl
+bg-emerald-700
+px-5
+py-3
+font-semibold
+text-white
+"
+
+>
+
+Create Post
+
+</Link>
+
+
+
 
 </div>
 
@@ -1016,7 +1136,6 @@ searchedPosts.map(
 (resource)=>(
 
 
-
 <ResourceCard
 
 
@@ -1026,21 +1145,16 @@ key={resource.id}
 resource={resource}
 
 
-
 onLike={()=>handleLike(resource.id)}
-
 
 
 onShare={()=>handleShare(resource.id)}
 
 
-
 onDelete={handleDelete}
 
 
-
 />
-
 
 
 )
@@ -1058,19 +1172,17 @@ onDelete={handleDelete}
 
 
 
-</div>
-
-
-
-
-
-
-
 
 </div>
 
 
 
+
+
+
+
+
+</div>
 
 
 </main>
