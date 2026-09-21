@@ -2,8 +2,15 @@
 
 
 import {
+    useEffect,
+    useState
+} from "react";
+
+
+import {
     RescueDonation
 } from "@/types/rescue";
+
 
 
 
@@ -16,6 +23,7 @@ interface Props{
 
 
 }
+
 
 
 
@@ -39,89 +47,341 @@ rescue
 
 
 
-    function getTypeIcon(){
+
+const [remainingTime,setRemainingTime] =
+
+useState("");
 
 
-        if(rescue.type==="FOOD"){
-
-            return "🍱";
-
-        }
 
 
-        return "💊";
+
+
+
+const [timeStatus,setTimeStatus] =
+
+useState("");
+
+
+
+
+
+
+
+
+
+
+function calculateRemainingTime(){
+
+
+
+    const now = new Date().getTime();
+
+
+
+    const expiry =
+
+        new Date(
+
+            rescue.expiryTime
+
+        ).getTime();
+
+
+
+
+
+    const difference =
+
+        expiry - now;
+
+
+
+
+
+
+
+    if(difference <= 0){
+
+
+        setRemainingTime(
+
+            "Expired"
+
+        );
+
+
+        setTimeStatus(
+
+            "expired"
+
+        );
+
+
+        return;
+
+
+    }
+
+
+
+
+
+
+
+    const hours =
+
+        Math.floor(
+
+            difference /
+
+            (1000 * 60 * 60)
+
+        );
+
+
+
+
+
+
+
+    const minutes =
+
+        Math.floor(
+
+            (difference %
+
+            (1000 * 60 * 60))
+
+            /
+
+            (1000 * 60)
+
+        );
+
+
+
+
+
+
+
+    setRemainingTime(
+
+        `${hours} hours ${minutes} minutes`
+
+    );
+
+
+
+
+
+
+
+
+    if(hours < 24){
+
+
+        setTimeStatus(
+
+            "urgent"
+
+        );
+
+
+    }
+
+    else{
+
+
+        setTimeStatus(
+
+            "safe"
+
+        );
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+useEffect(()=>{
+
+
+    calculateRemainingTime();
+
+
+
+
+    const timer =
+
+        setInterval(
+
+            calculateRemainingTime,
+
+            60000
+
+        );
+
+
+
+
+
+    return()=>{
+
+
+        clearInterval(timer);
+
+
+    };
+
+
+},[]);
+
+
+
+
+
+
+
+
+
+function getTypeIcon(){
+
+
+    if(rescue.type==="FOOD"){
+
+
+        return "🍱";
+
+
+    }
+
+
+    return "💊";
+
+
+}
+
+
+
+
+
+
+
+
+
+function getTypeName(){
+
+
+    if(rescue.type==="FOOD"){
+
+
+        return "Food Support";
+
+
+    }
+
+
+    return "Medicine Support";
+
+
+}
+
+
+
+
+
+
+
+
+
+function getStatusStyle(){
+
+
+
+    switch(rescue.status){
+
+
+
+        case "AVAILABLE":
+
+            return "bg-emerald-100 text-emerald-700";
+
+
+
+        case "RESERVED":
+
+            return "bg-yellow-100 text-yellow-700";
+
+
+
+        case "PICKED_UP":
+
+            return "bg-blue-100 text-blue-700";
+
+
+
+        case "DELIVERED":
+
+            return "bg-purple-100 text-purple-700";
+
+
+
+        default:
+
+            return "bg-red-100 text-red-700";
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+function getExpiryStyle(){
+
+
+
+    if(timeStatus==="expired"){
+
+
+        return "bg-red-100 text-red-700";
 
 
     }
 
 
 
+    if(timeStatus==="urgent"){
 
 
-
-
-
-    function getTypeName(){
-
-
-        if(rescue.type==="FOOD"){
-
-            return "Food Support";
-
-        }
-
-
-        return "Medicine Support";
+        return "bg-yellow-100 text-yellow-700";
 
 
     }
 
 
 
+    return "bg-emerald-100 text-emerald-700";
 
 
-
-
-
-    function getStatusStyle(){
-
-
-        switch(rescue.status){
-
-
-            case "AVAILABLE":
-
-                return "bg-emerald-100 text-emerald-700";
-
-
-
-            case "RESERVED":
-
-                return "bg-yellow-100 text-yellow-700";
-
-
-
-            case "PICKED_UP":
-
-                return "bg-blue-100 text-blue-700";
-
-
-
-            case "DELIVERED":
-
-                return "bg-purple-100 text-purple-700";
-
-
-
-            default:
-
-                return "bg-red-100 text-red-700";
-
-
-        }
-
-
-    }
+}
 
 
 
@@ -182,6 +442,8 @@ text-3xl
 
 
 
+
+
 <span className="
 rounded-full
 bg-emerald-100
@@ -219,6 +481,8 @@ text-slate-900
 
 
 
+
+
 </div>
 
 
@@ -247,6 +511,7 @@ ${getStatusStyle()}
 🌱 {rescue.status}
 
 </span>
+
 
 
 
@@ -294,6 +559,7 @@ text-slate-600
 
 
 
+
 <p>
 
 📦 Quantity:
@@ -309,6 +575,7 @@ text-slate-900
 </span>
 
 </p>
+
 
 
 
@@ -338,25 +605,43 @@ text-slate-900
 
 
 
-<p>
 
-⏳ Available Until:
 
-<span className="
-ml-1
-font-semibold
-text-slate-900
+<div className="
+flex
+items-center
+gap-2
 ">
 
-{new Date(
 
-rescue.expiryTime
+⏳ Remaining Time:
 
-).toLocaleString()}
+
+<span className={`
+
+rounded-full
+
+px-3
+
+py-1
+
+font-semibold
+
+${getExpiryStyle()}
+
+`}>
+
+{
+
+remainingTime
+
+}
 
 </span>
 
-</p>
+
+</div>
+
 
 
 
@@ -379,6 +664,7 @@ text-slate-900
 </span>
 
 </p>
+
 
 
 
