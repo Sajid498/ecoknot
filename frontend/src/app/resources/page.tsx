@@ -79,6 +79,14 @@ export default function ResourcePage(){
 
 
 
+    const [search,setSearch] =
+
+        useState("");
+
+
+
+
+
 
 
 
@@ -566,6 +574,68 @@ export default function ResourcePage(){
 
 
 
+    const searchedPosts =
+
+
+        filteredPosts.filter(
+
+
+            resource =>
+
+
+
+            resource.content
+
+            .toLowerCase()
+
+            .includes(
+
+                search.toLowerCase()
+
+            )
+
+
+
+            ||
+
+
+
+            resource.userName
+
+            .toLowerCase()
+
+            .includes(
+
+                search.toLowerCase()
+
+            )
+
+
+
+            ||
+
+
+
+            resource.category
+
+            .toLowerCase()
+
+            .includes(
+
+                search.toLowerCase()
+
+            )
+
+
+
+        );
+
+
+
+
+
+
+
 
 
 return(
@@ -658,6 +728,57 @@ hover:bg-emerald-800
 </Link>
 
 
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div className="
+mt-6
+">
+
+
+
+
+<input
+
+
+value={search}
+
+
+onChange={(e)=>
+
+setSearch(
+
+e.target.value
+
+)
+
+}
+
+
+placeholder="Search resources..."
+
+
+className="
+w-full
+rounded-xl
+border
+bg-white
+p-3
+shadow-sm
+"
+
+/>
 
 
 
@@ -800,7 +921,6 @@ selectedCategory===category
 
 {category}
 
-
 </button>
 
 
@@ -866,7 +986,7 @@ Loading resources...
 
 
 
-filteredPosts.length===0 ?
+searchedPosts.length===0 ?
 
 
 
@@ -891,7 +1011,7 @@ No posts available.
 
 
 
-filteredPosts.map(
+searchedPosts.map(
 
 (resource)=>(
 
