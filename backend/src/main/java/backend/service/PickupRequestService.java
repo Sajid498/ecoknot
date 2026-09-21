@@ -35,6 +35,9 @@ public class PickupRequestService {
     private final UserRepository userRepository;
 
 
+    private final NotificationService notificationService;
+
+
 
 
 
@@ -48,7 +51,9 @@ public class PickupRequestService {
 
             RescueDonationRepository rescueDonationRepository,
 
-            UserRepository userRepository
+            UserRepository userRepository,
+
+            NotificationService notificationService
 
     ){
 
@@ -58,6 +63,8 @@ public class PickupRequestService {
         this.rescueDonationRepository = rescueDonationRepository;
 
         this.userRepository = userRepository;
+
+        this.notificationService = notificationService;
 
 
     }
@@ -184,7 +191,6 @@ public class PickupRequestService {
 
 
 
-
         PickupRequest saved =
 
                 pickupRequestRepository.save(
@@ -192,6 +198,34 @@ public class PickupRequestService {
                         request
 
                 );
+
+
+
+
+
+
+
+
+
+        // Notify donation owner
+
+        notificationService.createNotification(
+
+
+                rescue.getUser().getId(),
+
+
+                volunteer.getName()
+
+                + " requested pickup for your relief donation: "
+
+                + rescue.getTitle(),
+
+
+                "PICKUP_REQUEST"
+
+        );
+
 
 
 
@@ -266,7 +300,7 @@ public class PickupRequestService {
 
 
 
-    // Get requests for a relief post
+    // Get requests for relief post
 
     public List<PickupRequestDTO> getReliefRequests(
 
@@ -355,6 +389,34 @@ public class PickupRequestService {
 
 
 
+
+
+        // Notify volunteer
+
+        notificationService.createNotification(
+
+
+                request.getVolunteer().getId(),
+
+
+                "Your pickup request for "
+
+                + request.getRescueDonation().getTitle()
+
+                + " has been approved.",
+
+
+                "PICKUP_APPROVED"
+
+        );
+
+
+
+
+
+
+
+
         return convertToDTO(saved);
 
 
@@ -414,6 +476,32 @@ public class PickupRequestService {
 
 
 
+
+
+        notificationService.createNotification(
+
+
+                request.getVolunteer().getId(),
+
+
+                "Your pickup request for "
+
+                + request.getRescueDonation().getTitle()
+
+                + " has been rejected.",
+
+
+                "PICKUP_REJECTED"
+
+        );
+
+
+
+
+
+
+
+
         return convertToDTO(saved);
 
 
@@ -427,7 +515,7 @@ public class PickupRequestService {
 
 
 
-    // Mark item picked up
+    // Mark picked up
 
     public PickupRequestDTO markPickedUp(
 
@@ -680,7 +768,6 @@ public class PickupRequestService {
 
 
     }
-
 
 
 
