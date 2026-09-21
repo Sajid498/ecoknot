@@ -650,29 +650,10 @@ onShare={()=>handleShare(resource.id)}
 onDelete={()=>handleRemoveBookmark(resource.id)}
 
 
+isSaved={true}
+
+
 />
-
-
-
-<button
-
-onClick={()=>handleRemoveBookmark(resource.id)}
-
-className="
-mt-3
-rounded-xl
-bg-red-50
-px-4
-py-2
-font-semibold
-text-red-700
-"
-
->
-
-Remove ⭐
-
-</button>
 
 
 

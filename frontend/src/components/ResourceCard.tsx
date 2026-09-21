@@ -49,6 +49,9 @@ interface Props{
     onDelete:(id:number)=>void;
 
 
+    isSaved?:boolean;
+
+
 }
 
 
@@ -69,7 +72,9 @@ onLike,
 
 onShare,
 
-onDelete
+onDelete,
+
+isSaved=false
 
 }:Props
 
@@ -119,10 +124,9 @@ useState(false);
 
 
 
-
 const [saved,setSaved] =
 
-useState(false);
+useState(isSaved);
 
 
 
