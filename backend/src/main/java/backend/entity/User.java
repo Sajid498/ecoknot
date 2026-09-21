@@ -45,19 +45,23 @@ public class User {
 
 
     // Donor profile information
-// Donor profile information
 
-private String location;
-
-
-@Enumerated(EnumType.STRING)
-private BloodGroup bloodGroup;
+    private String location;
 
 
-private boolean availableForDonation = false;
+
+    @Enumerated(EnumType.STRING)
+    private BloodGroup bloodGroup;
 
 
-private LocalDate lastDonationDate;
+
+    private boolean availableForDonation = false;
+
+
+
+    private LocalDate lastDonationDate;
+
+
 
 
 
@@ -66,6 +70,34 @@ private LocalDate lastDonationDate;
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<BloodRequest> bloodRequests;
+
+
+
+
+
+
+
+    // Resource sharing posts
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Resource> resources;
+
+
+
+
+
+
+
+    // Surplus food & medicine rescue posts
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<RescueDonation> rescueDonations;
+
+
+
+
 
 
 
@@ -83,11 +115,15 @@ private LocalDate lastDonationDate;
 
 
 
+
+
     public String getName() {
 
         return name;
 
     }
+
+
 
 
 
@@ -103,11 +139,15 @@ private LocalDate lastDonationDate;
 
 
 
+
+
     public String getPassword() {
 
         return password;
 
     }
+
+
 
 
 
@@ -123,6 +163,8 @@ private LocalDate lastDonationDate;
 
 
 
+
+
     public String getLocation() {
 
         return location;
@@ -130,11 +172,21 @@ private LocalDate lastDonationDate;
     }
 
 
-public BloodGroup getBloodGroup() {
 
-    return bloodGroup;
 
-}
+
+
+
+    public BloodGroup getBloodGroup() {
+
+        return bloodGroup;
+
+    }
+
+
+
+
+
 
 
     public boolean isAvailableForDonation() {
@@ -142,6 +194,8 @@ public BloodGroup getBloodGroup() {
         return availableForDonation;
 
     }
+
+
 
 
 
@@ -157,11 +211,38 @@ public BloodGroup getBloodGroup() {
 
 
 
+
+
     public List<BloodRequest> getBloodRequests() {
 
         return bloodRequests;
 
     }
+
+
+
+
+
+
+
+    public List<Resource> getResources(){
+
+        return resources;
+
+    }
+
+
+
+
+
+
+
+    public List<RescueDonation> getRescueDonations(){
+
+        return rescueDonations;
+
+    }
+
 
 
 
@@ -180,11 +261,15 @@ public BloodGroup getBloodGroup() {
 
 
 
+
+
     public void setEmail(String email) {
 
         this.email = email;
 
     }
+
+
 
 
 
@@ -200,11 +285,15 @@ public BloodGroup getBloodGroup() {
 
 
 
+
+
     public void setRole(String role) {
 
         this.role = role;
 
     }
+
+
 
 
 
@@ -216,11 +305,21 @@ public BloodGroup getBloodGroup() {
 
     }
 
-public void setBloodGroup(BloodGroup bloodGroup) {
 
-    this.bloodGroup = bloodGroup;
 
-}
+
+
+
+
+    public void setBloodGroup(BloodGroup bloodGroup) {
+
+        this.bloodGroup = bloodGroup;
+
+    }
+
+
+
+
 
 
 
@@ -234,12 +333,13 @@ public void setBloodGroup(BloodGroup bloodGroup) {
 
 
 
+
+
     public void setLastDonationDate(LocalDate lastDonationDate) {
 
         this.lastDonationDate = lastDonationDate;
 
     }
-
 
 
 
