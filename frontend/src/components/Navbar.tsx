@@ -769,7 +769,22 @@ text-slate-600
 
 </Link>
 
+<Link
 
+href="/saved-resources"
+
+className="
+text-sm
+font-medium
+text-slate-600
+hover:text-emerald-700
+"
+
+>
+
+⭐ Saved
+
+</Link>
 
 
 

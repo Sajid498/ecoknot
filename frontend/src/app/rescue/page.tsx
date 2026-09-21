@@ -26,7 +26,6 @@ import {
 
 
 
-
 const API_URL =
 
     process.env.NEXT_PUBLIC_API_URL ||
@@ -71,6 +70,27 @@ export default function ReliefHubPage(){
 
 
 
+    const [userLat,setUserLat] =
+
+        useState<number | null>(null);
+
+
+
+
+
+    const [userLng,setUserLng] =
+
+        useState<number | null>(null);
+
+
+
+
+
+    const [nearbyMode,setNearbyMode] =
+
+        useState(false);
+
+
 
 
 
@@ -94,9 +114,6 @@ export default function ReliefHubPage(){
 
 
 
-
-
-
     async function loadReliefPosts(){
 
 
@@ -104,7 +121,6 @@ export default function ReliefHubPage(){
 
 
             setLoading(true);
-
 
 
 
@@ -122,7 +138,6 @@ export default function ReliefHubPage(){
 
 
 
-
             if(!response.ok){
 
 
@@ -134,7 +149,6 @@ export default function ReliefHubPage(){
 
 
             }
-
 
 
 
@@ -178,10 +192,8 @@ export default function ReliefHubPage(){
         }
 
 
+
     }
-
-
-
 
 
 
@@ -199,12 +211,9 @@ export default function ReliefHubPage(){
 
 
 
-
-
         const now =
 
             new Date().getTime();
-
 
 
 
@@ -222,14 +231,9 @@ export default function ReliefHubPage(){
 
 
 
-
-
         const remaining =
 
-            expiry - now;
-
-
-
+            expiry-now;
 
 
 
@@ -249,9 +253,6 @@ export default function ReliefHubPage(){
 
 
 
-
-
-
         return(
 
             remaining > 0
@@ -259,6 +260,221 @@ export default function ReliefHubPage(){
             &&
 
             remaining <= oneDay
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    function calculateDistance(
+
+        lat1:number,
+
+        lng1:number,
+
+        lat2:number,
+
+        lng2:number
+
+    ){
+
+
+
+        const R = 6371;
+
+
+
+        const dLat =
+
+            (
+
+                (lat2-lat1)
+
+                *
+
+                Math.PI
+
+                /
+
+                180
+
+            );
+
+
+
+        const dLng =
+
+            (
+
+                (lng2-lng1)
+
+                *
+
+                Math.PI
+
+                /
+
+                180
+
+            );
+
+
+
+
+
+        const a =
+
+
+            Math.sin(dLat/2)
+
+            *
+
+            Math.sin(dLat/2)
+
+            +
+
+            Math.cos(
+
+                lat1*Math.PI/180
+
+            )
+
+            *
+
+            Math.cos(
+
+                lat2*Math.PI/180
+
+            )
+
+            *
+
+            Math.sin(dLng/2)
+
+            *
+
+            Math.sin(dLng/2);
+
+
+
+
+
+        const c =
+
+            2 *
+
+            Math.atan2(
+
+                Math.sqrt(a),
+
+                Math.sqrt(1-a)
+
+            );
+
+
+
+
+
+        return Number(
+
+            (R*c).toFixed(2)
+
+        );
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    function findNearbyRelief(){
+
+
+
+        if(!navigator.geolocation){
+
+
+            alert(
+
+                "Location is not supported"
+
+            );
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+
+        navigator.geolocation.getCurrentPosition(
+
+            (position)=>{
+
+
+
+                const lat =
+
+                    position.coords.latitude;
+
+
+
+                const lng =
+
+                    position.coords.longitude;
+
+
+
+
+
+
+
+                setUserLat(lat);
+
+
+                setUserLng(lng);
+
+
+
+
+                setNearbyMode(true);
+
+
+
+            },
+
+
+            ()=>{
+
+
+                alert(
+
+                    "Please allow location access"
+
+                );
+
+
+            }
+
 
         );
 
@@ -277,66 +493,154 @@ export default function ReliefHubPage(){
 
 
 
-
     const filteredReliefs =
 
-        rescues.filter(
 
-            (relief)=>{
+        rescues
 
-
-
-                if(filter==="URGENT"){
-
-
-                    return isUrgent(relief);
-
-
-                }
+        .map((relief)=>{
 
 
 
+            if(
+
+                nearbyMode
+
+                &&
+
+                userLat
+
+                &&
+
+                userLng
+
+                &&
+
+                relief.latitude
+
+                &&
+
+                relief.longitude
+
+            ){
 
 
 
+                return {
 
-                if(filter==="FOOD"){
+                    ...relief,
 
+                    distance:
 
-                    return relief.type==="FOOD";
+                    calculateDistance(
 
+                        userLat,
 
-                }
+                        userLng,
 
+                        relief.latitude,
 
+                        relief.longitude
 
+                    )
 
-
-
-
-                if(filter==="MEDICINE"){
-
-
-                    return relief.type==="MEDICINE";
-
-
-                }
-
-
-
-
-
-
-
-                return true;
+                };
 
 
             }
 
 
-        );
 
 
+
+            return relief;
+
+
+
+        })
+
+        .filter((relief)=>{
+
+
+
+            if(filter==="URGENT"){
+
+
+                return isUrgent(relief);
+
+
+            }
+
+
+
+
+
+            if(filter==="FOOD"){
+
+
+                return relief.type==="FOOD";
+
+
+            }
+
+
+
+
+
+            if(filter==="MEDICINE"){
+
+
+                return relief.type==="MEDICINE";
+
+
+            }
+
+
+
+
+
+            return true;
+
+
+
+        })
+
+        .sort((a,b)=>{
+
+
+            if(
+
+                nearbyMode
+
+                &&
+
+                a.distance
+
+                &&
+
+                b.distance
+
+            ){
+
+
+                return (
+
+                    a.distance
+
+                    -
+
+                    b.distance
+
+                );
+
+
+            }
+
+
+            return 0;
+
+
+        });
 
 
 
@@ -389,10 +693,7 @@ md:justify-between
 
 
 
-
-
 <div>
-
 
 
 <h1 className="
@@ -409,25 +710,18 @@ text-slate-900
 
 
 
-
-
-
 <p className="
 mt-2
 text-slate-600
 ">
 
-Connect surplus food and medicine with people who need them before resources go to waste.
+Connect surplus food and medicine with people who need them.
 
 </p>
 
 
 
-
-
-
 </div>
-
 
 
 
@@ -447,7 +741,6 @@ px-5
 py-3
 font-semibold
 text-white
-hover:bg-emerald-800
 "
 
 >
@@ -455,11 +748,6 @@ hover:bg-emerald-800
 + Create Relief Post
 
 </Link>
-
-
-
-
-
 
 
 
@@ -473,11 +761,34 @@ hover:bg-emerald-800
 
 
 
+<button
+
+onClick={findNearbyRelief}
+
+className="
+mt-8
+rounded-xl
+bg-blue-600
+px-6
+py-3
+font-semibold
+text-white
+hover:bg-blue-700
+"
+
+>
+
+📍 Find Nearby Relief
+
+</button>
 
 
 
 
-{/* MAP SECTION */}
+
+
+
+
 
 <div className="
 mt-10
@@ -488,14 +799,11 @@ mt-10
 mb-4
 text-2xl
 font-bold
-text-slate-900
 ">
 
 🗺️ Relief Locations
 
 </h2>
-
-
 
 
 
@@ -507,9 +815,6 @@ rescues={rescues}
 />
 
 
-
-
-
 </div>
 
 
@@ -520,12 +825,6 @@ rescues={rescues}
 
 
 
-
-
-
-
-{/* FILTER SECTION */}
-
 <div className="
 mt-8
 flex
@@ -535,28 +834,18 @@ gap-3
 
 
 
-
-
-
-
-
 <button
 
 onClick={()=>setFilter("ALL")}
 
-className={
-
-filter==="ALL"
-
-?
-
-"rounded-full bg-emerald-700 px-5 py-2 text-white font-semibold"
-
-:
-
-"rounded-full bg-white px-5 py-2 font-semibold shadow"
-
-}
+className="
+rounded-full
+bg-emerald-700
+px-5
+py-2
+text-white
+font-semibold
+"
 
 >
 
@@ -568,27 +857,18 @@ All
 
 
 
-
-
-
-
 <button
 
 onClick={()=>setFilter("URGENT")}
 
-className={
-
-filter==="URGENT"
-
-?
-
-"rounded-full bg-red-600 px-5 py-2 text-white font-semibold"
-
-:
-
-"rounded-full bg-white px-5 py-2 font-semibold shadow"
-
-}
+className="
+rounded-full
+bg-red-600
+px-5
+py-2
+text-white
+font-semibold
+"
 
 >
 
@@ -600,27 +880,18 @@ filter==="URGENT"
 
 
 
-
-
-
-
 <button
 
 onClick={()=>setFilter("FOOD")}
 
-className={
-
-filter==="FOOD"
-
-?
-
-"rounded-full bg-orange-600 px-5 py-2 text-white font-semibold"
-
-:
-
-"rounded-full bg-white px-5 py-2 font-semibold shadow"
-
-}
+className="
+rounded-full
+bg-orange-600
+px-5
+py-2
+text-white
+font-semibold
+"
 
 >
 
@@ -632,36 +903,24 @@ filter==="FOOD"
 
 
 
-
-
-
-
 <button
 
 onClick={()=>setFilter("MEDICINE")}
 
-className={
-
-filter==="MEDICINE"
-
-?
-
-"rounded-full bg-blue-600 px-5 py-2 text-white font-semibold"
-
-:
-
-"rounded-full bg-white px-5 py-2 font-semibold shadow"
-
-}
+className="
+rounded-full
+bg-blue-600
+px-5
+py-2
+text-white
+font-semibold
+"
 
 >
 
 💊 Medicine
 
 </button>
-
-
-
 
 
 
@@ -675,12 +934,6 @@ filter==="MEDICINE"
 
 
 
-
-
-
-
-{/* CARD SECTION */}
-
 <div className="
 mt-8
 space-y-6
@@ -690,13 +943,9 @@ space-y-6
 
 
 
-
-
-
 {
 
 loading ?
-
 
 
 <div className="
@@ -716,13 +965,9 @@ Loading relief posts...
 
 
 
-
-
 :
 
 filteredReliefs.length===0 ?
-
-
 
 
 
@@ -734,61 +979,9 @@ text-center
 shadow
 ">
 
-
-
-
-
-
-<div className="
-text-5xl
-">
-
-🌱
+No relief post available.
 
 </div>
-
-
-
-
-
-
-
-
-<h2 className="
-mt-4
-text-xl
-font-bold
-">
-
-No relief post available
-
-</h2>
-
-
-
-
-
-
-
-
-<p className="
-mt-2
-text-slate-600
-">
-
-No matching relief post found.
-
-</p>
-
-
-
-
-
-
-
-</div>
-
-
 
 
 
@@ -800,37 +993,23 @@ No matching relief post found.
 
 
 
-filteredReliefs.map(
-
-(relief)=>(
-
+filteredReliefs.map((relief)=>(
 
 
 <RescueCard
 
-
 key={relief.id}
 
-
 rescue={relief}
-
 
 />
 
 
-
-)
-
-
-)
-
-
+))
 
 
 
 }
-
-
 
 
 

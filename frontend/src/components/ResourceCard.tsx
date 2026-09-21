@@ -20,11 +20,13 @@ import {
 
 
 
+
 const API_URL =
 
     process.env.NEXT_PUBLIC_API_URL ||
 
     "http://localhost:8080";
+
 
 
 
@@ -55,6 +57,8 @@ interface Props{
 
 
 
+
+
 export default function ResourceCard(
 
 {
@@ -73,9 +77,15 @@ onDelete
 
 
 
+
+
+
 const [user,setUser] =
 
 useState<any>(null);
+
+
+
 
 
 
@@ -87,9 +97,15 @@ useState<ResourceComment[]>([]);
 
 
 
+
+
+
 const [commentText,setCommentText] =
 
 useState("");
+
+
+
 
 
 
@@ -104,14 +120,39 @@ useState(false);
 
 
 
+const [saved,setSaved] =
+
+useState(false);
+
+
+
+
+
+
+
+const [bookmarkLoading,setBookmarkLoading] =
+
+useState(false);
+
+
+
+
+
+
+
+
+
+
 
 
 useEffect(()=>{
 
 
+
     const savedUser =
 
         localStorage.getItem("user");
+
 
 
 
@@ -126,6 +167,7 @@ useEffect(()=>{
 
 
     }
+
 
 
 },[]);
@@ -145,9 +187,11 @@ function formatDate(
 ){
 
 
+
     const created =
 
         new Date(date);
+
 
 
 
@@ -168,6 +212,7 @@ function formatDate(
     );
 
 
+
 }
 
 
@@ -179,6 +224,7 @@ function formatDate(
 
 
 async function loadComments(){
+
 
 
     try{
@@ -199,6 +245,7 @@ async function loadComments(){
         if(response.ok){
 
 
+
             const data =
 
                 await response.json();
@@ -208,7 +255,9 @@ async function loadComments(){
             setComments(data);
 
 
+
         }
+
 
 
     }
@@ -216,10 +265,13 @@ async function loadComments(){
     catch(error){
 
 
+
         console.log(error);
 
 
+
     }
+
 
 
 }
@@ -273,7 +325,6 @@ async function addComment(){
 
 
 
-
     try{
 
 
@@ -284,39 +335,27 @@ async function addComment(){
 
 `${API_URL}/api/resources/${resource.id}/comments?userId=${currentUser.id}`,
 
-                {
+{
 
+method:"POST",
 
-                    method:"POST",
+headers:{
 
+"Content-Type":
 
-                    headers:{
+"application/json"
 
+},
 
-                        "Content-Type":
+body:JSON.stringify({
 
-                        "application/json"
+content:commentText
 
+})
 
-                    },
+}
 
-
-                    body:JSON.stringify({
-
-
-                        content:commentText
-
-
-                    })
-
-
-                }
-
-            );
-
-
-
-
+);
 
 
 
@@ -356,7 +395,7 @@ async function addComment(){
 
 async function deleteComment(
 
-    commentId:number
+commentId:number
 
 ){
 
@@ -375,23 +414,20 @@ async function deleteComment(
     try{
 
 
+
         const response =
 
             await fetch(
 
 `${API_URL}/api/comments/${commentId}?userId=${user.id}`,
 
-                {
+{
 
+method:"DELETE"
 
-                    method:"DELETE"
+}
 
-
-                }
-
-            );
-
-
+);
 
 
 
@@ -415,10 +451,7 @@ async function deleteComment(
 
             );
 
-
         }
-
-
 
 
 
@@ -431,6 +464,156 @@ async function deleteComment(
 
 
     }
+
+
+}
+
+
+
+
+
+
+
+
+
+async function toggleBookmark(){
+
+
+
+    const savedUser =
+
+        localStorage.getItem("user");
+
+
+
+
+
+    if(!savedUser){
+
+        return;
+
+    }
+
+
+
+
+
+
+
+    const currentUser =
+
+        JSON.parse(savedUser);
+
+
+
+
+
+
+
+    try{
+
+
+
+        setBookmarkLoading(true);
+
+
+
+
+
+
+
+        let response;
+
+
+
+
+
+
+
+        if(saved){
+
+
+
+            response =
+
+            await fetch(
+
+`${API_URL}/api/bookmarks/remove?userId=${currentUser.id}&resourceId=${resource.id}`,
+
+{
+
+method:"DELETE"
+
+}
+
+);
+
+
+
+        }
+
+        else{
+
+
+
+            response =
+
+            await fetch(
+
+`${API_URL}/api/bookmarks/save?userId=${currentUser.id}&resourceId=${resource.id}`,
+
+{
+
+method:"POST"
+
+}
+
+);
+
+
+
+        }
+
+
+
+
+
+
+
+
+        if(response.ok){
+
+
+
+            setSaved(
+
+                !saved
+
+            );
+
+
+        }
+
+
+
+    }
+
+    catch(error){
+
+
+        console.log(error);
+
+
+    }
+
+    finally{
+
+
+        setBookmarkLoading(false);
+
+
+    }
+
 
 
 }
@@ -466,6 +649,7 @@ async function handleShareClick(){
             await navigator.share({
 
 
+
                 title:
 
                 "EcoKnot Resource",
@@ -490,8 +674,8 @@ async function handleShareClick(){
 
         }
 
-
         else{
+
 
 
             await navigator.clipboard.writeText(
@@ -499,6 +683,7 @@ async function handleShareClick(){
                 link
 
             );
+
 
 
             alert(
@@ -514,17 +699,21 @@ async function handleShareClick(){
 
 
 
+
+
         onShare();
+
 
 
 
     }
 
-
     catch(error){
 
 
+
         console.log(error);
+
 
 
     }
@@ -543,11 +732,15 @@ async function handleShareClick(){
 function toggleComments(){
 
 
+
     setShowComments(
 
         !showComments
 
     );
+
+
+
 
 
     if(!showComments){
@@ -557,6 +750,7 @@ function toggleComments(){
 
 
     }
+
 
 
 }
@@ -598,6 +792,9 @@ justify-between
 
 
 
+
+
+
 <div>
 
 
@@ -615,6 +812,7 @@ text-slate-900
 
 
 
+
 <p className="
 text-sm
 text-slate-500
@@ -625,7 +823,9 @@ text-slate-500
 </p>
 
 
+
 </div>
+
 
 
 
@@ -635,6 +835,7 @@ text-slate-500
 {
 
 resource.category &&
+
 
 
 <span className="
@@ -650,6 +851,7 @@ text-emerald-700
 🏷 {resource.category}
 
 </span>
+
 
 
 }
@@ -683,10 +885,10 @@ text-slate-700
 
 
 
-
 {
 
 resource.imageUrl &&
+
 
 
 <img
@@ -704,6 +906,8 @@ object-cover
 
 />
 
+
+
 }
 
 
@@ -720,6 +924,9 @@ flex
 flex-wrap
 gap-3
 ">
+
+
+
 
 
 
@@ -744,6 +951,7 @@ hover:bg-blue-100
 👍 {resource.likes}
 
 </button>
+
 
 
 
@@ -779,6 +987,57 @@ hover:bg-green-100
 
 
 
+
+<button
+
+onClick={toggleBookmark}
+
+disabled={bookmarkLoading}
+
+className="
+rounded-xl
+bg-purple-50
+px-4
+py-2
+font-semibold
+text-purple-700
+hover:bg-purple-100
+"
+
+>
+
+{
+
+bookmarkLoading
+
+?
+
+"Saving..."
+
+:
+
+saved
+
+?
+
+"⭐ Saved"
+
+:
+
+"☆ Save"
+
+}
+
+</button>
+
+
+
+
+
+
+
+
+
 <button
 
 onClick={toggleComments}
@@ -798,6 +1057,7 @@ hover:bg-yellow-100
 💬 Comments
 
 </button>
+
 
 
 
@@ -833,7 +1093,11 @@ hover:bg-red-100
 </button>
 
 
+
 }
+
+
+
 
 
 
@@ -852,11 +1116,13 @@ hover:bg-red-100
 showComments &&
 
 
+
 <div className="
 mt-8
 border-t
 pt-6
 ">
+
 
 
 
@@ -881,6 +1147,7 @@ Comments
 <div className="
 space-y-3
 ">
+
 
 
 {
@@ -931,6 +1198,7 @@ font-semibold
 
 
 
+
 <p className="
 text-slate-700
 ">
@@ -950,6 +1218,7 @@ text-slate-700
 user?.id===comment.userId &&
 
 
+
 <button
 
 onClick={()=>deleteComment(comment.id)}
@@ -959,7 +1228,6 @@ absolute
 right-3
 top-3
 text-red-600
-hover:text-red-800
 "
 
 >
@@ -967,6 +1235,7 @@ hover:text-red-800
 🗑
 
 </button>
+
 
 
 }
@@ -979,7 +1248,9 @@ hover:text-red-800
 )
 
 
+
 )
+
 
 
 }
@@ -1001,6 +1272,7 @@ mt-5
 flex
 gap-3
 ">
+
 
 
 <input
@@ -1037,6 +1309,7 @@ focus:outline-none
 
 
 
+
 <button
 
 onClick={addComment}
@@ -1047,7 +1320,6 @@ bg-emerald-700
 px-5
 font-semibold
 text-white
-hover:bg-emerald-800
 "
 
 >
@@ -1058,7 +1330,10 @@ Post
 
 
 
+
+
 </div>
+
 
 
 
@@ -1075,13 +1350,12 @@ Post
 
 
 
-
-
 </div>
 
 
 
 );
+
 
 
 }
