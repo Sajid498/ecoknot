@@ -1,17 +1,29 @@
 "use client";
 
 
-import { useEffect, useState } from "react";
+import {
+    useEffect,
+    useState
+} from "react";
+
 
 import ProtectedRoute from "@/components/ProtectedRoute";
+
 import Navbar from "@/components/Navbar";
 
 
 
 
 
+
+
 const API_URL =
+
+    process.env.NEXT_PUBLIC_API_URL ||
+
     "http://localhost:8080";
+
+
 
 
 
@@ -46,12 +58,17 @@ type Notification = {
 
 
 
+
+
 export default function NotificationsPage(){
 
 
 
     const [notifications,setNotifications] =
+
         useState<Notification[]>([]);
+
+
 
 
 
@@ -64,7 +81,36 @@ export default function NotificationsPage(){
         loadNotifications();
 
 
+
+
+        const interval =
+
+            setInterval(()=>{
+
+
+                loadNotifications();
+
+
+
+            },10000);
+
+
+
+
+
+        return()=>{
+
+
+            clearInterval(interval);
+
+
+        };
+
+
+
     },[]);
+
+
 
 
 
@@ -79,16 +125,21 @@ export default function NotificationsPage(){
         try{
 
 
+
             const savedUser =
-                localStorage.getItem(
-                    "user"
-                );
+
+                localStorage.getItem("user");
+
+
+
 
 
 
             if(!savedUser){
 
+
                 return;
+
 
             }
 
@@ -96,21 +147,28 @@ export default function NotificationsPage(){
 
 
 
+
+
             const user =
-                JSON.parse(
-                    savedUser
-                );
+
+                JSON.parse(savedUser);
+
+
+
 
 
 
 
 
             const response =
+
                 await fetch(
 
-                    `${API_URL}/api/notifications/user/${user.id}`
+`${API_URL}/api/notifications/user/${user.id}`
 
                 );
+
+
 
 
 
@@ -121,7 +179,9 @@ export default function NotificationsPage(){
 
 
                 throw new Error(
+
                     "Failed to load notifications"
+
                 );
 
 
@@ -131,20 +191,89 @@ export default function NotificationsPage(){
 
 
 
+
+
             const data =
+
                 await response.json();
 
 
 
 
 
-            setNotifications(
-                data
-            );
+
+
+            setNotifications(data);
 
 
 
         }
+
+        catch(error){
+
+
+            console.log(error);
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async function markAsRead(
+
+        id:number
+
+    ){
+
+
+
+        try{
+
+
+
+            const response =
+
+                await fetch(
+
+`${API_URL}/api/notifications/${id}/read`,
+
+                    {
+
+                        method:"PUT"
+
+                    }
+
+                );
+
+
+
+
+
+
+            if(response.ok){
+
+
+                loadNotifications();
+
+
+            }
+
+
+
+
+
+        }
+
         catch(error){
 
 
@@ -164,246 +293,506 @@ export default function NotificationsPage(){
 
 
 
-    return(
+    function getNotificationIcon(
 
+        type:string
 
-    <ProtectedRoute>
+    ){
 
 
-        <main className="
-        min-h-screen
-        bg-slate-50
-        ">
 
+        switch(type){
 
-            <Navbar />
 
 
+            case "PICKUP_REQUEST":
 
+                return "🚚";
 
 
 
-            <div className="
-            mx-auto
-            max-w-4xl
-            px-6
-            py-10
-            ">
+            case "PICKUP_APPROVED":
 
+                return "✅";
 
 
 
+            case "PICKUP_REJECTED":
 
-                <div className="
-                rounded-3xl
-                bg-white
-                p-8
-                shadow-lg
-                border
-                border-slate-200
-                ">
+                return "❌";
 
 
 
-                    <h1 className="
-                    text-3xl
-                    font-bold
-                    text-slate-900
-                    ">
+            case "BLOOD_REQUEST":
 
-                        🔔 Notifications
+                return "🩸";
 
-                    </h1>
 
 
+            default:
 
-                    <p className="
-                    mt-2
-                    text-slate-500
-                    ">
+                return "🔔";
 
-                        Blood donation requests and important updates.
 
-                    </p>
 
+        }
 
 
+    }
 
 
 
 
 
 
-                    {
-                        notifications.length === 0 ?
 
 
-                        (
 
-                            <div className="
-                            mt-8
-                            rounded-xl
-                            bg-slate-50
-                            p-5
-                            text-slate-500
-                            ">
+    function getTypeName(
 
-                                No notifications available.
+        type:string
 
-                            </div>
+    ){
 
 
-                        )
 
-                        :
+        switch(type){
 
 
-                        (
 
-                            <div className="
-                            mt-8
-                            space-y-4
-                            ">
+            case "PICKUP_REQUEST":
 
+                return "Pickup Request";
 
-                            {
-                                notifications.map(
-                                    (
-                                        notification
-                                    )=>(
 
 
-                                    <div
+            case "PICKUP_APPROVED":
 
-                                    key={
-                                        notification.id
-                                    }
+                return "Pickup Approved";
 
-                                    className="
-                                    rounded-xl
-                                    border
-                                    border-emerald-200
-                                    bg-emerald-50
-                                    p-5
-                                    "
 
-                                    >
 
+            case "PICKUP_REJECTED":
 
+                return "Pickup Rejected";
 
 
-                                        <div className="
-                                        flex
-                                        justify-between
-                                        gap-3
-                                        ">
 
+            case "BLOOD_REQUEST":
 
+                return "Blood Request";
 
-                                            <h2 className="
-                                            font-bold
-                                            text-slate-900
-                                            ">
 
-                                                🩸 Blood Request Alert
 
-                                            </h2>
+            default:
 
+                return type;
 
 
-                                            <span className="
-                                            rounded-full
-                                            bg-emerald-700
-                                            px-3
-                                            py-1
-                                            text-xs
-                                            text-white
-                                            ">
 
-                                                {
-                                                    notification.type
-                                                }
+        }
 
-                                            </span>
 
+    }
 
 
-                                        </div>
 
 
 
 
 
 
-                                        <p className="
-                                        mt-3
-                                        text-slate-700
-                                        ">
 
-                                            {
-                                                notification.message
-                                            }
+return(
 
-                                        </p>
 
 
+<ProtectedRoute>
 
 
 
+<main className="
+min-h-screen
+bg-slate-50
+">
 
-                                        <p className="
-                                        mt-3
-                                        text-sm
-                                        text-slate-500
-                                        ">
 
-                                            {
-                                                notification.createdAt
-                                            }
 
-                                        </p>
+<Navbar />
 
 
 
 
 
-                                    </div>
 
 
-                                    )
+<div className="
+mx-auto
+max-w-4xl
+px-6
+py-10
+">
 
-                                )
 
-                            }
 
 
-                            </div>
 
 
-                        )
+<div className="
+rounded-3xl
+bg-white
+p-8
+shadow-lg
+border
+border-slate-200
+">
 
-                    }
 
 
 
 
 
-                </div>
+<h1 className="
+text-3xl
+font-bold
+text-slate-900
+">
 
+🔔 Notifications
 
+</h1>
 
 
-            </div>
 
 
 
-        </main>
 
 
-    </ProtectedRoute>
+<p className="
+mt-2
+text-slate-500
+">
 
+Stay updated with your community activities.
 
-    );
+</p>
+
+
+
+
+
+
+
+
+
+{
+
+notifications.length===0 ?
+
+
+
+<div className="
+mt-8
+rounded-xl
+bg-slate-50
+p-6
+text-center
+text-slate-500
+">
+
+No notifications available.
+
+</div>
+
+
+
+
+
+
+:
+
+
+
+<div className="
+mt-8
+space-y-4
+">
+
+
+{
+
+notifications.map(
+
+(notification)=>(
+
+
+
+<div
+
+key={notification.id}
+
+className={`
+
+rounded-2xl
+
+border
+
+p-5
+
+transition
+
+${
+
+notification.readStatus
+
+?
+
+"bg-white border-slate-200"
+
+:
+
+"bg-emerald-50 border-emerald-300 shadow"
+
+}
+
+`}
+
+>
+
+
+
+
+
+
+<div className="
+flex
+items-start
+justify-between
+gap-4
+">
+
+
+
+
+
+<div className="
+flex
+gap-3
+">
+
+
+
+
+
+<div className="
+text-3xl
+">
+
+{getNotificationIcon(
+
+notification.type
+
+)}
+
+</div>
+
+
+
+
+
+
+<div>
+
+
+
+<h2 className="
+font-bold
+text-slate-900
+">
+
+{getTypeName(
+
+notification.type
+
+)}
+
+</h2>
+
+
+
+
+
+<p className="
+mt-2
+text-slate-700
+">
+
+{notification.message}
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<span className="
+rounded-full
+bg-emerald-700
+px-3
+py-1
+text-xs
+font-semibold
+text-white
+">
+
+{notification.type}
+
+</span>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<div className="
+mt-4
+flex
+items-center
+justify-between
+">
+
+
+<p className="
+text-sm
+text-slate-500
+">
+
+{
+
+new Date(
+
+notification.createdAt
+
+).toLocaleString()
+
+}
+
+</p>
+
+
+
+
+
+
+{
+
+!notification.readStatus &&
+
+
+
+<button
+
+onClick={()=>markAsRead(
+
+notification.id
+
+)}
+
+className="
+rounded-lg
+bg-emerald-700
+px-4
+py-2
+text-sm
+font-semibold
+text-white
+hover:bg-emerald-800
+"
+
+>
+
+Mark as Read
+
+</button>
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+)
+
+
+)
+
+}
+
+
+
+</div>
+
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+</main>
+
+
+
+</ProtectedRoute>
+
+
+
+);
+
 
 
 }

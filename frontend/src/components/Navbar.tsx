@@ -3,20 +3,23 @@
 
 import Link from "next/link";
 
-import { 
-    useEffect, 
-    useState 
+import {
+    useEffect,
+    useState
 } from "react";
 
-import { 
-    useRouter 
+import {
+    useRouter
 } from "next/navigation";
 
 
 
 
 
+
 const API_URL =
+
+    process.env.NEXT_PUBLIC_API_URL ||
 
     "http://localhost:8080";
 
@@ -27,11 +30,13 @@ const API_URL =
 
 
 
-export default function Navbar() {
+
+export default function Navbar(){
 
 
 
     const router = useRouter();
+
 
 
 
@@ -68,6 +73,7 @@ export default function Navbar() {
     useEffect(()=>{
 
 
+
         const savedUser =
 
             localStorage.getItem("user");
@@ -76,7 +82,9 @@ export default function Navbar() {
 
 
 
+
         if(savedUser){
+
 
 
             const userData =
@@ -87,11 +95,7 @@ export default function Navbar() {
 
 
 
-            setUser(
-
-                userData
-
-            );
+            setUser(userData);
 
 
 
@@ -104,38 +108,102 @@ export default function Navbar() {
             );
 
 
-        }
 
 
 
 
 
 
-        const savedModule =
 
-            localStorage.getItem("activeModule");
+            const interval =
 
-
-
+                setInterval(()=>{
 
 
-        if(savedModule){
+
+                    loadUnreadCount(
+
+                        userData.id
+
+                    );
 
 
-            setActiveModule(
 
-                savedModule
+                },10000);
+
+
+
+
+
+
+
+
+
+            const refreshHandler = () => {
+
+
+                loadUnreadCount(
+
+                    userData.id
+
+                );
+
+
+            };
+
+
+
+
+
+
+            window.addEventListener(
+
+                "notificationUpdate",
+
+                refreshHandler
 
             );
 
 
-        }
 
+
+
+
+
+
+
+            return()=>{
+
+
+                clearInterval(interval);
+
+
+
+
+
+                window.removeEventListener(
+
+                    "notificationUpdate",
+
+                    refreshHandler
+
+                );
+
+
+            };
+
+
+
+        }
 
 
 
 
     },[]);
+
+
+
+
 
 
 
@@ -152,14 +220,16 @@ export default function Navbar() {
     ){
 
 
+
         try{
+
 
 
             const response =
 
                 await fetch(
 
-                    `${API_URL}/api/notifications/unread-count/${userId}`
+`${API_URL}/api/notifications/unread-count/${userId}`
 
                 );
 
@@ -167,11 +237,15 @@ export default function Navbar() {
 
 
 
+
             if(!response.ok){
+
 
                 return;
 
+
             }
+
 
 
 
@@ -185,6 +259,7 @@ export default function Navbar() {
 
 
 
+
             setUnreadCount(
 
                 data.count
@@ -193,15 +268,19 @@ export default function Navbar() {
 
 
 
+
         }
 
         catch(error){
 
 
+
             console.log(error);
 
 
+
         }
+
 
 
     }
@@ -226,7 +305,11 @@ export default function Navbar() {
 
 
 
-    const handleLogout = () => {
+
+
+
+    const handleLogout =()=>{
+
 
 
         localStorage.removeItem("user");
@@ -235,11 +318,14 @@ export default function Navbar() {
 
 
 
+
         setUser(null);
 
         setActiveModule("");
 
         setUnreadCount(0);
+
+
 
 
 
@@ -256,7 +342,7 @@ export default function Navbar() {
 
 
 
-    const handleBackToMain = () => {
+    const handleBackToMain =()=>{
 
 
         localStorage.removeItem(
@@ -284,7 +370,7 @@ export default function Navbar() {
 
 
 
-    const handleLogoClick = () => {
+    const handleLogoClick =()=>{
 
 
         localStorage.removeItem(
@@ -309,7 +395,7 @@ export default function Navbar() {
 
 
 
-    return (
+return(
 
 
 
@@ -322,6 +408,9 @@ border-slate-200
 bg-white/95
 backdrop-blur
 ">
+
+
+
 
 
 <div className="
@@ -339,6 +428,7 @@ py-4
 
 
 
+
 <Link
 
 href="/"
@@ -348,6 +438,8 @@ onClick={handleLogoClick}
 className="flex items-center gap-2"
 
 >
+
+
 
 
 <div className="
@@ -387,6 +479,7 @@ EcoKnot
 
 
 
+
 <p className="
 text-xs
 text-slate-500
@@ -401,6 +494,7 @@ Community Connected
 </div>
 
 
+
 </Link>
 
 
@@ -410,12 +504,16 @@ Community Connected
 
 
 
-< nav className="
+
+<nav className="
 hidden
 items-center
 gap-7
 lg:flex
 ">
+
+
+
 {
 
 isBloodSection ?
@@ -445,8 +543,6 @@ hover:text-emerald-700
 
 
 
-
-
 <Link
 
 href="/blood-donation"
@@ -467,8 +563,6 @@ text-emerald-700
 
 
 
-
-
 <Link
 
 href="/my-requests"
@@ -477,7 +571,6 @@ className="
 text-sm
 font-medium
 text-slate-600
-hover:text-emerald-700
 "
 
 >
@@ -485,8 +578,6 @@ hover:text-emerald-700
 📋 My Requests
 
 </Link>
-
-
 
 
 
@@ -500,7 +591,6 @@ className="
 text-sm
 font-medium
 text-slate-600
-hover:text-emerald-700
 "
 
 >
@@ -508,8 +598,6 @@ hover:text-emerald-700
 ❤️ My Donations
 
 </Link>
-
-
 
 
 
@@ -523,7 +611,6 @@ className="
 text-sm
 font-medium
 text-slate-600
-hover:text-emerald-700
 "
 
 >
@@ -531,8 +618,6 @@ hover:text-emerald-700
 🩸 Donation History
 
 </Link>
-
-
 
 
 
@@ -546,7 +631,6 @@ className="
 text-sm
 font-medium
 text-slate-600
-hover:text-emerald-700
 "
 
 >
@@ -554,9 +638,6 @@ hover:text-emerald-700
 🌎 Resources
 
 </Link>
-
-
-
 
 
 
@@ -570,16 +651,13 @@ className="
 text-sm
 font-medium
 text-slate-600
-hover:text-emerald-700
 "
 
 >
 
- Relief Hub
+🌱 Relief Hub
 
 </Link>
-
-
 
 
 
@@ -593,7 +671,6 @@ className="
 text-sm
 font-medium
 text-slate-600
-hover:text-emerald-700
 "
 
 >
@@ -604,15 +681,18 @@ hover:text-emerald-700
 
 
 
-
 </>
+
+
 
 :
 
+
+
 <>
 
- 
- 
+
+
 <Link
 
 href="/"
@@ -641,7 +721,6 @@ className="
 text-sm
 font-medium
 text-slate-600
-hover:text-emerald-700
 "
 
 >
@@ -649,9 +728,6 @@ hover:text-emerald-700
 Blood Donation
 
 </Link>
-
-
-
 
 
 
@@ -665,7 +741,6 @@ className="
 text-sm
 font-medium
 text-slate-600
-hover:text-emerald-700
 "
 
 >
@@ -673,9 +748,6 @@ hover:text-emerald-700
 Campaigns
 
 </Link>
-
-
-
 
 
 
@@ -689,7 +761,6 @@ className="
 text-sm
 font-medium
 text-slate-600
-hover:text-emerald-700
 "
 
 >
@@ -697,9 +768,6 @@ hover:text-emerald-700
 🌎 Resources
 
 </Link>
-
-
-
 
 
 
@@ -713,17 +781,13 @@ className="
 text-sm
 font-medium
 text-slate-600
-hover:text-emerald-700
 "
 
 >
 
- Relief Hub
+🌱 Relief Hub
 
 </Link>
-
-
-
 
 
 
@@ -737,7 +801,6 @@ className="
 text-sm
 font-medium
 text-slate-600
-hover:text-emerald-700
 "
 
 >
@@ -748,15 +811,21 @@ Academic Hub
 
 
 
-
-
 </>
+
 
 
 }
 
 
+
 </nav>
+
+
+
+
+
+
 
 
 
@@ -777,8 +846,8 @@ gap-3
 user ?
 
 
-
 <>
+
 
 
 <Link
@@ -801,13 +870,36 @@ title="Notifications"
 >
 
 
+
+<span
+
+className={
+
+unreadCount > 0
+
+?
+
+"animate-pulse"
+
+:
+
+""
+
+}
+
+>
+
 🔔
+
+</span>
+
+
+
 
 
 
 
 {
-
 
 unreadCount > 0 &&
 
@@ -816,8 +908,8 @@ unreadCount > 0 &&
 
 className="
 absolute
--right-1
--top-1
+right-0
+top-0
 flex
 h-5
 w-5
@@ -837,12 +929,12 @@ text-white
 </span>
 
 
+
 }
 
 
 
 </Link>
-
 
 
 
@@ -862,8 +954,6 @@ sm:block
 {user.name}
 
 </span>
-
-
 
 
 
@@ -891,6 +981,7 @@ hover:bg-slate-100
 Profile
 
 </button>
+
 
 
 </Link>
@@ -924,6 +1015,8 @@ Logout
 
 </button>
 
+
+
 </>
 
 
@@ -949,7 +1042,6 @@ py-2
 text-sm
 font-semibold
 text-slate-700
-hover:bg-slate-100
 sm:block
 "
 
@@ -960,9 +1052,8 @@ Log In
 </button>
 
 
+
 </Link>
-
-
 
 
 
@@ -992,6 +1083,7 @@ Sign Up
 </button>
 
 
+
 </Link>
 
 
@@ -1004,8 +1096,6 @@ Sign Up
 
 
 
-
-
 </div>
 
 
@@ -1013,10 +1103,15 @@ Sign Up
 
 
 
+
 </div>
+
+
+
 
 
 </header>
+
 
 
 );
