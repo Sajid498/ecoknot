@@ -71,6 +71,42 @@ export default function ResourcePage(){
 
 
 
+    const [selectedCategory,setSelectedCategory] =
+
+        useState("All");
+
+
+
+
+
+
+
+
+
+    const categories = [
+
+
+        "All",
+
+        "Education",
+
+        "Environment",
+
+        "Donation",
+
+        "Technology",
+
+        "Emergency",
+
+        "Others"
+
+
+    ];
+
+
+
+
+
 
 
 
@@ -103,6 +139,9 @@ export default function ResourcePage(){
 
 
     },[]);
+
+
+
 
 
 
@@ -455,6 +494,8 @@ export default function ResourcePage(){
 
 
 
+
+
     const communityPosts =
 
         resources.filter(
@@ -464,6 +505,7 @@ export default function ResourcePage(){
             resource.userId !== user?.id
 
         );
+
 
 
 
@@ -490,6 +532,39 @@ export default function ResourcePage(){
 
 
 
+    const filteredPosts =
+
+
+        selectedCategory === "All"
+
+
+        ?
+
+
+        displayedPosts
+
+
+        :
+
+
+        displayedPosts.filter(
+
+
+            resource =>
+
+
+            resource.category === selectedCategory
+
+
+        );
+
+
+
+
+
+
+
+
 
 
 
@@ -502,6 +577,8 @@ bg-slate-50
 p-6
 md:p-10
 ">
+
+
 
 
 
@@ -523,6 +600,9 @@ justify-between
 ">
 
 
+
+
+
 <div>
 
 
@@ -534,6 +614,7 @@ font-bold
 🌎 Resource Sharing
 
 </h1>
+
 
 
 
@@ -580,6 +661,7 @@ hover:bg-emerald-800
 
 
 
+
 </div>
 
 
@@ -595,6 +677,7 @@ mt-8
 flex
 gap-4
 ">
+
 
 
 
@@ -630,6 +713,7 @@ My Posts
 
 
 
+
 <button
 
 onClick={()=>setActiveTab("community")}
@@ -658,6 +742,83 @@ Community Posts
 
 
 
+
+</div>
+
+
+
+
+
+
+
+
+
+<div className="
+mt-6
+flex
+flex-wrap
+gap-3
+">
+
+
+
+
+
+{
+
+categories.map(
+
+(category)=>(
+
+
+<button
+
+
+key={category}
+
+
+onClick={()=>setSelectedCategory(category)}
+
+
+
+className={
+
+selectedCategory===category
+
+?
+
+"rounded-full bg-emerald-700 px-4 py-2 text-white font-semibold"
+
+:
+
+"rounded-full bg-white px-4 py-2 font-semibold shadow"
+
+}
+
+
+>
+
+{category}
+
+
+</button>
+
+
+
+)
+
+
+)
+
+
+}
+
+
+
+
+
+
+
 </div>
 
 
@@ -677,9 +838,11 @@ space-y-6
 
 
 
+
 {
 
 loading ?
+
 
 
 <div className="
@@ -697,13 +860,14 @@ Loading resources...
 
 
 
+
+
 :
 
 
 
+filteredPosts.length===0 ?
 
-
-displayedPosts.length===0 ?
 
 
 <div className="
@@ -721,15 +885,16 @@ No posts available.
 
 
 
+
+
 :
 
 
 
-
-
-displayedPosts.map(
+filteredPosts.map(
 
 (resource)=>(
+
 
 
 <ResourceCard
@@ -741,16 +906,21 @@ key={resource.id}
 resource={resource}
 
 
+
 onLike={()=>handleLike(resource.id)}
+
 
 
 onShare={()=>handleShare(resource.id)}
 
 
+
 onDelete={handleDelete}
 
 
+
 />
+
 
 
 )
@@ -767,15 +937,20 @@ onDelete={handleDelete}
 
 
 
+
+</div>
+
+
+
+
+
+
+
+
 </div>
 
 
 
-
-
-
-
-</div>
 
 
 </main>
