@@ -10,6 +10,7 @@ import backend.dto.PickupRequestDTO;
 import backend.entity.PickupRequest;
 import backend.entity.PickupStatus;
 import backend.entity.RescueDonation;
+import backend.entity.RescueStatus;
 import backend.entity.User;
 import backend.repository.PickupRequestRepository;
 import backend.repository.RescueDonationRepository;
@@ -18,10 +19,8 @@ import backend.repository.UserRepository;
 
 
 
-
 @Service
 public class PickupRequestService {
-
 
 
 
@@ -36,9 +35,6 @@ public class PickupRequestService {
 
 
     private final NotificationService notificationService;
-
-
-
 
 
 
@@ -76,7 +72,6 @@ public class PickupRequestService {
 
 
 
-
     // Volunteer requests pickup
 
     public PickupRequestDTO createPickupRequest(
@@ -86,7 +81,6 @@ public class PickupRequestService {
             Long volunteerId
 
     ){
-
 
 
         RescueDonation rescue =
@@ -104,8 +98,6 @@ public class PickupRequestService {
                         )
 
                 );
-
-
 
 
 
@@ -131,13 +123,9 @@ public class PickupRequestService {
 
 
 
-
-
         PickupRequest request =
 
                 new PickupRequest();
-
-
 
 
 
@@ -153,15 +141,11 @@ public class PickupRequestService {
 
 
 
-
-
         request.setVolunteer(
 
                 volunteer
 
         );
-
-
 
 
 
@@ -177,15 +161,11 @@ public class PickupRequestService {
 
 
 
-
-
         request.setRequestedAt(
 
                 LocalDateTime.now()
 
         );
-
-
 
 
 
@@ -206,8 +186,7 @@ public class PickupRequestService {
 
 
 
-
-        // Notify donation owner
+        // Notify donor
 
         notificationService.createNotification(
 
@@ -232,9 +211,7 @@ public class PickupRequestService {
 
 
 
-
         return convertToDTO(saved);
-
 
 
     }
@@ -256,7 +233,6 @@ public class PickupRequestService {
     ){
 
 
-
         User volunteer =
 
                 userRepository
@@ -272,8 +248,6 @@ public class PickupRequestService {
                         )
 
                 );
-
-
 
 
 
@@ -309,7 +283,6 @@ public class PickupRequestService {
     ){
 
 
-
         return pickupRequestRepository
 
                 .findByRescueDonationId(rescueId)
@@ -340,12 +313,9 @@ public class PickupRequestService {
     ){
 
 
-
         PickupRequest request =
 
                 getRequest(requestId);
-
-
 
 
 
@@ -361,15 +331,11 @@ public class PickupRequestService {
 
 
 
-
-
         request.setApprovedAt(
 
                 LocalDateTime.now()
 
         );
-
-
 
 
 
@@ -389,10 +355,6 @@ public class PickupRequestService {
 
 
 
-
-
-        // Notify volunteer
-
         notificationService.createNotification(
 
 
@@ -409,7 +371,6 @@ public class PickupRequestService {
                 "PICKUP_APPROVED"
 
         );
-
 
 
 
@@ -439,12 +400,9 @@ public class PickupRequestService {
     ){
 
 
-
         PickupRequest request =
 
                 getRequest(requestId);
-
-
 
 
 
@@ -460,8 +418,6 @@ public class PickupRequestService {
 
 
 
-
-
         PickupRequest saved =
 
                 pickupRequestRepository.save(
@@ -469,8 +425,6 @@ public class PickupRequestService {
                         request
 
                 );
-
-
 
 
 
@@ -501,7 +455,6 @@ public class PickupRequestService {
 
 
 
-
         return convertToDTO(saved);
 
 
@@ -524,12 +477,9 @@ public class PickupRequestService {
     ){
 
 
-
         PickupRequest request =
 
                 getRequest(requestId);
-
-
 
 
 
@@ -545,8 +495,6 @@ public class PickupRequestService {
 
 
 
-
-
         PickupRequest saved =
 
                 pickupRequestRepository.save(
@@ -554,6 +502,32 @@ public class PickupRequestService {
                         request
 
                 );
+
+
+
+
+
+
+        notificationService.createNotification(
+
+
+                request.getRescueDonation()
+
+                .getUser()
+
+                .getId(),
+
+
+                "Your donation "
+
+                + request.getRescueDonation().getTitle()
+
+                + " has been picked up.",
+
+
+                "PICKUP_COMPLETED"
+
+        );
 
 
 
@@ -583,12 +557,9 @@ public class PickupRequestService {
     ){
 
 
-
         PickupRequest request =
 
                 getRequest(requestId);
-
-
 
 
 
@@ -599,8 +570,6 @@ public class PickupRequestService {
                 PickupStatus.DELIVERED
 
         );
-
-
 
 
 
@@ -618,6 +587,36 @@ public class PickupRequestService {
 
 
 
+        // Update relief status
+
+        RescueDonation rescue =
+
+                request.getRescueDonation();
+
+
+
+
+        rescue.setStatus(
+
+                RescueStatus.DELIVERED
+
+        );
+
+
+
+
+        rescueDonationRepository.save(
+
+                rescue
+
+        );
+
+
+
+
+
+
+
         PickupRequest saved =
 
                 pickupRequestRepository.save(
@@ -625,6 +624,33 @@ public class PickupRequestService {
                         request
 
                 );
+
+
+
+
+
+
+
+
+        // Notify donor
+
+        notificationService.createNotification(
+
+
+                rescue.getUser().getId(),
+
+
+                "Your donation "
+
+                + rescue.getTitle()
+
+                + " has been delivered successfully.",
+
+
+                "DELIVERY_COMPLETE"
+
+        );
+
 
 
 
@@ -650,7 +676,6 @@ public class PickupRequestService {
             Long id
 
     ){
-
 
 
         return pickupRequestRepository
@@ -685,7 +710,6 @@ public class PickupRequestService {
     ){
 
 
-
         User volunteer =
 
                 request.getVolunteer();
@@ -694,13 +718,9 @@ public class PickupRequestService {
 
 
 
-
-
         RescueDonation rescue =
 
                 request.getRescueDonation();
-
-
 
 
 
@@ -719,8 +739,6 @@ public class PickupRequestService {
                         volunteer.getLocation()
 
                 );
-
-
 
 
 
@@ -746,8 +764,6 @@ public class PickupRequestService {
 
 
 
-
-
         return new PickupRequestDTO(
 
                 request.getId(),
@@ -768,9 +784,6 @@ public class PickupRequestService {
 
 
     }
-
-
-
 
 
 }
