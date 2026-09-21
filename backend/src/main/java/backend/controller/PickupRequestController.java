@@ -3,9 +3,14 @@ package backend.controller;
 
 import java.util.List;
 
-
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import backend.entity.PickupRequest;
 import backend.service.PickupRequestService;
@@ -30,6 +35,7 @@ public class PickupRequestController {
 
 
 
+
     public PickupRequestController(
 
             PickupRequestService pickupRequestService
@@ -48,11 +54,11 @@ public class PickupRequestController {
 
 
 
-    // Volunteer requests pickup
+    // Volunteer request pickup
 
     @PostMapping
 
-    public PickupRequest createPickupRequest(
+    public PickupRequest createPickup(
 
             @RequestParam Long rescueId,
 
@@ -134,7 +140,7 @@ public class PickupRequestController {
 
 
 
-    // Approve request
+    // Approve pickup request
 
     @PutMapping("/{id}/approve")
 
@@ -160,7 +166,33 @@ public class PickupRequestController {
 
 
 
-    // Mark picked up
+    // Reject pickup request
+
+    @PutMapping("/{id}/reject")
+
+    public PickupRequest rejectRequest(
+
+            @PathVariable Long id
+
+    ){
+
+
+        return pickupRequestService
+
+                .rejectRequest(id);
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // Volunteer picked up item
 
     @PutMapping("/{id}/pickup")
 
@@ -186,7 +218,7 @@ public class PickupRequestController {
 
 
 
-    // Mark delivered
+    // Delivery completed
 
     @PutMapping("/{id}/deliver")
 
@@ -203,8 +235,6 @@ public class PickupRequestController {
 
 
     }
-
-
 
 
 

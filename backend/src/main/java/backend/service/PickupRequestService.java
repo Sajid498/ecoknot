@@ -40,6 +40,7 @@ public class PickupRequestService {
 
 
 
+
     public PickupRequestService(
 
             PickupRequestRepository pickupRequestRepository,
@@ -101,7 +102,6 @@ public class PickupRequestService {
 
 
 
-
         User volunteer =
 
                 userRepository
@@ -123,11 +123,9 @@ public class PickupRequestService {
 
 
 
-
         PickupRequest request =
 
                 new PickupRequest();
-
 
 
 
@@ -145,13 +143,11 @@ public class PickupRequestService {
 
 
 
-
         request.setVolunteer(
 
                 volunteer
 
         );
-
 
 
 
@@ -169,13 +165,11 @@ public class PickupRequestService {
 
 
 
-
         request.setRequestedAt(
 
                 LocalDateTime.now()
 
         );
-
 
 
 
@@ -230,7 +224,6 @@ public class PickupRequestService {
 
 
 
-
         return pickupRequestRepository
 
                 .findByVolunteer(
@@ -257,6 +250,7 @@ public class PickupRequestService {
             Long rescueId
 
     ){
+
 
 
         return pickupRequestRepository
@@ -297,13 +291,11 @@ public class PickupRequestService {
 
 
 
-
         request.setStatus(
 
                 PickupStatus.APPROVED
 
         );
-
 
 
 
@@ -316,6 +308,52 @@ public class PickupRequestService {
 
         );
 
+
+
+
+
+
+        return pickupRequestRepository.save(
+
+                request
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // Reject pickup request
+
+    public PickupRequest rejectRequest(
+
+            Long requestId
+
+    ){
+
+
+
+        PickupRequest request =
+
+                getRequest(requestId);
+
+
+
+
+
+
+        request.setStatus(
+
+                PickupStatus.REJECTED
+
+        );
 
 
 
@@ -358,13 +396,11 @@ public class PickupRequestService {
 
 
 
-
         request.setStatus(
 
                 PickupStatus.PICKED_UP
 
         );
-
 
 
 
@@ -407,7 +443,6 @@ public class PickupRequestService {
 
 
 
-
         request.setStatus(
 
                 PickupStatus.DELIVERED
@@ -419,13 +454,11 @@ public class PickupRequestService {
 
 
 
-
         request.setCompletedAt(
 
                 LocalDateTime.now()
 
         );
-
 
 
 
@@ -454,6 +487,7 @@ public class PickupRequestService {
             Long id
 
     ){
+
 
 
         return pickupRequestRepository
