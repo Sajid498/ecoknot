@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import Navbar from "@/components/Navbar";
 import BloodDonationNavbar from "@/components/BloodDonationNavbar";
 
 
@@ -176,7 +175,7 @@ export default function DonationHistoryPage() {
             {/* PERMANENT MAIN NAVBAR */}
             {/* ========================= */}
 
-            <Navbar />
+      
 
 
             {/* ========================= */}

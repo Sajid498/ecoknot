@@ -472,7 +472,23 @@ export default function Navbar() {
 
                     </Link>
 
+{/* CAMPAIGNS */}
 
+<Link
+
+    href="/fundraising"
+
+    onClick={closeProfileMenu}
+
+    className={navClass(
+        "/fundraising"
+    )}
+
+>
+
+    🤝 Campaigns
+
+</Link>
 
                     {/* DASHBOARD */}
 

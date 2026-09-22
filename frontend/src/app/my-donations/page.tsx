@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
-import Navbar from "@/components/Navbar";
+
 import BloodDonationNavbar from "@/components/BloodDonationNavbar";
 
 
@@ -183,7 +183,7 @@ export default function MyDonationsPage() {
                 {/* PERMANENT MAIN NAVBAR */}
                 {/* ========================= */}
 
-                <Navbar />
+                
 
 
                 {/* ========================= */}

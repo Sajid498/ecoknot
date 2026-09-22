@@ -12,10 +12,8 @@ import Navbar from "@/components/Navbar";
 import BloodDonationNavbar from "@/components/BloodDonationNavbar";
 
 
+import ReliefNavbar from "@/components/ReliefNavbar";
 
-// Future imports will be added later
-// import ReliefNavbar from "@/components/ReliefNavbar";
-// import TimeBankNavbar from "@/components/TimeBankNavbar";
 
 
 
@@ -31,6 +29,8 @@ export default function AppNavigation(){
     const pathname =
 
         usePathname();
+
+
 
 
 
@@ -83,13 +83,54 @@ export default function AppNavigation(){
 
 
 
+    function showReliefNavbar(){
+
+
+        return (
+
+            pathname.startsWith(
+                "/rescue"
+            )
+
+            ||
+
+            pathname.startsWith(
+                "/my-relief-posts"
+            )
+
+            ||
+
+            pathname.startsWith(
+                "/pickup-requests"
+            )
+
+            ||
+
+            pathname.startsWith(
+                "/nearby-relief"
+            )
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
     return(
 
 
         <>
 
 
-            {/* Always visible */}
+
+            {/* Global Navbar */}
 
             <Navbar />
 
@@ -97,10 +138,12 @@ export default function AppNavigation(){
 
 
 
-            {/* Blood Module Navigation */}
 
+
+            {/* Blood Module Navbar */}
 
             {
+
                 showBloodNavbar()
 
                 &&
@@ -108,6 +151,26 @@ export default function AppNavigation(){
                 <BloodDonationNavbar />
 
             }
+
+
+
+
+
+
+
+            {/* Relief Module Navbar */}
+
+            {
+
+                showReliefNavbar()
+
+                &&
+
+                <ReliefNavbar />
+
+            }
+
+
 
 
 
