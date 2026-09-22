@@ -3,8 +3,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import BloodDonationNavbar from "@/components/BloodDonationNavbar";
-import Navbar from "@/components/Navbar";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 
@@ -1463,8 +1461,8 @@ export default function DonorPage(){
         ">
 
 
-            <Navbar />
-            <BloodDonationNavbar />
+    
+        
 
 
 

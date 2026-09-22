@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-import BloodDonationNavbar from "@/components/BloodDonationNavbar";
+
 
 
 const API_URL =
@@ -190,7 +190,7 @@ export default function MyDonationsPage() {
                 {/* BLOOD MODULE NAVBAR */}
                 {/* ========================= */}
 
-                <BloodDonationNavbar />
+        
 
 
                 {/* ========================= */}

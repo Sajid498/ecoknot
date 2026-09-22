@@ -17,7 +17,7 @@ import Link from "next/link";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 
-import Navbar from "@/components/Navbar";
+
 
 
 
@@ -367,7 +367,7 @@ bg-slate-50
 ">
 
 
-<Navbar />
+
 
 
 

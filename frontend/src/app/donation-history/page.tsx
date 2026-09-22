@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import BloodDonationNavbar from "@/components/BloodDonationNavbar";
 
 
 const API_URL =
@@ -182,7 +181,7 @@ export default function DonationHistoryPage() {
             {/* BLOOD MODULE NAVBAR */}
             {/* ========================= */}
 
-            <BloodDonationNavbar />
+
 
 
             {/* ========================= */}
