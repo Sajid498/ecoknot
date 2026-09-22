@@ -372,29 +372,69 @@ export default function ReliefNavbar(){
 
                 {/* MY POSTS */}
 
-                <Link
+                {/* MY POSTS */}
 
-                    href="/rescue"
+<Link
 
-                    className={
+    href="/rescue/my-posts"
 
-                        navClass(
+    className={
 
-                            "/rescue"
+        navClass(
 
-                        )
+            "/rescue/my-posts"
 
-                    }
+        )
 
-                >
+    }
 
-
-                    📦 My Posts
-
+>
 
 
+    📦 My Posts
 
-                </Link>
+
+
+    {
+
+
+        isActive(
+
+            "/rescue/my-posts"
+
+        )
+
+        &&
+
+
+        <span
+
+            className="
+
+            absolute
+
+            bottom-0
+
+            left-3
+
+            right-3
+
+            h-0.5
+
+            rounded-full
+
+            bg-emerald-600
+
+            "
+
+        />
+
+
+    }
+
+
+
+</Link>
 
 
 
