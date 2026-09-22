@@ -145,8 +145,6 @@ function calculateRemainingTime(){
 
 
 
-
-
     const expiry =
 
         new Date(
@@ -190,7 +188,6 @@ function calculateRemainingTime(){
 
 
     }
-
 
 
 
@@ -246,6 +243,7 @@ function calculateRemainingTime(){
 
 
 
+
     if(hours < 24){
 
 
@@ -269,7 +267,6 @@ function calculateRemainingTime(){
 
 
     }
-
 
 
 }
@@ -302,7 +299,6 @@ useEffect(()=>{
 
 
 
-
     return()=>{
 
 
@@ -313,6 +309,31 @@ useEffect(()=>{
 
 
 },[]);
+
+
+
+
+
+
+
+
+
+
+// Check whether current user owns this relief post
+
+function isOwnPost(){
+
+
+    return (
+
+        user &&
+
+        user.id === rescue.userId
+
+    );
+
+
+}
 
 
 
@@ -348,14 +369,12 @@ async function requestPickup(){
 
 
 
-    // Prevent owner from requesting own donation
-
-    if(user.id === rescue.userId){
+    if(isOwnPost()){
 
 
         setPickupMessage(
 
-            "You cannot request pickup for your own donation"
+            "You cannot request pickup for your own relief post"
 
         );
 
@@ -396,9 +415,10 @@ async function requestPickup(){
 
 
 
+        const data =
 
+            await response.json();
 
-        const data = await response.json();
 
 
 
@@ -439,9 +459,7 @@ async function requestPickup(){
     catch(error){
 
 
-
         console.log(error);
-
 
 
         setPickupMessage(
@@ -593,15 +611,6 @@ function getExpiryStyle(){
 
 
 }
-
-
-
-
-
-
-
-
-
 return(
 
 
@@ -821,6 +830,9 @@ items-center
 gap-2
 ">
 
+
+
+
 ⏳ Remaining Time:
 
 
@@ -881,9 +893,36 @@ text-slate-900
 
 
 
+
+
+
+
 {
 
-user?.id !== rescue.userId &&
+/*
+
+    Pickup button
+
+    Rules:
+
+    1. Owner cannot request own post
+
+    2. Only AVAILABLE posts can receive requests
+
+    3. Other users can request pickup
+
+*/
+
+}
+
+
+
+
+{
+
+!isOwnPost()
+
+&&
 
 
 <button
@@ -891,26 +930,56 @@ user?.id !== rescue.userId &&
 onClick={requestPickup}
 
 disabled={
-    rescue.status !== "AVAILABLE"
+
+rescue.status !== "AVAILABLE"
+
 }
 
 className="
+
 mt-5
+
 w-full
+
 rounded-xl
+
 bg-emerald-700
+
 px-5
+
 py-3
+
 font-semibold
+
 text-white
+
 transition
+
 hover:bg-emerald-800
+
+disabled:cursor-not-allowed
+
 disabled:bg-gray-300
+
 "
 
 >
 
-🚚 Request Pickup
+{
+
+rescue.status !== "AVAILABLE"
+
+?
+
+"Pickup unavailable"
+
+:
+
+"🚚 Request Pickup"
+
+}
+
+
 
 </button>
 
@@ -927,20 +996,30 @@ disabled:bg-gray-300
 
 {
 
-user?.id === rescue.userId &&
+isOwnPost()
+
+&&
 
 
 <div className="
+
 mt-5
+
 rounded-xl
+
 bg-slate-100
+
 p-3
+
 text-center
+
 font-semibold
+
 text-slate-600
+
 ">
 
-👑 This is your donation
+👑 This is your relief post
 
 </div>
 
@@ -961,11 +1040,17 @@ pickupMessage &&
 
 
 <p className="
+
 mt-3
+
 text-center
+
 text-sm
+
 font-semibold
+
 text-emerald-700
+
 ">
 
 {pickupMessage}
