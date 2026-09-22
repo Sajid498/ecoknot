@@ -15,6 +15,9 @@ import BloodDonationNavbar from "@/components/BloodDonationNavbar";
 import ReliefNavbar from "@/components/ReliefNavbar";
 
 
+import FundraisingNavbar from "@/components/FundraisingNavbar";
+
+
 
 
 
@@ -29,6 +32,7 @@ export default function AppNavigation(){
     const pathname =
 
         usePathname();
+
 
 
 
@@ -123,6 +127,28 @@ export default function AppNavigation(){
 
 
 
+    function showFundraisingNavbar(){
+
+
+        return (
+
+            pathname.startsWith(
+                "/fundraising"
+            )
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
     return(
 
 
@@ -133,6 +159,7 @@ export default function AppNavigation(){
             {/* Global Navbar */}
 
             <Navbar />
+
 
 
 
@@ -158,6 +185,8 @@ export default function AppNavigation(){
 
 
 
+
+
             {/* Relief Module Navbar */}
 
             {
@@ -167,6 +196,26 @@ export default function AppNavigation(){
                 &&
 
                 <ReliefNavbar />
+
+            }
+
+
+
+
+
+
+
+
+
+            {/* Fundraising Module Navbar */}
+
+            {
+
+                showFundraisingNavbar()
+
+                &&
+
+                <FundraisingNavbar />
 
             }
 

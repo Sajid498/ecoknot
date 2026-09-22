@@ -77,146 +77,183 @@ public class PickupRequestService {
 
     // Volunteer requests pickup
 
-    public PickupRequestDTO createPickupRequest(
+public PickupRequestDTO createPickupRequest(
 
-            Long rescueId,
+        Long rescueId,
 
-            Long volunteerId
+        Long volunteerId
+
+){
+
+
+    RescueDonation rescue =
+
+            rescueDonationRepository
+
+            .findById(rescueId)
+
+            .orElseThrow(
+
+                    () -> new RuntimeException(
+
+                            "Relief post not found"
+
+                    )
+
+            );
+
+
+
+
+
+    User volunteer =
+
+            userRepository
+
+            .findById(volunteerId)
+
+            .orElseThrow(
+
+                    () -> new RuntimeException(
+
+                            "Volunteer not found"
+
+                    )
+
+            );
+
+
+
+
+
+
+
+    /*
+     * Security validation
+     *
+     * A user cannot request pickup
+     * from their own relief post
+     */
+
+    if(
+
+        rescue.getUser()
+
+              .getId()
+
+              .equals(volunteerId)
 
     ){
 
 
-        RescueDonation rescue =
+        throw new RuntimeException(
 
-                rescueDonationRepository
-
-                .findById(rescueId)
-
-                .orElseThrow(
-
-                        () -> new RuntimeException(
-
-                                "Relief post not found"
-
-                        )
-
-                );
-
-
-
-
-
-        User volunteer =
-
-                userRepository
-
-                .findById(volunteerId)
-
-                .orElseThrow(
-
-                        () -> new RuntimeException(
-
-                                "Volunteer not found"
-
-                        )
-
-                );
-
-
-
-
-
-        PickupRequest request =
-
-                new PickupRequest();
-
-
-
-
-
-        request.setRescueDonation(
-
-                rescue
+                "You cannot request pickup for your own relief post"
 
         );
-
-
-
-
-
-        request.setVolunteer(
-
-                volunteer
-
-        );
-
-
-
-
-
-        request.setStatus(
-
-                PickupStatus.PENDING
-
-        );
-
-
-
-
-
-        request.setRequestedAt(
-
-                LocalDateTime.now()
-
-        );
-
-
-
-
-
-        PickupRequest saved =
-
-                pickupRequestRepository.save(
-
-                        request
-
-                );
-
-
-
-
-
-
-
-
-
-        notificationService.createNotification(
-
-
-                rescue.getUser().getId(),
-
-
-                volunteer.getName()
-
-                + " requested pickup for your relief donation: "
-
-                + rescue.getTitle(),
-
-
-                "PICKUP_REQUEST"
-
-        );
-
-
-
-
-
-
-
-        return convertToDTO(saved);
 
 
     }
+
+
+
+
+
+
+
+
+
+    PickupRequest request =
+
+            new PickupRequest();
+
+
+
+
+
+    request.setRescueDonation(
+
+            rescue
+
+    );
+
+
+
+
+
+    request.setVolunteer(
+
+            volunteer
+
+    );
+
+
+
+
+
+    request.setStatus(
+
+            PickupStatus.PENDING
+
+    );
+
+
+
+
+
+    request.setRequestedAt(
+
+            LocalDateTime.now()
+
+    );
+
+
+
+
+
+    PickupRequest saved =
+
+            pickupRequestRepository.save(
+
+                    request
+
+            );
+
+
+
+
+
+
+
+
+
+    notificationService.createNotification(
+
+
+            rescue.getUser().getId(),
+
+
+            volunteer.getName()
+
+            + " requested pickup for your relief donation: "
+
+            + rescue.getTitle(),
+
+
+            "PICKUP_REQUEST"
+
+    );
+
+
+
+
+
+
+
+    return convertToDTO(saved);
+
+
+}
 
 
 

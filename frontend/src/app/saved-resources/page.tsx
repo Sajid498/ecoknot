@@ -7,7 +7,6 @@ import {
 } from "react";
 
 
-import Navbar from "@/components/Navbar";
 
 
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -458,7 +457,6 @@ bg-slate-50
 
 
 
-<Navbar />
 
 
 

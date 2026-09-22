@@ -2,7 +2,6 @@
 
 
 import { useState } from "react";
-import Navbar from "@/components/Navbar";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import toast from "react-hot-toast";
 
@@ -194,7 +193,6 @@ bg-slate-50
 ">
 
 
-<Navbar />
 
 
 

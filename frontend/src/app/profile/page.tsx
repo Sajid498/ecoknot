@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-import Navbar from "@/components/Navbar";
 
 
 
@@ -434,7 +433,7 @@ export default function ProfilePage(){
         ">
 
 
-            <Navbar />
+      
 
 
 

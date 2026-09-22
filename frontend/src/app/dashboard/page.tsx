@@ -7,7 +7,6 @@ import {
 } from "react";
 
 
-import Navbar from "@/components/Navbar";
 
 
 
@@ -280,7 +279,7 @@ bg-slate-50
 
 
 
-<Navbar />
+
 
 
 
