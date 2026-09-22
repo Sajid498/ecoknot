@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import Navbar from "@/components/Navbar";
-import BloodDonationNavbar from "@/components/BloodDonationNavbar";
 
 import toast from "react-hot-toast";
 
@@ -571,18 +569,7 @@ export default function MyRequestsPage() {
             "
         >
 
-            {/* ========================= */}
-            {/* PERMANENT MAIN NAVBAR */}
-            {/* ========================= */}
-
-            <Navbar />
-
-
-            {/* ========================= */}
-            {/* BLOOD MODULE NAVBAR */}
-            {/* ========================= */}
-
-            <BloodDonationNavbar />
+            
 
 
             {/* ========================= */}
@@ -1106,5 +1093,6 @@ export default function MyRequestsPage() {
         </main>
 
     );
+
 
 }

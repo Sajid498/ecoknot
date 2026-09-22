@@ -1,8 +1,7 @@
 "use client";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
-import Navbar from "@/components/Navbar";
-import BloodDonationNavbar from "@/components/BloodDonationNavbar";
+
 
 import {
     useEffect,
@@ -579,26 +578,7 @@ export default function BloodDonationPage() {
         <ProtectedRoute>
 
             <>
-
-                {/* ========================= */}
-                {/* PERMANENT MAIN NAVBAR */}
-                {/* ========================= */}
-
-                <Navbar />
-
-
-                {/* ========================= */}
-                {/* BLOOD MODULE NAVBAR */}
-                {/* ========================= */}
-
-                <BloodDonationNavbar />
-
-
-                {/* ========================= */}
-                {/* PAGE CONTENT */}
-                {/* ========================= */}
-
-                <main
+    <main
                     className="
                     min-h-screen
                     bg-slate-50

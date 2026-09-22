@@ -946,33 +946,7 @@ export default function Navbar() {
 
 
 
-                                        {/* ACADEMIC HUB */}
-
-                                        <Link
-
-                                            href="#"
-
-                                            onClick={
-                                                closeProfileMenu
-                                            }
-
-                                            className="
-                                            block
-                                            rounded-xl
-                                            px-4
-                                            py-3
-                                            text-sm
-                                            font-medium
-                                            text-slate-700
-                                            transition
-                                            hover:bg-emerald-50
-                                            hover:text-emerald-700
-                                            "
-                                        >
-
-                                            🎓 Academic Hub
-
-                                        </Link>
+                   
 
 
 

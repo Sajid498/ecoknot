@@ -1,177 +1,390 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 
-import Navbar from "@/components/Navbar";
-import BloodDonationNavbar from "@/components/BloodDonationNavbar";
+import {
+    useState
+} from "react";
+
+
+import {
+    useRouter
+} from "next/navigation";
+
 
 import toast from "react-hot-toast";
 
 
+
+
+
+
+
+
 const API_URL =
+
     process.env.NEXT_PUBLIC_API_URL ||
+
     "http://localhost:8080";
+
+
+
+
+
+
+
 
 
 const initialForm = {
 
+
     patientName: "",
+
 
     bloodGroup: "",
 
+
     hospital: "",
+
 
     location: "",
 
+
     contactNumber: "",
+
 
     requiredDate: "",
 
+
     unitsNeeded: "",
+
 
     urgency: "NORMAL",
 
+
     description: "",
+
 
 };
 
 
+
+
+
+
+
+
+
+
+
+
 export default function CreateBloodRequestPage() {
+
+
+
 
     const router = useRouter();
 
 
-    const [formData, setFormData] =
+
+
+
+
+
+    const [formData,setFormData] =
+
         useState(initialForm);
 
 
-    const [loading, setLoading] =
+
+
+
+
+    const [loading,setLoading] =
+
         useState(false);
 
 
-    function handleChange(
-        e:
-            React.ChangeEvent<
-                HTMLInputElement |
-                HTMLSelectElement |
-                HTMLTextAreaElement
-            >
-    ) {
 
-        const { name, value } =
-            e.target;
+
+
+
+
+
+
+
+
+
+    function handleChange(
+
+        e:
+        React.ChangeEvent<
+
+            HTMLInputElement |
+
+            HTMLSelectElement |
+
+            HTMLTextAreaElement
+
+        >
+
+    ){
+
+
+
+        const {
+
+            name,
+
+            value
+
+        } = e.target;
+
+
+
+
+
 
 
         setFormData({
 
+
+
             ...formData,
 
-            [name]: value
+
+
+            [name]:value
+
+
 
         });
+
+
 
     }
 
 
-    async function createRequest() {
+
+
+
+
+
+
+
+
+
+
+    async function createRequest(){
+
+
+
+
 
         const savedUser =
+
             localStorage.getItem("user");
 
 
-        if (!savedUser) {
+
+
+
+
+        if(!savedUser){
+
+
 
             toast.error(
+
                 "Please login first"
+
             );
+
 
 
             return;
 
+
         }
 
 
+
+
+
+
+
+
         const user =
+
             JSON.parse(savedUser);
 
 
-        try {
+
+
+
+
+
+        try{
+
+
 
             setLoading(true);
 
 
+
+
+
+
+
             const response =
+
                 await fetch(
 
-                    `${API_URL}/api/blood-requests/user/${user.id}`,
+`${API_URL}/api/blood-requests/user/${user.id}`,
 
-                    {
-
-                        method: "POST",
-
-                        headers: {
-
-                            "Content-Type":
-                                "application/json"
-
-                        },
+                {
 
 
-                        body: JSON.stringify({
 
-                            ...formData,
-
-                            unitsNeeded:
-                                Number(formData.unitsNeeded)
-
-                        })
-
-                    }
-
-                );
+                    method:"POST",
 
 
-            if (!response.ok) {
+
+
+
+                    headers:{
+
+
+                        "Content-Type":
+
+                        "application/json"
+
+
+                    },
+
+
+
+
+
+
+
+                    body:JSON.stringify({
+
+
+
+                        ...formData,
+
+
+
+                        unitsNeeded:
+
+                        Number(
+
+                            formData.unitsNeeded
+
+                        )
+
+
+
+                    })
+
+
+
+                }
+
+            );
+
+
+
+
+
+
+
+
+
+
+
+            if(!response.ok){
+
+
 
                 throw new Error(
+
                     "Request creation failed"
+
                 );
+
 
             }
 
 
+
+
+
+
+
+
+
             toast.success(
+
                 "Blood request created successfully"
+
             );
+
+
+
+
 
 
             router.push(
+
                 "/my-requests"
+
             );
+
+
+
+
 
         }
 
-        catch (error) {
+        catch(error){
+
+
 
             console.log(error);
 
 
+
+
             toast.error(
+
                 "Something went wrong"
+
             );
+
+
 
         }
 
-        finally {
+
+
+
+
+
+        finally{
+
+
 
             setLoading(false);
 
+
+
         }
 
+
+
+
     }
-
-
     return (
 
         <main
@@ -182,23 +395,6 @@ export default function CreateBloodRequestPage() {
         >
 
 
-            {/* ========================= */}
-            {/* PERMANENT MAIN NAVBAR */}
-            {/* ========================= */}
-
-            <Navbar />
-
-
-            {/* ========================= */}
-            {/* BLOOD MODULE NAVBAR */}
-            {/* ========================= */}
-
-            <BloodDonationNavbar />
-
-
-            {/* ========================= */}
-            {/* PAGE CONTENT */}
-            {/* ========================= */}
 
             <div
                 className="
@@ -210,6 +406,7 @@ export default function CreateBloodRequestPage() {
             >
 
 
+
                 <div
                     className="
                     rounded-3xl
@@ -218,6 +415,7 @@ export default function CreateBloodRequestPage() {
                     shadow
                     "
                 >
+
 
 
                     <h1
@@ -232,6 +430,8 @@ export default function CreateBloodRequestPage() {
                     </h1>
 
 
+
+
                     <p
                         className="
                         mt-2
@@ -244,6 +444,9 @@ export default function CreateBloodRequestPage() {
                     </p>
 
 
+
+
+
                     <div
                         className="
                         mt-8
@@ -252,7 +455,7 @@ export default function CreateBloodRequestPage() {
                     >
 
 
-                        {/* PATIENT NAME */}
+
 
                         <input
 
@@ -274,10 +477,12 @@ export default function CreateBloodRequestPage() {
                             border
                             p-3
                             "
+
                         />
 
 
-                        {/* BLOOD GROUP */}
+
+
 
                         <select
 
@@ -297,6 +502,7 @@ export default function CreateBloodRequestPage() {
                             border
                             p-3
                             "
+
                         >
 
                             <option value="">
@@ -307,64 +513,44 @@ export default function CreateBloodRequestPage() {
 
 
                             <option value="A_POSITIVE">
-
                                 A+
-
                             </option>
-
 
                             <option value="A_NEGATIVE">
-
                                 A-
-
                             </option>
-
 
                             <option value="B_POSITIVE">
-
                                 B+
-
                             </option>
-
 
                             <option value="B_NEGATIVE">
-
                                 B-
-
                             </option>
-
 
                             <option value="O_POSITIVE">
-
                                 O+
-
                             </option>
-
 
                             <option value="O_NEGATIVE">
-
                                 O-
-
                             </option>
-
 
                             <option value="AB_POSITIVE">
-
                                 AB+
-
                             </option>
-
 
                             <option value="AB_NEGATIVE">
-
                                 AB-
-
                             </option>
+
 
                         </select>
 
 
-                        {/* HOSPITAL */}
+
+
+
 
                         <input
 
@@ -386,10 +572,13 @@ export default function CreateBloodRequestPage() {
                             border
                             p-3
                             "
+
                         />
 
 
-                        {/* LOCATION */}
+
+
+
 
                         <input
 
@@ -411,10 +600,14 @@ export default function CreateBloodRequestPage() {
                             border
                             p-3
                             "
+
                         />
 
 
-                        {/* CONTACT NUMBER */}
+
+
+
+
 
                         <input
 
@@ -436,10 +629,14 @@ export default function CreateBloodRequestPage() {
                             border
                             p-3
                             "
+
                         />
 
 
-                        {/* REQUIRED DATE */}
+
+
+
+
 
                         <input
 
@@ -461,10 +658,14 @@ export default function CreateBloodRequestPage() {
                             border
                             p-3
                             "
+
                         />
 
 
-                        {/* UNITS NEEDED */}
+
+
+
+
 
                         <input
 
@@ -488,10 +689,14 @@ export default function CreateBloodRequestPage() {
                             border
                             p-3
                             "
+
                         />
 
 
-                        {/* URGENCY */}
+
+
+
+
 
                         <select
 
@@ -511,6 +716,7 @@ export default function CreateBloodRequestPage() {
                             border
                             p-3
                             "
+
                         >
 
                             <option value="NORMAL">
@@ -533,10 +739,14 @@ export default function CreateBloodRequestPage() {
 
                             </option>
 
+
                         </select>
 
 
-                        {/* DESCRIPTION */}
+
+
+
+
 
                         <textarea
 
@@ -560,20 +770,29 @@ export default function CreateBloodRequestPage() {
                             border
                             p-3
                             "
+
                         />
 
 
-                        {/* CREATE BUTTON */}
+
+
+
+
+
+
 
                         <button
+
 
                             onClick={
                                 createRequest
                             }
 
+
                             disabled={
                                 loading
                             }
+
 
                             className="
                             w-full
@@ -587,32 +806,51 @@ export default function CreateBloodRequestPage() {
                             disabled:cursor-not-allowed
                             disabled:opacity-50
                             "
+
                         >
 
                             {
 
                                 loading
 
-                                    ?
+                                ?
 
-                                    "Creating..."
+                                "Creating..."
 
-                                    :
+                                :
 
-                                    "🩸 Create Request"
+                                "🩸 Create Request"
 
                             }
 
+
                         </button>
+
+
+
 
                     </div>
 
+
+
+
+
                 </div>
+
+
+
+
 
             </div>
 
+
+
+
+
         </main>
 
+
     );
+
 
 }

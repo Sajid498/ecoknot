@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-
+import AppNavigation from "@/components/AppNavigation";
 import {
   Geist,
   Geist_Mono
@@ -84,10 +84,11 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
 
 
-        <ToastProvider />
+   <ToastProvider />
 
+<AppNavigation />
 
-        {children}
+{children}
 
 
       </body>

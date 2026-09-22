@@ -457,31 +457,7 @@ export default function Home() {
 
 
 
-                <div className="rounded-2xl border border-blue-100 bg-blue-50 p-5">
-
-
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-xl">
-
-                    📚
-
-                  </div>
-
-
-                  <h3 className="font-bold text-slate-900">
-
-                    Academic Hub
-
-                  </h3>
-
-
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-
-                    Share notes, materials, and academic knowledge.
-
-                  </p>
-
-
-                </div>
+              
 
 
 
