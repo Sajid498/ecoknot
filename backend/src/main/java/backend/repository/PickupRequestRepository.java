@@ -18,6 +18,9 @@ public interface PickupRequestRepository
 
 
 
+
+    // Get pickup requests created by a volunteer
+
     List<PickupRequest> findByVolunteer(
 
             User volunteer
@@ -29,6 +32,10 @@ public interface PickupRequestRepository
 
 
 
+
+
+    // Get requests for a specific relief post
+
     List<PickupRequest> findByRescueDonationId(
 
             Long rescueId
@@ -39,6 +46,26 @@ public interface PickupRequestRepository
 
 
 
+
+
+
+    // Get all pickup requests
+    // from relief posts owned by a user
+
+    List<PickupRequest> findByRescueDonationUserId(
+
+            Long userId
+
+    );
+
+
+
+
+
+
+
+
+    // Count pickup requests by status
 
     long countByStatus(
 

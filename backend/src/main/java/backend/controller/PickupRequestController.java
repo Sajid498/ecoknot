@@ -132,7 +132,24 @@ public class PickupRequestController {
 
     }
 
+    // Get all pickup requests
+    // for relief posts owned by a user
 
+    @GetMapping("/owner/{id}")
+
+    public List<PickupRequestDTO> getOwnerRequests(
+
+            @PathVariable Long id
+
+    ){
+
+
+        return pickupRequestService
+
+                .getOwnerRequests(id);
+
+
+    }
 
 
 

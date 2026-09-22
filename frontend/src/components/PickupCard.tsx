@@ -54,7 +54,6 @@ onUpdate
 
 
 
-
 async function updateStatus(
 
     action:string
@@ -64,7 +63,6 @@ async function updateStatus(
 
 
     try{
-
 
 
         const response =
@@ -80,8 +78,6 @@ async function updateStatus(
                 }
 
             );
-
-
 
 
 
@@ -125,6 +121,7 @@ function getStatusStyle(){
     switch(pickup.status){
 
 
+
         case "PENDING":
 
             return "bg-yellow-100 text-yellow-700";
@@ -149,12 +146,115 @@ function getStatusStyle(){
 
 
 
-        default:
+        case "REJECTED":
 
             return "bg-red-100 text-red-700";
 
 
+
+        default:
+
+            return "bg-gray-100 text-gray-700";
+
+
     }
+
+
+}
+
+
+
+
+
+
+
+
+
+function statusText(){
+
+
+
+    switch(pickup.status){
+
+
+
+        case "PENDING":
+
+            return "🟡 Waiting for owner approval";
+
+
+
+        case "APPROVED":
+
+            return "🟢 Pickup approved";
+
+
+
+        case "PICKED_UP":
+
+            return "🔵 Item picked up";
+
+
+
+        case "DELIVERED":
+
+            return "🟣 Delivery completed";
+
+
+
+        case "REJECTED":
+
+            return "🔴 Request rejected";
+
+
+
+        default:
+
+            return pickup.status;
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+function isCompleted(
+
+    status:string
+
+){
+
+
+    const steps = [
+
+        "PENDING",
+
+        "APPROVED",
+
+        "PICKED_UP",
+
+        "DELIVERED"
+
+    ];
+
+
+    return steps.indexOf(
+
+        pickup.status
+
+    )
+
+    >=
+
+    steps.indexOf(status);
 
 
 }
@@ -184,13 +284,12 @@ shadow-md
 
 
 
-
 <div className="
 flex
 justify-between
 items-start
+gap-4
 ">
-
 
 
 
@@ -212,18 +311,14 @@ text-slate-900
 
 
 
-
-
-
 <p className="
 mt-2
 text-slate-600
 ">
 
-{pickup.rescueDonation.description}
+Pickup request for this relief donation.
 
 </p>
-
 
 
 </div>
@@ -234,7 +329,9 @@ text-slate-600
 
 
 
-<span className={`
+<span
+
+className={`
 
 rounded-full
 
@@ -248,13 +345,13 @@ font-semibold
 
 ${getStatusStyle()}
 
-`}>
+`}
+
+>
 
 {pickup.status}
 
 </span>
-
-
 
 
 
@@ -279,13 +376,12 @@ text-slate-600
 
 
 
-
-
 <p>
 
 🍱 Type:
 
 <span className="
+ml-1
 font-semibold
 text-slate-900
 ">
@@ -300,13 +396,12 @@ text-slate-900
 
 
 
-
-
 <p>
 
 📦 Quantity:
 
 <span className="
+ml-1
 font-semibold
 text-slate-900
 ">
@@ -321,13 +416,12 @@ text-slate-900
 
 
 
-
-
 <p>
 
 📍 Location:
 
 <span className="
+ml-1
 font-semibold
 text-slate-900
 ">
@@ -337,7 +431,6 @@ text-slate-900
 </span>
 
 </p>
-
 
 
 
@@ -353,27 +446,231 @@ text-slate-900
 
 
 
+{/* STATUS TIMELINE */}
+
+
+<div className="
+mt-6
+rounded-xl
+bg-slate-50
+p-5
+">
+
+
+<h3 className="
+font-bold
+text-slate-900
+">
+
+Pickup Progress
+
+</h3>
+
+
+
+
+
+<div className="
+mt-4
+space-y-3
+">
+
+
+
+
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+<span>
+
 {
 
-pickup.status==="PENDING" &&
+isCompleted("PENDING")
+
+?
+
+"🟡"
+
+:
+
+"⚪"
+
+}
+
+</span>
+
+
+<p>
+
+Request Submitted
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+
+<span>
+
+{
+
+isCompleted("APPROVED")
+
+?
+
+"🟢"
+
+:
+
+"⚪"
+
+}
+
+</span>
+
+
+<p>
+
+Owner Approved
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+
+<span>
+
+{
+
+isCompleted("PICKED_UP")
+
+?
+
+"🔵"
+
+:
+
+"⚪"
+
+}
+
+</span>
+
+
+<p>
+
+Item Picked Up
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div className="
+flex
+items-center
+gap-3
+">
+
+
+<span>
+
+{
+
+isCompleted("DELIVERED")
+
+?
+
+"🟣"
+
+:
+
+"⚪"
+
+}
+
+</span>
+
+
+<p>
+
+Delivered Successfully
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
 
 
 <p className="
 mt-5
 rounded-xl
-bg-yellow-50
+bg-slate-50
 p-3
 text-center
 font-semibold
-text-yellow-700
+text-slate-700
 ">
 
-Waiting for donor approval ⏳
+{statusText()}
 
 </p>
-
-
-}
 
 
 
@@ -385,7 +682,9 @@ Waiting for donor approval ⏳
 
 {
 
-pickup.status==="APPROVED" &&
+pickup.status==="APPROVED"
+
+&&
 
 
 <button
@@ -423,7 +722,9 @@ hover:bg-blue-700
 
 {
 
-pickup.status==="PICKED_UP" &&
+pickup.status==="PICKED_UP"
+
+&&
 
 
 <button
@@ -444,7 +745,7 @@ hover:bg-purple-700
 
 >
 
-✅ Mark Delivered
+✅ Complete Delivery
 
 </button>
 
@@ -453,6 +754,35 @@ hover:bg-purple-700
 
 
 
+
+
+
+
+
+
+{
+
+pickup.status==="DELIVERED"
+
+&&
+
+
+<div className="
+mt-5
+rounded-xl
+bg-purple-50
+p-3
+text-center
+font-semibold
+text-purple-700
+">
+
+🎉 Pickup completed successfully
+
+</div>
+
+
+}
 
 
 

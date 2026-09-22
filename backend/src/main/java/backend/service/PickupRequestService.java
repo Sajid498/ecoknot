@@ -346,7 +346,28 @@ public PickupRequestDTO createPickupRequest(
 
 
 
+// Get all pickup requests
+// from relief posts owned by a user
 
+public List<PickupRequestDTO> getOwnerRequests(
+
+        Long userId
+
+){
+
+
+    return pickupRequestRepository
+
+            .findByRescueDonationUserId(userId)
+
+            .stream()
+
+            .map(this::convertToDTO)
+
+            .toList();
+
+
+}
 
 
 

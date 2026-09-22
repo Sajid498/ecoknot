@@ -14,8 +14,6 @@ import {
 
 
 
-
-
 export default function ReliefNavbar(){
 
 
@@ -30,12 +28,12 @@ export default function ReliefNavbar(){
 
 
 
-
     function isActive(
 
         path:string
 
     ){
+
 
 
         if(path === "/rescue"){
@@ -45,6 +43,7 @@ export default function ReliefNavbar(){
 
 
         }
+
 
 
         return pathname.startsWith(path);
@@ -86,6 +85,7 @@ export default function ReliefNavbar(){
 
 
         ${
+
             isActive(path)
 
             ?
@@ -140,6 +140,7 @@ export default function ReliefNavbar(){
 
 
 
+
             <div
 
                 className="
@@ -163,6 +164,7 @@ export default function ReliefNavbar(){
                 "
 
             >
+
 
 
 
@@ -228,6 +230,8 @@ export default function ReliefNavbar(){
 
 
 
+
+
                     <div
 
                         className="
@@ -264,6 +268,7 @@ export default function ReliefNavbar(){
 
 
 
+
                         <p
 
                             className="
@@ -296,6 +301,10 @@ export default function ReliefNavbar(){
 
 
 
+                {/* OVERVIEW */}
+
+
+
                 <Link
 
                     href="/rescue"
@@ -314,6 +323,7 @@ export default function ReliefNavbar(){
 
 
                     🌱 Overview
+
 
 
 
@@ -346,6 +356,7 @@ export default function ReliefNavbar(){
 
                         />
 
+
                     }
 
 
@@ -359,15 +370,17 @@ export default function ReliefNavbar(){
 
 
 
+                {/* MY POSTS */}
+
                 <Link
 
-                    href="/my-relief-posts"
+                    href="/rescue"
 
                     className={
 
                         navClass(
 
-                            "/my-relief-posts"
+                            "/rescue"
 
                         )
 
@@ -380,37 +393,6 @@ export default function ReliefNavbar(){
 
 
 
-                    {
-
-                        isActive("/my-relief-posts")
-
-                        &&
-
-
-                        <span
-
-                            className="
-
-                            absolute
-
-                            bottom-0
-
-                            left-3
-
-                            right-3
-
-                            h-0.5
-
-                            rounded-full
-
-                            bg-emerald-600
-
-                            "
-
-                        />
-
-                    }
-
 
                 </Link>
 
@@ -419,6 +401,10 @@ export default function ReliefNavbar(){
 
 
 
+
+
+
+                {/* PICKUP REQUESTS */}
 
 
 
@@ -443,11 +429,18 @@ export default function ReliefNavbar(){
 
 
 
+
+
                     {
 
-                        isActive("/pickup-requests")
+                        isActive(
+
+                            "/pickup-requests"
+
+                        )
 
                         &&
+
 
 
                         <span
@@ -472,7 +465,9 @@ export default function ReliefNavbar(){
 
                         />
 
+
                     }
+
 
 
                 </Link>
@@ -482,6 +477,10 @@ export default function ReliefNavbar(){
 
 
 
+
+
+
+                {/* NEARBY RELIEF */}
 
 
 
@@ -506,9 +505,14 @@ export default function ReliefNavbar(){
 
 
 
+
                     {
 
-                        isActive("/nearby-relief")
+                        isActive(
+
+                            "/nearby-relief"
+
+                        )
 
                         &&
 
@@ -535,6 +539,7 @@ export default function ReliefNavbar(){
 
                         />
 
+
                     }
 
 
@@ -543,6 +548,12 @@ export default function ReliefNavbar(){
 
 
 
+
+
+
+
+
+                {/* CREATE BUTTON */}
 
 
 
@@ -555,6 +566,7 @@ export default function ReliefNavbar(){
                     "
 
                 >
+
 
 
                     <Link
@@ -589,6 +601,7 @@ export default function ReliefNavbar(){
                     </Link>
 
 
+
                 </div>
 
 
@@ -596,7 +609,10 @@ export default function ReliefNavbar(){
 
 
 
+
+
             </div>
+
 
 
 
