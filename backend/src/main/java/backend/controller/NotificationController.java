@@ -16,6 +16,7 @@ import backend.service.NotificationService;
 
 
 
+
 @RestController
 @RequestMapping("/api/notifications")
 @CrossOrigin("*")
@@ -24,7 +25,9 @@ public class NotificationController {
 
 
 
+
     private final NotificationService notificationService;
+
 
 
 
@@ -38,8 +41,7 @@ public class NotificationController {
     ){
 
 
-        this.notificationService =
-                notificationService;
+        this.notificationService = notificationService;
 
 
     }
@@ -52,8 +54,7 @@ public class NotificationController {
 
 
 
-    // Get notifications of a user
-
+    // Get all notifications of a user
 
     @GetMapping("/user/{userId}")
 
@@ -64,10 +65,13 @@ public class NotificationController {
     ){
 
 
+
         return notificationService
 
                 .getUserNotifications(
+
                         userId
+
                 );
 
 
@@ -82,7 +86,6 @@ public class NotificationController {
 
 
     // Get unread notification count
-
 
     @GetMapping("/unread-count/{userId}")
 
@@ -99,8 +102,12 @@ public class NotificationController {
                 notificationService
 
                         .getUnreadCount(
+
                                 userId
+
                         );
+
+
 
 
 
@@ -108,6 +115,7 @@ public class NotificationController {
         return Map.of(
 
                 "count",
+
                 count
 
         );
@@ -125,7 +133,6 @@ public class NotificationController {
 
     // Mark notification as read
 
-
     @PutMapping("/read/{id}")
 
     public Notification markAsRead(
@@ -139,7 +146,9 @@ public class NotificationController {
         return notificationService
 
                 .markAsRead(
+
                         id
+
                 );
 
 

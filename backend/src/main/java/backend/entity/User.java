@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,9 +17,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 
+
 @Entity
 @Table(name = "users")
 public class User {
+
 
 
 
@@ -28,7 +31,11 @@ public class User {
 
 
 
+
+
     private String name;
+
+
 
 
 
@@ -36,11 +43,17 @@ public class User {
 
 
 
+
+
     private String password;
 
 
 
+
+
     private String role;
+
+
 
 
 
@@ -50,12 +63,18 @@ public class User {
 
 
 
+
+
     @Enumerated(EnumType.STRING)
     private BloodGroup bloodGroup;
 
 
 
+
+
     private boolean availableForDonation = false;
+
+
 
 
 
@@ -67,9 +86,15 @@ public class User {
 
 
 
+
+
     @OneToMany(mappedBy = "user")
+
     @JsonIgnore
+
     private List<BloodRequest> bloodRequests;
+
+
 
 
 
@@ -80,8 +105,12 @@ public class User {
     // Resource sharing posts
 
     @OneToMany(mappedBy = "user")
+
     @JsonIgnore
+
     private List<Resource> resources;
+
+
 
 
 
@@ -92,8 +121,33 @@ public class User {
     // Surplus food & medicine rescue posts
 
     @OneToMany(mappedBy = "user")
+
     @JsonIgnore
+
     private List<RescueDonation> rescueDonations;
+
+
+
+
+
+
+
+
+
+    // User notifications
+
+    @OneToMany(
+
+            mappedBy = "receiver",
+
+            cascade = CascadeType.ALL
+
+    )
+
+    @JsonIgnore
+
+    private List<Notification> notifications;
+
 
 
 
@@ -117,11 +171,15 @@ public class User {
 
 
 
+
+
     public String getName() {
 
         return name;
 
     }
+
+
 
 
 
@@ -141,11 +199,15 @@ public class User {
 
 
 
+
+
     public String getPassword() {
 
         return password;
 
     }
+
+
 
 
 
@@ -165,11 +227,15 @@ public class User {
 
 
 
+
+
     public String getLocation() {
 
         return location;
 
     }
+
+
 
 
 
@@ -189,11 +255,15 @@ public class User {
 
 
 
+
+
     public boolean isAvailableForDonation() {
 
         return availableForDonation;
 
     }
+
+
 
 
 
@@ -213,6 +283,8 @@ public class User {
 
 
 
+
+
     public List<BloodRequest> getBloodRequests() {
 
         return bloodRequests;
@@ -225,11 +297,15 @@ public class User {
 
 
 
+
+
     public List<Resource> getResources(){
 
         return resources;
 
     }
+
+
 
 
 
@@ -251,11 +327,31 @@ public class User {
 
 
 
+    public List<Notification> getNotifications(){
+
+        return notifications;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
     public void setName(String name) {
 
         this.name = name;
 
     }
+
+
 
 
 
@@ -275,11 +371,15 @@ public class User {
 
 
 
+
+
     public void setPassword(String password) {
 
         this.password = password;
 
     }
+
+
 
 
 
@@ -299,11 +399,15 @@ public class User {
 
 
 
+
+
     public void setLocation(String location) {
 
         this.location = location;
 
     }
+
+
 
 
 
@@ -323,11 +427,15 @@ public class User {
 
 
 
+
+
     public void setAvailableForDonation(boolean availableForDonation) {
 
         this.availableForDonation = availableForDonation;
 
     }
+
+
 
 
 

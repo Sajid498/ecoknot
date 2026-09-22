@@ -9,16 +9,23 @@ import backend.entity.Notification;
 
 
 
-public interface NotificationRepository 
+
+public interface NotificationRepository
+
         extends JpaRepository<Notification, Long> {
 
 
 
 
-    // Get all notifications of a user
+
+
+    // Get all notifications of a specific user
+    // Latest notification first
 
     List<Notification> findByUserIdOrderByCreatedAtDesc(
+
             Long userId
+
     );
 
 
@@ -27,11 +34,17 @@ public interface NotificationRepository
 
 
 
-    // Count unread notifications
+
+
+    // Count unread notifications of a user
 
     long countByUserIdAndReadStatusFalse(
+
             Long userId
+
     );
+
+
 
 
 

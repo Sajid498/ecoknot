@@ -11,9 +11,11 @@ import jakarta.persistence.Table;
 
 
 
+
 @Entity
 @Table(name = "notifications")
 public class Notification {
+
 
 
 
@@ -26,7 +28,13 @@ public class Notification {
 
 
 
+
+
+    // Receiver user id
+
     private Long userId;
+
+
 
 
 
@@ -38,7 +46,11 @@ public class Notification {
 
 
 
+
+
     private String type;
+
+
 
 
 
@@ -50,7 +62,11 @@ public class Notification {
 
 
 
+
+
     private LocalDateTime createdAt;
+
+
 
 
 
@@ -66,9 +82,18 @@ public class Notification {
 
 
 
+
+
+
+
     public Notification(){
 
+
+
     }
+
+
+
 
 
 
@@ -89,6 +114,7 @@ public class Notification {
     ){
 
 
+
         this.userId = userId;
 
         this.message = message;
@@ -98,6 +124,7 @@ public class Notification {
         this.createdAt = LocalDateTime.now();
 
         this.readStatus = false;
+
 
 
     }
@@ -110,9 +137,14 @@ public class Notification {
 
 
 
+
+
+
     public Long getId(){
 
+
         return id;
+
 
     }
 
@@ -126,16 +158,25 @@ public class Notification {
 
     public Long getUserId(){
 
+
         return userId;
+
 
     }
 
 
 
 
+
+
+
+
+
     public void setUserId(Long userId){
 
+
         this.userId = userId;
+
 
     }
 
@@ -149,7 +190,9 @@ public class Notification {
 
     public String getMessage(){
 
+
         return message;
+
 
     }
 
@@ -157,9 +200,15 @@ public class Notification {
 
 
 
+
+
+
+
     public void setMessage(String message){
 
+
         this.message = message;
+
 
     }
 
@@ -173,7 +222,9 @@ public class Notification {
 
     public String getType(){
 
+
         return type;
+
 
     }
 
@@ -181,9 +232,15 @@ public class Notification {
 
 
 
+
+
+
+
     public void setType(String type){
 
+
         this.type = type;
+
 
     }
 
@@ -197,7 +254,9 @@ public class Notification {
 
     public boolean isReadStatus(){
 
+
         return readStatus;
+
 
     }
 
@@ -205,9 +264,15 @@ public class Notification {
 
 
 
+
+
+
+
     public void setReadStatus(boolean readStatus){
 
+
         this.readStatus = readStatus;
+
 
     }
 
@@ -221,7 +286,9 @@ public class Notification {
 
     public LocalDateTime getCreatedAt(){
 
+
         return createdAt;
+
 
     }
 
@@ -229,9 +296,15 @@ public class Notification {
 
 
 
+
+
+
+
     public void setCreatedAt(LocalDateTime createdAt){
 
+
         this.createdAt = createdAt;
+
 
     }
 
@@ -245,7 +318,9 @@ public class Notification {
 
     public LocalDateTime getReadAt(){
 
+
         return readAt;
+
 
     }
 
@@ -253,9 +328,15 @@ public class Notification {
 
 
 
+
+
+
+
     public void setReadAt(LocalDateTime readAt){
 
+
         this.readAt = readAt;
+
 
     }
 

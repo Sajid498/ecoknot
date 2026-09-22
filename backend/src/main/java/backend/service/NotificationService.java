@@ -12,6 +12,7 @@ import backend.repository.NotificationRepository;
 
 
 
+
 @Service
 public class NotificationService {
 
@@ -25,6 +26,7 @@ public class NotificationService {
 
 
 
+
     public NotificationService(
 
             NotificationRepository notificationRepository
@@ -32,8 +34,7 @@ public class NotificationService {
     ){
 
 
-        this.notificationRepository =
-                notificationRepository;
+        this.notificationRepository = notificationRepository;
 
 
     }
@@ -48,7 +49,6 @@ public class NotificationService {
 
     // Create notification
 
-
     public Notification createNotification(
 
             Long userId,
@@ -61,23 +61,24 @@ public class NotificationService {
 
 
 
-        Notification notification =
+        Notification notification = new Notification(
 
-                new Notification(
+                userId,
 
-                        userId,
+                message,
 
-                        message,
+                type
 
-                        type
+        );
 
-                );
 
 
 
 
         return notificationRepository.save(
+
                 notification
+
         );
 
 
@@ -91,11 +92,7 @@ public class NotificationService {
 
 
 
-
-
-
     // Get all notifications of a user
-
 
     public List<Notification> getUserNotifications(
 
@@ -124,11 +121,7 @@ public class NotificationService {
 
 
 
-
-
-
     // Get unread notification count
-
 
     public long getUnreadCount(
 
@@ -157,11 +150,7 @@ public class NotificationService {
 
 
 
-
-
-
     // Mark notification as read
-
 
     public Notification markAsRead(
 
@@ -181,7 +170,9 @@ public class NotificationService {
 
                                 () -> new ResourceNotFoundException(
 
-                                        "Notification not found"
+                                        "Notification not found with id: "
+
+                                        + id
 
                                 )
 
@@ -198,6 +189,7 @@ public class NotificationService {
                 true
 
         );
+
 
 
 
@@ -223,8 +215,9 @@ public class NotificationService {
         );
 
 
-
     }
+
+
 
 
 

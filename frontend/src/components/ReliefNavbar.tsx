@@ -141,6 +141,8 @@ export default function ReliefNavbar(){
 
 
 
+
+
             <div
 
                 className="
@@ -232,6 +234,7 @@ export default function ReliefNavbar(){
 
 
 
+
                     <div
 
                         className="
@@ -264,6 +267,7 @@ export default function ReliefNavbar(){
 
 
                         </p>
+
 
 
 
@@ -327,6 +331,7 @@ export default function ReliefNavbar(){
 
 
 
+
                     {
 
                         isActive("/rescue")
@@ -356,8 +361,81 @@ export default function ReliefNavbar(){
 
                         />
 
+                    }
+
+
+                </Link>
+
+
+
+
+
+
+
+
+
+                {/* DASHBOARD */}
+
+
+
+                <Link
+
+                    href="/rescue/dashboard"
+
+                    className={
+
+                        navClass(
+
+                            "/rescue/dashboard"
+
+                        )
 
                     }
+
+                >
+
+
+                    📊 Dashboard
+
+
+
+
+
+                    {
+
+                        isActive(
+
+                            "/rescue/dashboard"
+
+                        )
+
+                        &&
+
+
+                        <span
+
+                            className="
+
+                            absolute
+
+                            bottom-0
+
+                            left-3
+
+                            right-3
+
+                            h-0.5
+
+                            rounded-full
+
+                            bg-emerald-600
+
+                            "
+
+                        />
+
+                    }
+
 
 
                 </Link>
@@ -372,69 +450,69 @@ export default function ReliefNavbar(){
 
                 {/* MY POSTS */}
 
-                {/* MY POSTS */}
-
-<Link
-
-    href="/rescue/my-posts"
-
-    className={
-
-        navClass(
-
-            "/rescue/my-posts"
-
-        )
-
-    }
-
->
 
 
-    📦 My Posts
+                <Link
+
+                    href="/rescue/my-posts"
+
+                    className={
+
+                        navClass(
+
+                            "/rescue/my-posts"
+
+                        )
+
+                    }
+
+                >
 
 
-
-    {
-
-
-        isActive(
-
-            "/rescue/my-posts"
-
-        )
-
-        &&
-
-
-        <span
-
-            className="
-
-            absolute
-
-            bottom-0
-
-            left-3
-
-            right-3
-
-            h-0.5
-
-            rounded-full
-
-            bg-emerald-600
-
-            "
-
-        />
-
-
-    }
+                    📦 My Posts
 
 
 
-</Link>
+
+
+                    {
+
+                        isActive(
+
+                            "/rescue/my-posts"
+
+                        )
+
+                        &&
+
+
+                        <span
+
+                            className="
+
+                            absolute
+
+                            bottom-0
+
+                            left-3
+
+                            right-3
+
+                            h-0.5
+
+                            rounded-full
+
+                            bg-emerald-600
+
+                            "
+
+                        />
+
+                    }
+
+
+
+                </Link>
 
 
 
@@ -482,7 +560,6 @@ export default function ReliefNavbar(){
                         &&
 
 
-
                         <span
 
                             className="
@@ -504,7 +581,6 @@ export default function ReliefNavbar(){
                             "
 
                         />
-
 
                     }
 
@@ -546,6 +622,7 @@ export default function ReliefNavbar(){
 
 
 
+
                     {
 
                         isActive(
@@ -579,8 +656,8 @@ export default function ReliefNavbar(){
 
                         />
 
-
                     }
+
 
 
                 </Link>
@@ -643,8 +720,6 @@ export default function ReliefNavbar(){
 
 
                 </div>
-
-
 
 
 
