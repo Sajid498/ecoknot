@@ -13,12 +13,18 @@ import Link from "next/link";
 import RescueCard from "@/components/RescueCard";
 
 
+import LoadingCard from "@/components/LoadingCard";
+
+
 import dynamic from "next/dynamic";
 
 
 import {
     RescueDonation
 } from "@/types/rescue";
+
+
+
 
 
 
@@ -33,6 +39,8 @@ const ReliefMap = dynamic(
     }
 
 );
+
+
 
 
 
@@ -59,9 +67,14 @@ export default function ReliefHubPage(){
 
 
 
+
+
     const [rescues,setRescues] =
 
         useState<RescueDonation[]>([]);
+
+
+
 
 
 
@@ -73,9 +86,24 @@ export default function ReliefHubPage(){
 
 
 
+
+
+    const [error,setError] =
+
+        useState("");
+
+
+
+
+
+
+
     const [filter,setFilter] =
 
         useState("ALL");
+
+
+
 
 
 
@@ -87,6 +115,8 @@ export default function ReliefHubPage(){
 
 
 
+
+
     const [userLng,setUserLng] =
 
         useState<number | null>(null);
@@ -94,9 +124,14 @@ export default function ReliefHubPage(){
 
 
 
+
+
+
     const [nearbyMode,setNearbyMode] =
 
         useState(false);
+
+
 
 
 
@@ -122,13 +157,25 @@ export default function ReliefHubPage(){
 
 
 
+
+
+
     async function loadReliefPosts(){
+
 
 
         try{
 
 
+
             setLoading(true);
+
+
+            setError("");
+
+
+
+
 
 
 
@@ -144,7 +191,11 @@ export default function ReliefHubPage(){
 
 
 
+
+
+
             if(!response.ok){
+
 
 
                 throw new Error(
@@ -161,9 +212,14 @@ export default function ReliefHubPage(){
 
 
 
+
+
+
             const data =
 
                 await response.json();
+
+
 
 
 
@@ -173,12 +229,28 @@ export default function ReliefHubPage(){
 
 
 
+
+
+
         }
 
         catch(error){
 
 
+
             console.log(error);
+
+
+
+
+            setError(
+
+                "Unable to load relief posts. Please try again."
+
+            );
+
+
+
 
 
         }
@@ -186,13 +258,20 @@ export default function ReliefHubPage(){
         finally{
 
 
+
             setLoading(false);
+
 
 
         }
 
 
+
     }
+
+
+
+
 
 
 
@@ -217,6 +296,8 @@ export default function ReliefHubPage(){
 
 
 
+
+
         const expiry =
 
             new Date(
@@ -229,9 +310,13 @@ export default function ReliefHubPage(){
 
 
 
+
+
         const remaining =
 
             expiry-now;
+
+
 
 
 
@@ -251,6 +336,9 @@ export default function ReliefHubPage(){
 
 
 
+
+
+
         return(
 
             remaining > 0
@@ -262,7 +350,12 @@ export default function ReliefHubPage(){
         );
 
 
+
     }
+
+
+
+
 
 
 
@@ -309,6 +402,7 @@ export default function ReliefHubPage(){
 
 
 
+
         const dLng =
 
             (
@@ -324,6 +418,7 @@ export default function ReliefHubPage(){
                 180
 
             );
+
 
 
 
@@ -366,6 +461,7 @@ export default function ReliefHubPage(){
 
 
 
+
         const c =
 
             2 *
@@ -389,27 +485,18 @@ export default function ReliefHubPage(){
         );
 
 
+
     }
-
-
-
-
-
-
-
-
-
-    function findNearbyRelief(){
+        function findNearbyRelief(){
 
 
 
         if(!navigator.geolocation){
 
 
+
             alert(
-
                 "Location is not supported"
-
             );
 
 
@@ -423,26 +510,31 @@ export default function ReliefHubPage(){
 
 
 
+
         navigator.geolocation.getCurrentPosition(
+
 
             (position)=>{
 
 
+                const lat =
 
-                setUserLat(
-
-                    position.coords.latitude
-
-                );
+                    position.coords.latitude;
 
 
 
-                setUserLng(
+                const lng =
 
-                    position.coords.longitude
+                    position.coords.longitude;
 
-                );
 
+
+
+
+                setUserLat(lat);
+
+
+                setUserLng(lng);
 
 
                 setNearbyMode(true);
@@ -450,6 +542,7 @@ export default function ReliefHubPage(){
 
 
             },
+
 
 
             ()=>{
@@ -465,64 +558,12 @@ export default function ReliefHubPage(){
             }
 
 
+
         );
 
 
+
     }
-
-
-
-
-
-
-
-
-
-
-
-
-    const totalPosts = rescues.length;
-
-
-
-    const availablePosts =
-
-        rescues.filter(
-
-            (item)=>
-
-                item.status==="AVAILABLE"
-
-        ).length;
-
-
-
-
-
-    const foodPosts =
-
-        rescues.filter(
-
-            (item)=>
-
-                item.type==="FOOD"
-
-        ).length;
-
-
-
-
-
-    const medicinePosts =
-
-        rescues.filter(
-
-            (item)=>
-
-                item.type==="MEDICINE"
-
-        ).length;
-
 
 
 
@@ -544,17 +585,19 @@ export default function ReliefHubPage(){
 
 
 
+
+
             if(
 
                 nearbyMode
 
                 &&
 
-                userLat!==null
+                userLat
 
                 &&
 
-                userLng!==null
+                userLng
 
                 &&
 
@@ -568,9 +611,11 @@ export default function ReliefHubPage(){
 
 
 
-                return {
+                return{
+
 
                     ...relief,
+
 
                     distance:
 
@@ -586,10 +631,13 @@ export default function ReliefHubPage(){
 
                     )
 
+
+
                 };
 
 
             }
+
 
 
 
@@ -629,6 +677,7 @@ export default function ReliefHubPage(){
 
 
 
+
             if(filter==="MEDICINE"){
 
 
@@ -644,9 +693,11 @@ export default function ReliefHubPage(){
             return true;
 
 
+
         })
 
         .sort((a,b)=>{
+
 
 
             if(
@@ -655,13 +706,14 @@ export default function ReliefHubPage(){
 
                 &&
 
-                a.distance!==undefined
+                a.distance
 
                 &&
 
-                b.distance!==undefined
+                b.distance
 
             ){
+
 
 
                 return (
@@ -682,9 +734,8 @@ export default function ReliefHubPage(){
             return 0;
 
 
+
         });
-
-
 
 
 
@@ -706,6 +757,7 @@ bg-slate-50
 p-6
 md:p-10
 ">
+
 
 
 
@@ -739,6 +791,7 @@ md:justify-between
 <div>
 
 
+
 <h1 className="
 text-3xl
 font-bold
@@ -763,7 +816,10 @@ Connect surplus food and medicine with people who need them.
 </p>
 
 
+
+
 </div>
+
 
 
 
@@ -790,169 +846,6 @@ hover:bg-emerald-800
 + Create Relief Post
 
 </Link>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* Dashboard Statistics */}
-
-<div className="
-mt-10
-grid
-gap-5
-md:grid-cols-4
-">
-
-
-
-
-
-<div className="
-rounded-2xl
-bg-white
-p-6
-shadow
-border
-">
-
-<p className="
-text-sm
-text-slate-500
-">
-
-🌱 Total Relief Posts
-
-</p>
-
-<h2 className="
-mt-3
-text-3xl
-font-bold
-">
-
-{totalPosts}
-
-</h2>
-
-</div>
-
-
-
-
-
-
-<div className="
-rounded-2xl
-bg-white
-p-6
-shadow
-border
-">
-
-<p className="
-text-sm
-text-slate-500
-">
-
-✅ Available
-
-</p>
-
-<h2 className="
-mt-3
-text-3xl
-font-bold
-text-emerald-700
-">
-
-{availablePosts}
-
-</h2>
-
-</div>
-
-
-
-
-
-
-<div className="
-rounded-2xl
-bg-white
-p-6
-shadow
-border
-">
-
-<p className="
-text-sm
-text-slate-500
-">
-
-🍱 Food Donations
-
-</p>
-
-<h2 className="
-mt-3
-text-3xl
-font-bold
-text-orange-600
-">
-
-{foodPosts}
-
-</h2>
-
-</div>
-
-
-
-
-
-
-
-<div className="
-rounded-2xl
-bg-white
-p-6
-shadow
-border
-">
-
-<p className="
-text-sm
-text-slate-500
-">
-
-💊 Medicine Donations
-
-</p>
-
-<h2 className="
-mt-3
-text-3xl
-font-bold
-text-blue-600
-">
-
-{medicinePosts}
-
-</h2>
-
-</div>
 
 
 
@@ -1014,6 +907,7 @@ font-bold
 
 
 
+
 <ReliefMap
 
 rescues={rescues}
@@ -1044,79 +938,196 @@ gap-3
 
 
 <button
+
 onClick={()=>setFilter("ALL")}
+
 className="
 rounded-full
 bg-emerald-700
 px-5
 py-2
-text-white
 font-semibold
+text-white
 "
+
 >
+
 All
+
 </button>
 
 
 
 
 
+
 <button
+
 onClick={()=>setFilter("URGENT")}
+
 className="
 rounded-full
 bg-red-600
 px-5
 py-2
-text-white
 font-semibold
+text-white
 "
+
 >
+
 🔥 Urgent
+
 </button>
 
 
 
 
 
+
+
 <button
+
 onClick={()=>setFilter("FOOD")}
+
 className="
 rounded-full
 bg-orange-600
 px-5
 py-2
-text-white
 font-semibold
+text-white
 "
+
 >
+
 🍱 Food
+
 </button>
+
+
 
 
 
 
 
 <button
+
 onClick={()=>setFilter("MEDICINE")}
+
 className="
 rounded-full
 bg-blue-600
 px-5
 py-2
-text-white
 font-semibold
+text-white
 "
->
-💊 Medicine
-</button>
 
+>
+
+💊 Medicine
+
+</button>
 
 
 
 
 
 </div>
+
+
+
+
+
+
+
+
+
+{
+
+error &&
+
+
+<div className="
+mt-8
+rounded-2xl
+bg-red-50
+p-8
+text-center
+">
+
+
+
+<div className="
+text-5xl
+">
+
+⚠️
+
+</div>
+
+
+
+
+<h2 className="
+mt-4
+text-xl
+font-bold
+text-red-700
+">
+
+Unable to load relief posts
+
+</h2>
+
+
+
+
+
+<p className="
+mt-2
+text-red-600
+">
+
+{error}
+
+</p>
+
+
+
+
+
+
+
+<button
+
+onClick={loadReliefPosts}
+
+className="
+mt-5
+rounded-xl
+bg-red-600
+px-5
+py-3
+font-semibold
+text-white
+hover:bg-red-700
+"
+
+>
+
+Retry
+
+</button>
+
+
+
+</div>
+
+
+
+}
 
 
 
@@ -1135,22 +1146,29 @@ space-y-6
 
 
 
+
+
 {
 
 loading ?
 
 
 
-<div className="
-rounded-2xl
-bg-white
-p-6
-shadow
-">
 
-Loading relief posts...
 
-</div>
+<>
+
+
+<LoadingCard />
+
+<LoadingCard />
+
+<LoadingCard />
+
+
+</>
+
+
 
 
 
@@ -1159,6 +1177,8 @@ Loading relief posts...
 
 
 :
+
+
 
 filteredReliefs.length===0 ?
 
@@ -1169,12 +1189,82 @@ filteredReliefs.length===0 ?
 <div className="
 rounded-2xl
 bg-white
-p-8
+p-10
 text-center
 shadow
 ">
 
-No relief post available.
+
+
+
+
+<div className="
+text-6xl
+">
+
+📦
+
+</div>
+
+
+
+
+
+
+<h2 className="
+mt-5
+text-2xl
+font-bold
+text-slate-900
+">
+
+No Relief Available
+
+</h2>
+
+
+
+
+
+
+<p className="
+mt-2
+text-slate-600
+">
+
+There are currently no food or medicine support posts.
+
+</p>
+
+
+
+
+
+<Link
+
+href="/rescue/create"
+
+className="
+mt-5
+inline-block
+rounded-xl
+bg-emerald-700
+px-5
+py-3
+font-semibold
+text-white
+"
+
+>
+
++ Create Relief Post
+
+</Link>
+
+
+
+
+
 
 </div>
 
@@ -1184,10 +1274,13 @@ No relief post available.
 
 
 
+
+
 :
 
-filteredReliefs.map((relief)=>(
 
+
+filteredReliefs.map((relief)=>(
 
 
 <RescueCard
@@ -1199,8 +1292,8 @@ rescue={relief}
 />
 
 
-
 ))
+
 
 
 }
@@ -1209,17 +1302,19 @@ rescue={relief}
 
 
 
-</div>
-
-
-
-
-
 
 
 </div>
 
 
+
+
+
+
+
+
+
+</div>
 
 
 

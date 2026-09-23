@@ -7,8 +7,16 @@ import {
 } from "react";
 
 
+import toast from "react-hot-toast";
+
 
 import ProtectedRoute from "@/components/ProtectedRoute";
+
+
+import LoadingCard from "@/components/LoadingCard";
+
+
+
 
 
 
@@ -27,6 +35,7 @@ const API_URL =
 
 
 
+
 type PickupRequest = {
 
 
@@ -36,19 +45,25 @@ type PickupRequest = {
     status:string;
 
 
+
     volunteer:{
 
 
         id:number;
 
+
         name:string;
 
+
         email:string;
+
 
         location:string;
 
 
     };
+
+
 
 
     rescueDonation:{
@@ -56,16 +71,21 @@ type PickupRequest = {
 
         id:number;
 
+
         title:string;
+
 
         type:string;
 
+
         quantity:string;
+
 
         location:string;
 
 
     };
+
 
 
 };
@@ -82,6 +102,8 @@ export default function PickupRequestsPage(){
 
 
 
+
+
     const [requests,setRequests] =
 
         useState<PickupRequest[]>([]);
@@ -89,9 +111,15 @@ export default function PickupRequestsPage(){
 
 
 
+
+
+
     const [user,setUser] =
 
         useState<any>(null);
+
+
+
 
 
 
@@ -106,14 +134,30 @@ export default function PickupRequestsPage(){
 
 
 
+    const [error,setError] =
+
+        useState("");
+
+
+
+
+
+
+
+
+
+
 
 
     useEffect(()=>{
 
 
+
         const savedUser =
 
             localStorage.getItem("user");
+
+
 
 
 
@@ -138,10 +182,15 @@ export default function PickupRequestsPage(){
             );
 
 
+
         }
 
 
+
     },[]);
+
+
+
 
 
 
@@ -158,10 +207,19 @@ export default function PickupRequestsPage(){
     ){
 
 
+
         try{
 
 
+
             setLoading(true);
+
+
+            setError("");
+
+
+
+
 
 
 
@@ -176,7 +234,12 @@ export default function PickupRequestsPage(){
 
 
 
+
+
+
+
             if(!response.ok){
+
 
 
                 throw new Error(
@@ -191,9 +254,18 @@ export default function PickupRequestsPage(){
 
 
 
+
+
+
+
+
             const data =
 
                 await response.json();
+
+
+
+
 
 
 
@@ -202,12 +274,27 @@ export default function PickupRequestsPage(){
 
 
 
+
+
+
+
         }
 
         catch(error){
 
 
+
             console.log(error);
+
+
+
+
+            setError(
+
+                "Unable to load pickup requests"
+
+            );
+
 
 
         }
@@ -215,13 +302,19 @@ export default function PickupRequestsPage(){
         finally{
 
 
+
             setLoading(false);
+
 
 
         }
 
 
+
     }
+
+
+
 
 
 
@@ -244,6 +337,7 @@ export default function PickupRequestsPage(){
         try{
 
 
+
             const response =
 
                 await fetch(
@@ -252,7 +346,9 @@ export default function PickupRequestsPage(){
 
                     {
 
+
                         method:"PUT"
+
 
                     }
 
@@ -262,7 +358,29 @@ export default function PickupRequestsPage(){
 
 
 
+
+
+
             if(response.ok){
+
+
+
+                toast.success(
+
+                    action==="approve"
+
+                    ?
+
+                    "Pickup request approved ✅"
+
+                    :
+
+                    "Pickup request rejected ❌"
+
+                );
+
+
+
 
 
                 loadRequests(
@@ -272,7 +390,24 @@ export default function PickupRequestsPage(){
                 );
 
 
+
             }
+
+            else{
+
+
+
+                toast.error(
+
+                    "Action failed"
+
+                );
+
+
+
+            }
+
+
 
 
 
@@ -281,7 +416,17 @@ export default function PickupRequestsPage(){
         catch(error){
 
 
+
             console.log(error);
+
+
+
+            toast.error(
+
+                "Something went wrong"
+
+            );
+
 
 
         }
@@ -289,16 +434,8 @@ export default function PickupRequestsPage(){
 
 
     }
-
-
-
-
-
-
-
-
-
     return(
+
 
 
 <ProtectedRoute>
@@ -314,10 +451,15 @@ md:p-10
 
 
 
+
+
+
+
 <div className="
 mx-auto
 max-w-5xl
 ">
+
 
 
 
@@ -333,6 +475,8 @@ text-slate-900
 🚚 Pickup Requests
 
 </h1>
+
+
 
 
 
@@ -355,10 +499,105 @@ Manage requests from volunteers for your relief posts.
 
 
 
+{
+
+error &&
+
+
+<div className="
+mt-8
+rounded-2xl
+bg-red-50
+p-8
+text-center
+">
+
+
+
+<div className="
+text-5xl
+">
+
+⚠️
+
+</div>
+
+
+
+
+<h2 className="
+mt-4
+text-xl
+font-bold
+text-red-700
+">
+
+Unable to load requests
+
+</h2>
+
+
+
+
+
+
+<p className="
+mt-2
+text-red-600
+">
+
+{error}
+
+</p>
+
+
+
+
+
+
+
+<button
+
+onClick={()=>user && loadRequests(user.id)}
+
+className="
+mt-5
+rounded-xl
+bg-red-600
+px-5
+py-3
+font-semibold
+text-white
+hover:bg-red-700
+"
+
+>
+
+Retry
+
+</button>
+
+
+
+</div>
+
+
+
+}
+
+
+
+
+
+
+
+
+
 <div className="
 mt-8
 space-y-5
 ">
+
 
 
 
@@ -371,16 +610,20 @@ loading ?
 
 
 
-<div className="
-rounded-2xl
-bg-white
-p-6
-shadow
-">
 
-Loading requests...
 
-</div>
+<>
+
+
+<LoadingCard />
+
+<LoadingCard />
+
+</>
+
+
+
+
 
 
 
@@ -399,14 +642,18 @@ requests.length===0 ?
 <div className="
 rounded-2xl
 bg-white
-p-8
+p-10
 text-center
 shadow
 ">
 
 
+
+
+
+
 <div className="
-text-5xl
+text-6xl
 ">
 
 🚚
@@ -414,15 +661,24 @@ text-5xl
 </div>
 
 
+
+
+
+
 <h2 className="
-mt-4
-text-xl
+mt-5
+text-2xl
 font-bold
+text-slate-900
 ">
 
-No pickup requests
+No Pickup Requests
 
 </h2>
+
+
+
+
 
 
 <p className="
@@ -430,12 +686,20 @@ mt-2
 text-slate-600
 ">
 
-No volunteers requested your relief posts yet.
+No volunteers have requested your relief posts yet.
 
 </p>
 
 
+
+
+
+
+
 </div>
+
+
+
 
 
 
@@ -446,9 +710,10 @@ No volunteers requested your relief posts yet.
 
 
 
-
-
 requests.map((request)=>(
+
+
+
 
 
 <div
@@ -460,9 +725,15 @@ rounded-2xl
 bg-white
 p-6
 shadow
+border
+border-slate-100
 "
 
 >
+
+
+
+
 
 
 
@@ -471,20 +742,31 @@ shadow
 flex
 justify-between
 items-start
+gap-4
 ">
+
+
+
+
+
 
 
 <div>
 
 
+
 <h2 className="
 text-xl
 font-bold
+text-slate-900
 ">
 
 {request.rescueDonation.title}
 
 </h2>
+
+
+
 
 
 
@@ -498,6 +780,7 @@ Volunteer:
 <span className="
 ml-2
 font-semibold
+text-slate-900
 ">
 
 {request.volunteer.name}
@@ -506,6 +789,10 @@ font-semibold
 
 
 </p>
+
+
+
+
 
 
 
@@ -518,6 +805,7 @@ Location:
 <span className="
 ml-2
 font-semibold
+text-slate-900
 ">
 
 {request.volunteer.location}
@@ -528,6 +816,9 @@ font-semibold
 </p>
 
 
+
+
+
 </div>
 
 
@@ -536,22 +827,67 @@ font-semibold
 
 
 
-<span className="
+
+
+<span className={`
+
 rounded-full
-bg-yellow-100
+
 px-4
+
 py-2
+
 font-semibold
-text-yellow-700
-">
+
+text-sm
+
+${
+
+request.status==="PENDING"
+
+?
+
+"bg-yellow-100 text-yellow-700"
+
+:
+
+request.status==="APPROVED"
+
+?
+
+"bg-emerald-100 text-emerald-700"
+
+:
+
+request.status==="REJECTED"
+
+?
+
+"bg-red-100 text-red-700"
+
+:
+
+"bg-slate-100 text-slate-700"
+
+}
+
+`}>
+
 
 {request.status}
+
 
 </span>
 
 
 
+
+
+
+
 </div>
+
+
 
 
 
@@ -561,9 +897,64 @@ text-yellow-700
 
 <div className="
 mt-5
-flex
-gap-3
+rounded-xl
+bg-slate-50
+p-4
 ">
+
+
+
+<p className="
+text-sm
+text-slate-500
+">
+
+Relief Details
+
+</p>
+
+
+
+<p className="
+mt-1
+font-semibold
+text-slate-900
+">
+
+{request.rescueDonation.type}
+
+</p>
+
+
+
+
+<p className="
+text-slate-600
+">
+
+Quantity:
+
+<span className="
+ml-2
+font-semibold
+">
+
+{request.rescueDonation.quantity}
+
+</span>
+
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
 
 
 
@@ -574,7 +965,14 @@ request.status==="PENDING"
 &&
 
 
-<>
+<div className="
+mt-5
+flex
+gap-3
+">
+
+
+
 
 
 
@@ -589,10 +987,11 @@ request.id,
 )}
 
 className="
+flex-1
 rounded-xl
 bg-emerald-700
 px-5
-py-2
+py-3
 font-semibold
 text-white
 hover:bg-emerald-800
@@ -603,6 +1002,9 @@ hover:bg-emerald-800
 ✅ Accept
 
 </button>
+
+
+
 
 
 
@@ -620,10 +1022,11 @@ request.id,
 )}
 
 className="
+flex-1
 rounded-xl
 bg-red-600
 px-5
-py-2
+py-3
 font-semibold
 text-white
 hover:bg-red-700
@@ -637,8 +1040,10 @@ hover:bg-red-700
 
 
 
-</>
 
+
+
+</div>
 
 
 }
@@ -647,25 +1052,23 @@ hover:bg-red-700
 
 
 
+
+
+
+
 </div>
 
 
-
-
-
-</div>
 
 
 
 ))
 
 
-
 }
 
 
 
-
 </div>
 
 
@@ -673,7 +1076,10 @@ hover:bg-red-700
 
 
 
+
+
 </div>
+
 
 
 </main>
@@ -683,7 +1089,9 @@ hover:bg-red-700
 </ProtectedRoute>
 
 
+
 );
+
 
 
 }
