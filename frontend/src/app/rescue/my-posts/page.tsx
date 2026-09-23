@@ -18,11 +18,14 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 
 
+
 const API_URL =
 
     process.env.NEXT_PUBLIC_API_URL ||
 
     "http://localhost:8080";
+
+
 
 
 
@@ -70,6 +73,9 @@ type RescuePost = {
 
 
 
+
+
+
 export default function MyReliefPostsPage(){
 
 
@@ -105,6 +111,7 @@ export default function MyReliefPostsPage(){
     useEffect(()=>{
 
 
+
         const savedUser =
 
             localStorage.getItem("user");
@@ -112,6 +119,7 @@ export default function MyReliefPostsPage(){
 
 
         if(savedUser){
+
 
 
             const userData =
@@ -145,6 +153,9 @@ export default function MyReliefPostsPage(){
 
 
 
+
+
+
     async function loadPosts(
 
         userId:number
@@ -152,10 +163,13 @@ export default function MyReliefPostsPage(){
     ){
 
 
+
         try{
 
 
             setLoading(true);
+
+
 
 
 
@@ -166,6 +180,8 @@ export default function MyReliefPostsPage(){
 `${API_URL}/api/rescues/user/${userId}`
 
                 );
+
+
 
 
 
@@ -186,9 +202,12 @@ export default function MyReliefPostsPage(){
 
 
 
+
             const data =
 
                 await response.json();
+
+
 
 
 
@@ -202,7 +221,9 @@ export default function MyReliefPostsPage(){
         catch(error){
 
 
+
             console.log(error);
+
 
 
         }
@@ -218,6 +239,113 @@ export default function MyReliefPostsPage(){
 
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    async function deletePost(
+
+        id:number
+
+    ){
+
+
+
+        const confirmDelete =
+
+            window.confirm(
+
+                "Are you sure you want to delete this relief post?"
+
+            );
+
+
+
+
+
+        if(!confirmDelete){
+
+            return;
+
+        }
+
+
+
+
+
+
+
+        try{
+
+
+
+            const response =
+
+                await fetch(
+
+`${API_URL}/api/rescues/${id}`,
+
+                    {
+
+                        method:"DELETE"
+
+                    }
+
+                );
+
+
+
+
+
+
+
+            if(response.ok && user){
+
+
+                loadPosts(
+
+                    user.id
+
+                );
+
+
+            }
+
+
+
+
+
+        }
+
+        catch(error){
+
+
+
+            console.log(
+
+                "Delete error",
+
+                error
+
+            );
+
+
+        }
+
+
+
+    }
+
+
+
 
 
 
@@ -245,9 +373,18 @@ export default function MyReliefPostsPage(){
 
 
 
+
             case "RESERVED":
 
                 return "bg-yellow-100 text-yellow-700";
+
+
+
+
+            case "PICKED_UP":
+
+                return "bg-blue-100 text-blue-700";
+
 
 
 
@@ -257,9 +394,18 @@ export default function MyReliefPostsPage(){
 
 
 
-            default:
+
+            case "EXPIRED":
 
                 return "bg-red-100 text-red-700";
+
+
+
+
+            default:
+
+                return "bg-slate-100 text-slate-700";
+
 
 
         }
@@ -278,7 +424,10 @@ export default function MyReliefPostsPage(){
 return(
 
 
+
 <ProtectedRoute>
+
+
 
 
 
@@ -293,10 +442,13 @@ md:p-10
 
 
 
+
+
 <div className="
 mx-auto
 max-w-6xl
 ">
+
 
 
 
@@ -315,16 +467,23 @@ shadow-lg
 
 
 
+
+
 <div className="
 flex
 items-center
 justify-between
+gap-4
 ">
 
 
 
 
+
+
+
 <div>
+
 
 
 <h1 className="
@@ -336,6 +495,8 @@ text-slate-900
 📦 My Relief Posts
 
 </h1>
+
+
 
 
 
@@ -352,6 +513,7 @@ Manage the relief items you shared.
 
 
 </div>
+
 
 
 
@@ -381,10 +543,11 @@ hover:bg-emerald-800
 
 
 
+
+
+
+
 </div>
-
-
-
 
 
 
@@ -397,6 +560,8 @@ hover:bg-emerald-800
 {
 
 loading ?
+
+
 
 
 
@@ -416,11 +581,16 @@ Loading posts...
 
 
 
+
 :
 
 
 
+
+
 posts.length===0 ?
+
+
 
 
 
@@ -435,6 +605,7 @@ text-center
 
 
 
+
 <div className="
 text-5xl
 ">
@@ -445,15 +616,19 @@ text-5xl
 
 
 
+
+
 <h2 className="
 mt-4
 text-xl
 font-bold
 ">
 
-No relief posts found
+No Relief Posts Yet
 
 </h2>
+
+
 
 
 
@@ -462,9 +637,36 @@ mt-2
 text-slate-600
 ">
 
-You have not shared any relief yet.
+Share your first relief donation with the community.
 
 </p>
+
+
+
+
+
+<Link
+
+href="/rescue/create"
+
+className="
+mt-5
+inline-block
+rounded-xl
+bg-emerald-700
+px-5
+py-3
+font-semibold
+text-white
+"
+
+>
+
++ Create Relief
+
+</Link>
+
+
 
 
 
@@ -477,6 +679,8 @@ You have not shared any relief yet.
 
 
 :
+
+
 
 
 
@@ -492,9 +696,11 @@ md:grid-cols-2
 
 
 
+
 {
 
 posts.map((post)=>(
+
 
 
 
@@ -507,11 +713,15 @@ rounded-2xl
 border
 border-slate-200
 p-6
-hover:shadow-md
 transition
+hover:shadow-md
 "
 
 >
+
+
+
+
 
 
 
@@ -526,8 +736,6 @@ gap-3
 
 
 
-
-<div>
 
 
 <h2 className="
@@ -558,9 +766,6 @@ post.type==="FOOD"
 
 
 
-</div>
-
-
 
 
 
@@ -584,6 +789,9 @@ ${statusStyle(post.status)}
 {post.status}
 
 </span>
+
+
+
 
 
 
@@ -621,6 +829,9 @@ text-slate-600
 
 
 
+
+
+
 <p>
 
 📦 Quantity:
@@ -636,6 +847,9 @@ text-slate-900
 </span>
 
 </p>
+
+
+
 
 
 
@@ -659,6 +873,9 @@ text-slate-900
 
 
 
+
+
+
 <p>
 
 ⏳ Expiry:
@@ -670,10 +887,15 @@ text-slate-900
 ">
 
 {
+
 new Date(
+
 post.expiryTime
+
 )
+
 .toLocaleString()
+
 }
 
 </span>
@@ -682,8 +904,26 @@ post.expiryTime
 
 
 
+
+
+
+
 </div>
 
+
+
+
+
+
+
+
+
+<div className="
+mt-6
+grid
+grid-cols-3
+gap-3
+">
 
 
 
@@ -694,24 +934,23 @@ post.expiryTime
 
 <Link
 
-href={`/pickup-requests`}
+href={`/rescue/edit/${post.id}`}
 
 className="
-mt-5
-block
 rounded-xl
-bg-emerald-700
-px-4
+bg-blue-600
+px-3
 py-3
 text-center
+text-sm
 font-semibold
 text-white
-hover:bg-emerald-800
+hover:bg-blue-700
 "
 
 >
 
-🚚 View Pickup Requests
+✏️ Edit
 
 </Link>
 
@@ -719,13 +958,97 @@ hover:bg-emerald-800
 
 
 
+
+
+
+<Link
+
+href="/pickup-requests"
+
+className="
+rounded-xl
+bg-emerald-700
+px-3
+py-3
+text-center
+text-sm
+font-semibold
+text-white
+hover:bg-emerald-800
+"
+
+>
+
+🚚 Pickup
+
+</Link>
+
+
+
+
+
+
+
+
+<button
+
+onClick={()=>deletePost(post.id)}
+
+className="
+rounded-xl
+bg-red-600
+px-3
+py-3
+text-sm
+font-semibold
+text-white
+hover:bg-red-700
+"
+
+>
+
+🗑 Delete
+
+</button>
+
+
+
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
+
+</div>
+
+
 
 
 
 ))
 
 
+
+
+
+}
+
+
+
+</div>
+
+
+
+
+
 }
 
 
@@ -733,27 +1056,34 @@ hover:bg-emerald-800
 
 
 
-</div>
-
-
-}
-
-
-
 
 </div>
 
 
+
+
+
+
+
 </div>
+
+
+
+
 
 
 </main>
 
 
+
+
+
 </ProtectedRoute>
 
 
+
 );
+
 
 
 }

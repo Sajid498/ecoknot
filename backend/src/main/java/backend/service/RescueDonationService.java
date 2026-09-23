@@ -14,13 +14,19 @@ import backend.repository.RescueDonationRepository;
 
 
 
+
+
 @Service
 public class RescueDonationService {
 
 
 
 
+
     private final RescueDonationRepository rescueDonationRepository;
+
+
+
 
 
 
@@ -32,7 +38,9 @@ public class RescueDonationService {
 
     ){
 
+
         this.rescueDonationRepository = rescueDonationRepository;
+
 
     }
 
@@ -43,6 +51,12 @@ public class RescueDonationService {
 
 
 
+
+
+
+
+
+    // Get all relief posts
 
     public List<RescueDonationDTO> getAllDonations(){
 
@@ -75,13 +89,18 @@ public class RescueDonationService {
 
 
 
-    // Get posts created by a specific donor
+
+
+
+
+    // Get posts created by a specific user
 
     public List<RescueDonationDTO> getUserDonations(
 
             Long userId
 
     ){
+
 
 
         return rescueDonationRepository
@@ -105,6 +124,59 @@ public class RescueDonationService {
 
 
 
+
+
+
+
+    // Get single relief post by id
+
+    public RescueDonationDTO getDonationById(
+
+            Long id
+
+    ){
+
+
+
+        RescueDonation donation =
+
+                rescueDonationRepository
+
+                        .findById(id)
+
+                        .orElseThrow(
+
+                                () -> new RuntimeException(
+
+                                        "Relief post not found"
+
+                                )
+
+                        );
+
+
+
+
+
+        return convertToDTO(donation);
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Create relief post
+
     public RescueDonationDTO createDonation(
 
             RescueDonation donation,
@@ -118,6 +190,7 @@ public class RescueDonationService {
         donation.setUser(user);
 
 
+
         donation.setCreatedAt(
 
                 LocalDateTime.now()
@@ -128,7 +201,10 @@ public class RescueDonationService {
 
 
 
+
+
         if(donation.getStatus()==null){
+
 
 
             donation.setStatus(
@@ -159,8 +235,8 @@ public class RescueDonationService {
 
 
 
-        return convertToDTO(saved);
 
+        return convertToDTO(saved);
 
 
     }
@@ -173,18 +249,32 @@ public class RescueDonationService {
 
 
 
-    /*
-        Automatically update expired donations
 
-        AVAILABLE
-              |
-              |
-        expiry time passed
-              |
-              |
-        EXPIRED
+
+
+
+    /*
+    
+    Automatically update expired donations
+
+
+    AVAILABLE
+
+          |
+
+          |
+
+    expiry time passed
+
+          |
+
+          |
+
+    EXPIRED
+
 
     */
+
 
 
     private void updateExpiredStatus(){
@@ -213,9 +303,7 @@ public class RescueDonationService {
 
 
 
-
         for(RescueDonation donation : donations){
-
 
 
 
@@ -250,13 +338,12 @@ public class RescueDonationService {
 
 
 
+
                 rescueDonationRepository.save(
 
                         donation
 
                 );
-
-
 
 
             }
@@ -266,6 +353,7 @@ public class RescueDonationService {
 
 
         }
+
 
 
 
@@ -280,6 +368,227 @@ public class RescueDonationService {
 
 
 
+
+
+
+
+    // Update relief post
+
+    public RescueDonationDTO updateDonation(
+
+            Long id,
+
+            RescueDonation updatedDonation
+
+    ){
+
+
+
+        RescueDonation existing =
+
+                rescueDonationRepository
+
+                        .findById(id)
+
+                        .orElseThrow(
+
+                                () -> new RuntimeException(
+
+                                        "Relief post not found"
+
+                                )
+
+                        );
+
+
+
+
+
+
+
+
+        existing.setTitle(
+
+                updatedDonation.getTitle()
+
+        );
+
+
+
+
+
+
+        existing.setDescription(
+
+                updatedDonation.getDescription()
+
+        );
+
+
+
+
+
+
+
+        existing.setType(
+
+                updatedDonation.getType()
+
+        );
+
+
+
+
+
+
+
+        existing.setQuantity(
+
+                updatedDonation.getQuantity()
+
+        );
+
+
+
+
+
+
+
+        existing.setLocation(
+
+                updatedDonation.getLocation()
+
+        );
+
+
+
+
+
+
+
+        existing.setLatitude(
+
+                updatedDonation.getLatitude()
+
+        );
+
+
+
+
+
+
+
+        existing.setLongitude(
+
+                updatedDonation.getLongitude()
+
+        );
+
+
+
+
+
+
+
+        existing.setExpiryTime(
+
+                updatedDonation.getExpiryTime()
+
+        );
+
+
+
+
+
+
+
+
+
+        RescueDonation saved =
+
+                rescueDonationRepository.save(
+
+                        existing
+
+                );
+
+
+
+
+
+
+
+        return convertToDTO(saved);
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Delete relief post
+
+    public void deleteDonation(
+
+            Long id
+
+    ){
+
+
+
+        RescueDonation donation =
+
+                rescueDonationRepository
+
+                        .findById(id)
+
+                        .orElseThrow(
+
+                                () -> new RuntimeException(
+
+                                        "Relief post not found"
+
+                                )
+
+                        );
+
+
+
+
+
+
+        rescueDonationRepository.delete(
+
+                donation
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Convert Entity to DTO
+
     private RescueDonationDTO convertToDTO(
 
             RescueDonation donation
@@ -291,25 +600,37 @@ public class RescueDonationService {
         return new RescueDonationDTO(
 
 
+
                 donation.getId(),
+
 
                 donation.getTitle(),
 
+
                 donation.getDescription(),
+
 
                 donation.getType(),
 
+
                 donation.getQuantity(),
+
 
                 donation.getLocation(),
 
+
                 donation.getLatitude(),
+
 
                 donation.getLongitude(),
 
+
                 donation.getExpiryTime(),
 
+
                 donation.getStatus(),
+
+
 
 
 
@@ -322,6 +643,8 @@ public class RescueDonationService {
                 :
 
                 null,
+
+
 
 
 
@@ -339,13 +662,17 @@ public class RescueDonationService {
 
 
 
+
+
                 donation.getCreatedAt()
+
 
 
         );
 
 
     }
+
 
 
 
