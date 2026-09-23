@@ -3,14 +3,21 @@ package backend.controller;
 
 import java.util.List;
 
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-
-import backend.entity.TimeOffer;
+import backend.entity.TimeRequest;
 import backend.entity.TimeTransaction;
 import backend.service.TimeBankService;
+
+
 
 
 
@@ -24,6 +31,7 @@ public class TimeBankController {
 
 
     private final TimeBankService timeBankService;
+
 
 
 
@@ -49,12 +57,13 @@ public class TimeBankController {
 
 
 
-    // ==================================
-    // Create Time Offer
-    // ==================================
+    // ======================================
+    // CREATE HELP REQUEST
+    // ======================================
 
-    @PostMapping("/offers")
-    public ResponseEntity<TimeOffer> createOffer(
+
+    @PostMapping("/requests")
+    public ResponseEntity<TimeRequest> createRequest(
 
             @RequestParam Long userId,
 
@@ -62,17 +71,16 @@ public class TimeBankController {
 
             @RequestParam String description,
 
-            @RequestParam String skillCategory,
+            @RequestParam String category,
 
             @RequestParam Integer hours
 
     ){
 
 
-
         return ResponseEntity.ok(
 
-                timeBankService.createOffer(
+                timeBankService.createRequest(
 
                         userId,
 
@@ -80,7 +88,7 @@ public class TimeBankController {
 
                         description,
 
-                        skillCategory,
+                        category,
 
                         hours
 
@@ -99,18 +107,18 @@ public class TimeBankController {
 
 
 
-    // ==================================
-    // Get Available Offers
-    // ==================================
+    // ======================================
+    // GET OPEN REQUESTS
+    // ======================================
 
-    @GetMapping("/offers")
-    public ResponseEntity<List<TimeOffer>> getOffers(){
 
+    @GetMapping("/requests")
+    public ResponseEntity<List<TimeRequest>> getRequests(){
 
 
         return ResponseEntity.ok(
 
-                timeBankService.getAvailableOffers()
+                timeBankService.getOpenRequests()
 
         );
 
@@ -125,26 +133,22 @@ public class TimeBankController {
 
 
 
-    // ==================================
-    // Get My Offers
-    // ==================================
+    // ======================================
+    // GET USER REQUESTS
+    // ======================================
 
-    @GetMapping("/my-offers/{userId}")
-    public ResponseEntity<List<TimeOffer>> getMyOffers(
+
+    @GetMapping("/requests/user/{userId}")
+    public ResponseEntity<List<TimeRequest>> getUserRequests(
 
             @PathVariable Long userId
 
     ){
 
 
-
         return ResponseEntity.ok(
 
-                timeBankService.getUserOffers(
-
-                        userId
-
-                )
+                timeBankService.getUserRequests(userId)
 
         );
 
@@ -159,30 +163,22 @@ public class TimeBankController {
 
 
 
-    // ==================================
-    // Complete Exchange
-    // ==================================
+    // ======================================
+    // ACCEPT REQUEST
+    // ======================================
 
-    @PutMapping("/complete/{offerId}")
-    public ResponseEntity<TimeTransaction> completeExchange(
 
-            @PathVariable Long offerId,
+    @PutMapping("/accept/{requestId}")
+    public ResponseEntity<TimeRequest> acceptRequest(
 
-            @RequestParam Long userId
+            @PathVariable Long requestId
 
     ){
 
 
-
         return ResponseEntity.ok(
 
-                timeBankService.completeExchange(
-
-                        userId,
-
-                        offerId
-
-                )
+                timeBankService.acceptRequest(requestId)
 
         );
 
@@ -197,32 +193,28 @@ public class TimeBankController {
 
 
 
-    // ==================================
-    // Spend Credits
-    // ==================================
+    // ======================================
+    // COMPLETE REQUEST
+    // ======================================
 
-    @PostMapping("/spend")
-    public ResponseEntity<TimeTransaction> spendCredits(
 
-            @RequestParam Long userId,
+    @PutMapping("/complete/{requestId}")
+    public ResponseEntity<TimeTransaction> completeRequest(
 
-            @RequestParam Integer hours,
+            @PathVariable Long requestId,
 
-            @RequestParam String description
+            @RequestParam Long helperId
 
     ){
 
 
-
         return ResponseEntity.ok(
 
-                timeBankService.spendCredits(
+                timeBankService.completeRequest(
 
-                        userId,
+                        requestId,
 
-                        hours,
-
-                        description
+                        helperId
 
                 )
 
@@ -239,9 +231,10 @@ public class TimeBankController {
 
 
 
-    // ==================================
-    // Get Balance
-    // ==================================
+    // ======================================
+    // BALANCE
+    // ======================================
+
 
     @GetMapping("/balance/{userId}")
     public ResponseEntity<Integer> getBalance(
@@ -251,48 +244,9 @@ public class TimeBankController {
     ){
 
 
-
         return ResponseEntity.ok(
 
-                timeBankService.getBalance(
-
-                        userId
-
-                )
-
-        );
-
-
-    }
-
-
-
-
-
-
-
-
-
-    // ==================================
-    // Transaction History
-    // ==================================
-
-    @GetMapping("/history/{userId}")
-    public ResponseEntity<List<TimeTransaction>> getHistory(
-
-            @PathVariable Long userId
-
-    ){
-
-
-
-        return ResponseEntity.ok(
-
-                timeBankService.getHistory(
-
-                        userId
-
-                )
+                timeBankService.getBalance(userId)
 
         );
 

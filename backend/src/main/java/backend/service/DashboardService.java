@@ -183,7 +183,7 @@ public class DashboardService {
 
                                 transaction ->
 
-                                        transaction.getAmount()
+                                        transaction.getHours()
 
                         )
 

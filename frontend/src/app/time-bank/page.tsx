@@ -6,11 +6,15 @@ import {
     useState
 } from "react";
 
+
 import Link from "next/link";
-import TimeOfferCard from "@/components/TimeOfferCard";
+
+
+import TimeRequestCard from "@/components/TimeRequestCard";
+
 
 import {
-    TimeOffer
+    TimeRequest
 } from "@/types/timebank";
 
 
@@ -35,32 +39,21 @@ export default function TimeBankPage(){
 
 
 
+    const [requests,setRequests] =
 
-
-
-    const [offers,setOffers] =
-
-        useState<TimeOffer[]>([]);
-
-
-
+        useState<TimeRequest[]>([]);
 
 
 
     const [balance,setBalance] =
 
-        useState(0);
-
-
-
+        useState<number>(0);
 
 
 
     const [loading,setLoading] =
 
         useState(true);
-
-
 
 
 
@@ -97,9 +90,7 @@ export default function TimeBankPage(){
 
         if(user.id){
 
-
             loadData();
-
 
         }
 
@@ -117,19 +108,16 @@ export default function TimeBankPage(){
     async function loadData(){
 
 
-
         try{
-
 
 
             await Promise.all([
 
-                loadBalance(),
+                loadRequests(),
 
-                loadOffers()
+                loadBalance()
 
             ]);
-
 
 
         }
@@ -137,9 +125,7 @@ export default function TimeBankPage(){
         catch(error){
 
 
-
             console.log(error);
-
 
 
         }
@@ -163,56 +149,13 @@ export default function TimeBankPage(){
 
 
 
-    async function loadBalance(){
+    async function loadRequests(){
 
-
-
-        const response =
-
-            await fetch(
-
-`${API_URL}/api/time-bank/balance/${user.id}`
-
-            );
-
-
-
-
-
-
-        const data =
-
-            await response.json();
-
-
-
-
-
-
-
-        setBalance(data);
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-   async function loadOffers(){
-
-
-    try{
 
 
         const response = await fetch(
 
-            `${API_URL}/api/time-bank/offers`
+            `${API_URL}/api/time-bank/requests`
 
         );
 
@@ -223,12 +166,13 @@ export default function TimeBankPage(){
 
 
 
-
         console.log(
-            "Time Bank Offers:",
-            data
-        );
 
+            "REQUEST RESPONSE:",
+
+            data
+
+        );
 
 
 
@@ -236,7 +180,7 @@ export default function TimeBankPage(){
         if(Array.isArray(data)){
 
 
-            setOffers(data);
+            setRequests(data);
 
 
         }
@@ -244,34 +188,107 @@ export default function TimeBankPage(){
         else{
 
 
-            setOffers([]);
+            setRequests([]);
 
 
         }
 
 
-
     }
 
 
-    catch(error){
 
 
 
-        console.log(
-            "Offer loading error:",
-            error
+
+
+
+
+    async function loadBalance(){
+
+
+
+        if(!user.id){
+
+            return;
+
+        }
+
+
+
+        const response = await fetch(
+
+            `${API_URL}/api/time-bank/balance/${user.id}`
+
         );
 
 
-        setOffers([]);
+
+        const data = await response.json();
+
+
+
+        setBalance(data);
 
 
     }
 
 
 
-}
+
+
+
+
+
+
+    async function handleAccept(
+
+        requestId:number
+
+    ){
+
+
+
+        try{
+
+
+            await fetch(
+
+                `${API_URL}/api/time-bank/accept/${requestId}`,
+
+                {
+
+                    method:"PUT"
+
+                }
+
+            );
+
+
+
+            alert(
+
+                "Request accepted"
+
+            );
+
+
+
+            loadRequests();
+
+
+        }
+
+        catch(error){
+
+
+            console.log(error);
+
+
+        }
+
+
+    }
 
 
 
@@ -284,25 +301,40 @@ export default function TimeBankPage(){
     if(loading){
 
 
+
         return(
 
+
             <main className="
+
             min-h-screen
+
             flex
+
             items-center
+
             justify-center
+
             bg-slate-50
+
             ">
 
 
                 <div className="
+
                 rounded-xl
+
                 bg-white
+
                 p-8
+
                 shadow
+
                 ">
 
+
                     Loading Time Bank...
+
 
                 </div>
 
@@ -326,13 +358,28 @@ export default function TimeBankPage(){
 return(
 
 
-
 <main className="
+
 min-h-screen
+
 bg-slate-50
+
 p-6
+
 md:p-10
+
 ">
+
+
+
+<div className="
+
+mx-auto
+
+max-w-6xl
+
+">
+
 
 
 
@@ -340,127 +387,156 @@ md:p-10
 
 
 <div className="
-mx-auto
-max-w-6xl
+
+flex
+
+justify-between
+
+items-center
+
 ">
 
 
-
-
-
+<div>
 
 
 
 <h1 className="
+
 text-3xl
+
 font-bold
+
 text-slate-900
+
 ">
 
-⏳ Volunteer Time Bank
+
+⏳ Community Time Bank
+
 
 </h1>
 
-<Link
 
-href="/time-bank/create"
-
-className="
-mt-5
-inline-block
-rounded-xl
-bg-emerald-700
-px-5
-py-3
-font-semibold
-text-white
-hover:bg-emerald-800
-"
-
->
-
-+ Create Time Offer
-
-</Link>
-
-<Link
-
-href="/time-bank/history"
-
-className="
-ml-3
-rounded-xl
-bg-slate-800
-px-5
-py-3
-font-semibold
-text-white
-"
-
->
-
-📜 History
-
-</Link>
 
 <p className="
+
 mt-2
+
 text-slate-600
+
 ">
 
-Exchange skills and time instead of money.
+
+Give help, earn time credits, use credits later.
+
 
 </p>
 
 
 
+</div>
 
 
 
 
 
 
-{/* CREDIT CARD */}
+
+
+<Link
+
+href="/time-bank/request"
+
+className="
+
+rounded-xl
+
+bg-emerald-700
+
+px-5
+
+py-3
+
+font-semibold
+
+text-white
+
+hover:bg-emerald-800
+
+"
+
+>
+
+
++ Create Request
+
+
+</Link>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
 
 
 <div className="
+
 mt-8
+
 rounded-3xl
+
 bg-emerald-700
+
 p-8
+
 text-white
-shadow-lg
+
 ">
 
 
-<p className="
-text-sm
-opacity-90
-">
+<p className="text-sm">
+
 
 My Time Credits
 
+
 </p>
+
 
 
 
 <h2 className="
+
 mt-3
+
 text-5xl
+
 font-bold
+
 ">
 
+
 {balance}
+
 
 </h2>
 
 
 
-<p className="
-mt-2
-">
+<p className="mt-2">
+
 
 hours available
+
 
 </p>
 
@@ -476,21 +552,27 @@ hours available
 
 
 
-{/* OFFERS */}
-
-
 <section className="
+
 mt-10
+
 ">
+
 
 
 <h2 className="
+
 text-2xl
+
 font-bold
+
 text-slate-900
+
 ">
 
-Available Volunteer Help
+
+People Need Help
+
 
 </h2>
 
@@ -501,24 +583,31 @@ Available Volunteer Help
 
 
 
-
 {
 
-offers.length === 0 ?
+requests.length === 0 ?
 
 
 
 <div className="
+
 mt-5
+
 rounded-2xl
+
 bg-white
+
 p-8
+
 text-center
-text-slate-600
+
 shadow
+
 ">
 
-No volunteer offers available yet.
+
+No help requests available.
+
 
 </div>
 
@@ -529,39 +618,57 @@ No volunteer offers available yet.
 :
 
 
+
+
+
 <div className="
+
 mt-6
+
 grid
+
 gap-6
+
 md:grid-cols-2
+
 ">
+
 
 
 {
 
-offers.map(
 
-offer =>
+requests.map(
+
+request => (
 
 
-<TimeOfferCard
 
-key={offer.id}
+<TimeRequestCard
 
-offer={offer}
+key={request.id}
 
-onComplete={loadData}
+request={request}
+
+onAccept={handleAccept}
 
 />
 
 
 )
 
+)
+
+
 
 }
 
 
+
+
+
 </div>
+
 
 
 
@@ -579,6 +686,7 @@ onComplete={loadData}
 
 
 
+
 </div>
 
 
@@ -587,7 +695,6 @@ onComplete={loadData}
 
 
 );
-
 
 
 }

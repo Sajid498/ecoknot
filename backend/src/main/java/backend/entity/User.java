@@ -230,7 +230,10 @@ public class User {
 
 
 
-
+@OneToMany(
+        mappedBy = "requester"
+)
+private List<TimeTransaction> requestedTransactions;
 
 
 
@@ -246,7 +249,7 @@ public class User {
 
     @OneToMany(
 
-            mappedBy = "user",
+            mappedBy = "provider",
 
             cascade = CascadeType.ALL
 

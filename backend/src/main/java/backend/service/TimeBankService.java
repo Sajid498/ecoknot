@@ -4,19 +4,13 @@ package backend.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-
-import backend.entity.TimeOffer;
-import backend.entity.TimeOfferStatus;
+import backend.entity.TimeRequest;
 import backend.entity.TimeTransaction;
-import backend.entity.TransactionType;
 import backend.entity.User;
-
-import backend.exception.ResourceNotFoundException;
-
-import backend.repository.TimeOfferRepository;
+import backend.repository.TimeRequestRepository;
 import backend.repository.TimeTransactionRepository;
 import backend.repository.UserRepository;
 
@@ -29,7 +23,7 @@ public class TimeBankService {
 
 
 
-    private final TimeOfferRepository timeOfferRepository;
+    private final TimeRequestRepository timeRequestRepository;
 
     private final TimeTransactionRepository timeTransactionRepository;
 
@@ -42,10 +36,9 @@ public class TimeBankService {
 
 
 
-
     public TimeBankService(
 
-            TimeOfferRepository timeOfferRepository,
+            TimeRequestRepository timeRequestRepository,
 
             TimeTransactionRepository timeTransactionRepository,
 
@@ -54,7 +47,7 @@ public class TimeBankService {
     ){
 
 
-        this.timeOfferRepository = timeOfferRepository;
+        this.timeRequestRepository = timeRequestRepository;
 
         this.timeTransactionRepository = timeTransactionRepository;
 
@@ -71,11 +64,12 @@ public class TimeBankService {
 
 
 
-    // ==================================
-    // Create Time Offer
-    // ==================================
+    // ======================================
+    // Create Help Request
+    // ======================================
 
-    public TimeOffer createOffer(
+
+    public TimeRequest createRequest(
 
             Long userId,
 
@@ -83,33 +77,25 @@ public class TimeBankService {
 
             String description,
 
-            String skillCategory,
+            String category,
 
             Integer hours
 
     ){
 
 
-
-        User user = userRepository
-
-                .findById(userId)
+        User user = userRepository.findById(userId)
 
                 .orElseThrow(
 
-                        () -> new ResourceNotFoundException(
-
-                                "User not found"
-
-                        )
+                () -> new RuntimeException("User not found")
 
                 );
 
 
 
 
-
-        TimeOffer offer = new TimeOffer(
+        TimeRequest request = new TimeRequest(
 
                 user,
 
@@ -117,7 +103,7 @@ public class TimeBankService {
 
                 description,
 
-                skillCategory,
+                category,
 
                 hours
 
@@ -125,13 +111,7 @@ public class TimeBankService {
 
 
 
-
-
-        return timeOfferRepository.save(
-
-                offer
-
-        );
+        return timeRequestRepository.save(request);
 
 
     }
@@ -144,21 +124,18 @@ public class TimeBankService {
 
 
 
-    // ==================================
-    // Get Available Offers
-    // ==================================
-
-    public List<TimeOffer> getAvailableOffers(){
+    // ======================================
+    // Get Open Requests
+    // ======================================
 
 
+    public List<TimeRequest> getOpenRequests(){
 
-        return timeOfferRepository
 
-                .findByStatusOrderByCreatedAtDesc(
 
-                        TimeOfferStatus.AVAILABLE
+        return timeRequestRepository
 
-                );
+                .findByStatus("OPEN");
 
 
     }
@@ -171,25 +148,21 @@ public class TimeBankService {
 
 
 
-    // ==================================
-    // Get User Offers
-    // ==================================
+    // ======================================
+    // Get User Requests
+    // ======================================
 
-    public List<TimeOffer> getUserOffers(
+
+    public List<TimeRequest> getUserRequests(
 
             Long userId
 
     ){
 
 
+        return timeRequestRepository
 
-        return timeOfferRepository
-
-                .findByUserId(
-
-                        userId
-
-                );
+                .findByRequesterId(userId);
 
 
     }
@@ -202,51 +175,81 @@ public class TimeBankService {
 
 
 
-    // ==================================
-    // Complete Exchange
-    // Earn credits for provider
-    // ==================================
+    // ======================================
+    // Accept Request
+    // ======================================
 
-    public TimeTransaction completeExchange(
 
-            Long userId,
+    @Transactional
+    public TimeRequest acceptRequest(
 
-            Long offerId
+            Long requestId
+
+    ){
+
+
+        TimeRequest request = timeRequestRepository
+
+                .findById(requestId)
+
+                .orElseThrow(
+
+                () -> new RuntimeException("Request not found")
+
+                );
+
+
+
+        request.setStatus("ACCEPTED");
+
+
+
+        return timeRequestRepository.save(request);
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // ======================================
+    // Complete Work & Give Credit
+    // ======================================
+
+
+    @Transactional
+    public TimeTransaction completeRequest(
+
+            Long requestId,
+
+            Long helperId
 
     ){
 
 
 
-        User user = userRepository
+        TimeRequest request = timeRequestRepository
 
-                .findById(userId)
-
-                .orElseThrow(
-
-                        () -> new ResourceNotFoundException(
-
-                                "User not found"
-
-                        )
-
-                );
-
-
-
-
-
-
-        TimeOffer offer = timeOfferRepository
-
-                .findById(offerId)
+                .findById(requestId)
 
                 .orElseThrow(
 
-                        () -> new ResourceNotFoundException(
+                () -> new RuntimeException("Request not found")
 
-                                "Offer not found"
+                );
 
-                        )
+
+
+        User helper = userRepository.findById(helperId)
+
+                .orElseThrow(
+
+                () -> new RuntimeException("Helper not found")
 
                 );
 
@@ -254,21 +257,9 @@ public class TimeBankService {
 
 
 
+        request.setStatus("COMPLETED");
 
-
-        offer.setStatus(
-
-                TimeOfferStatus.COMPLETED
-
-        );
-
-
-
-        timeOfferRepository.save(
-
-                offer
-
-        );
+        timeRequestRepository.save(request);
 
 
 
@@ -276,45 +267,56 @@ public class TimeBankService {
 
 
 
-        TimeTransaction transaction =
+       TimeTransaction transaction = new TimeTransaction();
 
-                new TimeTransaction(
 
-                        user,
+transaction.setProvider(helper);
 
-                        offer.getAvailableHours(),
 
-                        TransactionType.EARN,
+transaction.setRequester(
 
-                        "Completed: "
+        request.getRequester()
 
-                        + offer.getTitle()
-
-                );
+);
 
 
 
+transaction.setHours(
+
+        request.getRequiredHours()
+
+);
 
 
 
+transaction.setDescription(
 
-        transaction.setCreatedAt(
+        "Completed help request: "
 
-                LocalDateTime.now()
+        + request.getTitle()
 
-        );
-
-
-
+);
 
 
 
+transaction.setTransactionType(
 
-        return timeTransactionRepository.save(
+        "EARN"
 
-                transaction
+);
 
-        );
+
+
+transaction.setCreatedAt(
+
+        LocalDateTime.now()
+
+);
+
+
+
+return timeTransactionRepository.save(transaction);
+
 
 
     }
@@ -327,103 +329,10 @@ public class TimeBankService {
 
 
 
-    // ==================================
-    // Create Spend Transaction
-    // ==================================
-
-    public TimeTransaction spendCredits(
-
-            Long userId,
-
-            Integer hours,
-
-            String description
-
-    ){
-
-
-
-        User user = userRepository
-
-                .findById(userId)
-
-                .orElseThrow(
-
-                        () -> new ResourceNotFoundException(
-
-                                "User not found"
-
-                        )
-
-                );
-
-
-
-
-
-
-
-
-        if(getBalance(userId) < hours){
-
-
-            throw new RuntimeException(
-
-                    "Not enough time credits"
-
-            );
-
-
-        }
-
-
-
-
-
-
-
-
-        TimeTransaction transaction =
-
-                new TimeTransaction(
-
-                        user,
-
-                        -hours,
-
-                        TransactionType.SPEND,
-
-                        description
-
-                );
-
-
-
-
-
-
-
-
-        return timeTransactionRepository.save(
-
-                transaction
-
-        );
-
-
-    }
-
-
-
-
-
-
-
-
-
-    // ==================================
+    // ======================================
     // Calculate Balance
-    // ==================================
+    // ======================================
+
 
     public Integer getBalance(
 
@@ -433,29 +342,20 @@ public class TimeBankService {
 
 
 
-        List<TimeTransaction> transactions =
+     List<TimeTransaction> transactions =
 
-                timeTransactionRepository
+        timeTransactionRepository
 
-                        .findByUserId(
-
-                                userId
-
-                        );
+        .findByProviderIdOrderByCreatedAtDesc(userId);
 
 
 
 
-
-
-
-        return transactions
-
-                .stream()
+        return transactions.stream()
 
                 .mapToInt(
 
-                        TimeTransaction::getAmount
+                TimeTransaction::getHours
 
                 )
 
@@ -465,36 +365,6 @@ public class TimeBankService {
 
     }
 
-
-
-
-
-
-
-
-
-    // ==================================
-    // Transaction History
-    // ==================================
-
-    public List<TimeTransaction> getHistory(
-
-            Long userId
-
-    ){
-
-
-
-        return timeTransactionRepository
-
-                .findByUserIdOrderByCreatedAtDesc(
-
-                        userId
-
-                );
-
-
-    }
 
 
 

@@ -3,13 +3,7 @@ package backend.entity;
 
 import java.time.LocalDateTime;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,12 +13,9 @@ import jakarta.persistence.Table;
 
 
 
-
 @Entity
 @Table(name = "time_transactions")
 public class TimeTransaction {
-
-
 
 
 
@@ -36,34 +27,25 @@ public class TimeTransaction {
 
 
 
-
-
+    // Person who provided help and earned credits
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User user;
+    @JoinColumn(name = "provider_id")
+    private User provider;
 
 
 
 
 
-
-
-    // Positive = Earn
-    // Negative = Spend
-
-    private Integer amount;
-
+    // Person who requested help and used credits
+    @ManyToOne
+    @JoinColumn(name = "requester_id")
+    private User requester;
 
 
 
 
 
-
-    @Enumerated(EnumType.STRING)
-    private TransactionType type;
-
-
+    private Integer hours;
 
 
 
@@ -75,12 +57,13 @@ public class TimeTransaction {
 
 
 
+    private String transactionType;
+
+
+
 
 
     private LocalDateTime createdAt;
-
-
-
 
 
 
@@ -102,24 +85,28 @@ public class TimeTransaction {
 
     public TimeTransaction(
 
-            User user,
+            User provider,
 
-            Integer amount,
+            User requester,
 
-            TransactionType type,
+            Integer hours,
 
-            String description
+            String description,
+
+            String transactionType
 
     ){
 
 
-        this.user = user;
+        this.provider = provider;
 
-        this.amount = amount;
+        this.requester = requester;
 
-        this.type = type;
+        this.hours = hours;
 
         this.description = description;
+
+        this.transactionType = transactionType;
 
         this.createdAt = LocalDateTime.now();
 
@@ -150,10 +137,23 @@ public class TimeTransaction {
 
 
 
-    public User getUser(){
+    public User getProvider(){
 
 
-        return user;
+        return provider;
+
+
+    }
+
+
+
+
+
+
+    public void setProvider(User provider){
+
+
+        this.provider = provider;
 
 
     }
@@ -166,10 +166,23 @@ public class TimeTransaction {
 
 
 
-    public void setUser(User user){
+    public User getRequester(){
 
 
-        this.user = user;
+        return requester;
+
+
+    }
+
+
+
+
+
+
+    public void setRequester(User requester){
+
+
+        this.requester = requester;
 
 
     }
@@ -182,26 +195,10 @@ public class TimeTransaction {
 
 
 
-    public Integer getAmount(){
+    public Integer getHours(){
 
 
-        return amount;
-
-
-    }
-
-
-
-
-
-
-
-
-
-    public void setAmount(Integer amount){
-
-
-        this.amount = amount;
+        return hours;
 
 
     }
@@ -211,29 +208,10 @@ public class TimeTransaction {
 
 
 
+    public void setHours(Integer hours){
 
 
-
-    public TransactionType getType(){
-
-
-        return type;
-
-
-    }
-
-
-
-
-
-
-
-
-
-    public void setType(TransactionType type){
-
-
-        this.type = type;
+        this.hours = hours;
 
 
     }
@@ -259,13 +237,39 @@ public class TimeTransaction {
 
 
 
-
-
-
     public void setDescription(String description){
 
 
         this.description = description;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    public String getTransactionType(){
+
+
+        return transactionType;
+
+
+    }
+
+
+
+
+
+
+    public void setTransactionType(String transactionType){
+
+
+        this.transactionType = transactionType;
 
 
     }
@@ -291,9 +295,6 @@ public class TimeTransaction {
 
 
 
-
-
-
     public void setCreatedAt(LocalDateTime createdAt){
 
 
@@ -301,7 +302,6 @@ public class TimeTransaction {
 
 
     }
-
 
 
 

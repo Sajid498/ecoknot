@@ -1,44 +1,46 @@
-export interface TimeOffer {
+export interface TimeRequest {
 
 
-    id:number;
+    id: number;
 
 
-    title:string;
+    requester: {
 
+        id: number;
 
-    description:string;
+        name: string;
 
+        email: string;
 
-    skillCategory:string;
-
-
-    availableHours:number;
-
-
-    status:
-    |
-    "AVAILABLE"
-    |
-    "REQUESTED"
-    |
-    "COMPLETED"
-    |
-    "CANCELLED";
+    };
 
 
 
-    userName?:string;
+    title: string;
 
 
-    createdAt?:string;
+
+    description: string;
+
+
+
+    category: string;
+
+
+
+    requiredHours: number;
+
+
+
+    status: string;
+
+
+
+    createdAt: string;
+
 
 
 }
-
-
-
-
 
 
 
@@ -47,24 +49,50 @@ export interface TimeOffer {
 export interface TimeTransaction {
 
 
-    id:number;
-
-
-    amount:number;
-
-
-    type:
-    |
-    "EARN"
-    |
-    "SPEND";
+    id: number;
 
 
 
-    description:string;
+    provider: {
 
 
-    createdAt:string;
+        id: number;
+
+        name: string;
+
+        email: string;
+
+    };
+
+
+
+    requester: {
+
+
+        id: number;
+
+        name: string;
+
+        email: string;
+
+    };
+
+
+
+    hours: number;
+
+
+
+    description: string;
+
+
+
+    transactionType: string;
+
+
+
+    createdAt: string;
+
 
 
 }
@@ -73,20 +101,9 @@ export interface TimeTransaction {
 
 
 
+export interface TimeBalance {
 
 
-
-
-export interface TimeBankStats {
-
-
-    balance:number;
-
-
-    totalOffers:number;
-
-
-    totalTransactions:number;
-
+    balance: number;
 
 }
