@@ -22,6 +22,8 @@ import {
 
 
 
+
+
 const ReliefMap = dynamic(
 
     ()=>import("@/components/ReliefMap"),
@@ -31,6 +33,9 @@ const ReliefMap = dynamic(
     }
 
 );
+
+
+
 
 
 
@@ -61,11 +66,9 @@ export default function ReliefHubPage(){
 
 
 
-
     const [loading,setLoading] =
 
         useState(true);
-
 
 
 
@@ -77,7 +80,6 @@ export default function ReliefHubPage(){
 
 
 
-
     const [userLat,setUserLat] =
 
         useState<number | null>(null);
@@ -85,11 +87,9 @@ export default function ReliefHubPage(){
 
 
 
-
     const [userLng,setUserLng] =
 
         useState<number | null>(null);
-
 
 
 
@@ -132,7 +132,6 @@ export default function ReliefHubPage(){
 
 
 
-
             const response =
 
                 await fetch(
@@ -140,7 +139,6 @@ export default function ReliefHubPage(){
                     `${API_URL}/api/rescues`
 
                 );
-
 
 
 
@@ -163,12 +161,9 @@ export default function ReliefHubPage(){
 
 
 
-
             const data =
 
                 await response.json();
-
-
 
 
 
@@ -178,9 +173,7 @@ export default function ReliefHubPage(){
 
 
 
-
         }
-
 
         catch(error){
 
@@ -190,7 +183,6 @@ export default function ReliefHubPage(){
 
         }
 
-
         finally{
 
 
@@ -198,7 +190,6 @@ export default function ReliefHubPage(){
 
 
         }
-
 
 
     }
@@ -222,7 +213,6 @@ export default function ReliefHubPage(){
         const now =
 
             new Date().getTime();
-
 
 
 
@@ -318,6 +308,7 @@ export default function ReliefHubPage(){
 
 
 
+
         const dLng =
 
             (
@@ -398,7 +389,6 @@ export default function ReliefHubPage(){
         );
 
 
-
     }
 
 
@@ -433,34 +423,25 @@ export default function ReliefHubPage(){
 
 
 
-
         navigator.geolocation.getCurrentPosition(
 
             (position)=>{
 
 
 
-                const lat =
+                setUserLat(
 
-                    position.coords.latitude;
+                    position.coords.latitude
 
-
-
-                const lng =
-
-                    position.coords.longitude;
+                );
 
 
 
+                setUserLng(
 
+                    position.coords.longitude
 
-
-
-                setUserLat(lat);
-
-
-                setUserLng(lng);
-
+                );
 
 
 
@@ -487,8 +468,61 @@ export default function ReliefHubPage(){
         );
 
 
-
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    const totalPosts = rescues.length;
+
+
+
+    const availablePosts =
+
+        rescues.filter(
+
+            (item)=>
+
+                item.status==="AVAILABLE"
+
+        ).length;
+
+
+
+
+
+    const foodPosts =
+
+        rescues.filter(
+
+            (item)=>
+
+                item.type==="FOOD"
+
+        ).length;
+
+
+
+
+
+    const medicinePosts =
+
+        rescues.filter(
+
+            (item)=>
+
+                item.type==="MEDICINE"
+
+        ).length;
+
 
 
 
@@ -516,11 +550,11 @@ export default function ReliefHubPage(){
 
                 &&
 
-                userLat
+                userLat!==null
 
                 &&
 
-                userLng
+                userLng!==null
 
                 &&
 
@@ -610,7 +644,6 @@ export default function ReliefHubPage(){
             return true;
 
 
-
         })
 
         .sort((a,b)=>{
@@ -622,11 +655,11 @@ export default function ReliefHubPage(){
 
                 &&
 
-                a.distance
+                a.distance!==undefined
 
                 &&
 
-                b.distance
+                b.distance!==undefined
 
             ){
 
@@ -645,10 +678,12 @@ export default function ReliefHubPage(){
             }
 
 
+
             return 0;
 
 
         });
+
 
 
 
@@ -728,9 +763,7 @@ Connect surplus food and medicine with people who need them.
 </p>
 
 
-
 </div>
-
 
 
 
@@ -749,6 +782,7 @@ px-5
 py-3
 font-semibold
 text-white
+hover:bg-emerald-800
 "
 
 >
@@ -756,6 +790,171 @@ text-white
 + Create Relief Post
 
 </Link>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* Dashboard Statistics */}
+
+<div className="
+mt-10
+grid
+gap-5
+md:grid-cols-4
+">
+
+
+
+
+
+<div className="
+rounded-2xl
+bg-white
+p-6
+shadow
+border
+">
+
+<p className="
+text-sm
+text-slate-500
+">
+
+🌱 Total Relief Posts
+
+</p>
+
+<h2 className="
+mt-3
+text-3xl
+font-bold
+">
+
+{totalPosts}
+
+</h2>
+
+</div>
+
+
+
+
+
+
+<div className="
+rounded-2xl
+bg-white
+p-6
+shadow
+border
+">
+
+<p className="
+text-sm
+text-slate-500
+">
+
+✅ Available
+
+</p>
+
+<h2 className="
+mt-3
+text-3xl
+font-bold
+text-emerald-700
+">
+
+{availablePosts}
+
+</h2>
+
+</div>
+
+
+
+
+
+
+<div className="
+rounded-2xl
+bg-white
+p-6
+shadow
+border
+">
+
+<p className="
+text-sm
+text-slate-500
+">
+
+🍱 Food Donations
+
+</p>
+
+<h2 className="
+mt-3
+text-3xl
+font-bold
+text-orange-600
+">
+
+{foodPosts}
+
+</h2>
+
+</div>
+
+
+
+
+
+
+
+<div className="
+rounded-2xl
+bg-white
+p-6
+shadow
+border
+">
+
+<p className="
+text-sm
+text-slate-500
+">
+
+💊 Medicine Donations
+
+</p>
+
+<h2 className="
+mt-3
+text-3xl
+font-bold
+text-blue-600
+">
+
+{medicinePosts}
+
+</h2>
+
+</div>
+
+
 
 
 
@@ -802,7 +1001,6 @@ hover:bg-blue-700
 mt-10
 ">
 
-
 <h2 className="
 mb-4
 text-2xl
@@ -821,6 +1019,7 @@ font-bold
 rescues={rescues}
 
 />
+
 
 
 </div>
@@ -842,10 +1041,10 @@ gap-3
 
 
 
+
+
 <button
-
 onClick={()=>setFilter("ALL")}
-
 className="
 rounded-full
 bg-emerald-700
@@ -854,11 +1053,8 @@ py-2
 text-white
 font-semibold
 "
-
 >
-
 All
-
 </button>
 
 
@@ -866,9 +1062,7 @@ All
 
 
 <button
-
 onClick={()=>setFilter("URGENT")}
-
 className="
 rounded-full
 bg-red-600
@@ -877,11 +1071,8 @@ py-2
 text-white
 font-semibold
 "
-
 >
-
 🔥 Urgent
-
 </button>
 
 
@@ -889,9 +1080,7 @@ font-semibold
 
 
 <button
-
 onClick={()=>setFilter("FOOD")}
-
 className="
 rounded-full
 bg-orange-600
@@ -900,11 +1089,8 @@ py-2
 text-white
 font-semibold
 "
-
 >
-
 🍱 Food
-
 </button>
 
 
@@ -912,9 +1098,7 @@ font-semibold
 
 
 <button
-
 onClick={()=>setFilter("MEDICINE")}
-
 className="
 rounded-full
 bg-blue-600
@@ -923,12 +1107,12 @@ py-2
 text-white
 font-semibold
 "
-
 >
-
 💊 Medicine
-
 </button>
+
+
+
 
 
 
@@ -956,6 +1140,7 @@ space-y-6
 loading ?
 
 
+
 <div className="
 rounded-2xl
 bg-white
@@ -979,6 +1164,8 @@ filteredReliefs.length===0 ?
 
 
 
+
+
 <div className="
 rounded-2xl
 bg-white
@@ -999,9 +1186,8 @@ No relief post available.
 
 :
 
-
-
 filteredReliefs.map((relief)=>(
+
 
 
 <RescueCard
@@ -1013,16 +1199,17 @@ rescue={relief}
 />
 
 
-))
 
+))
 
 
 }
 
 
 
-</div>
 
+
+</div>
 
 
 

@@ -7,9 +7,13 @@ import {
 } from "react";
 
 
+import Link from "next/link";
+
+
 import {
     RescueDonation
 } from "@/types/rescue";
+
 
 
 
@@ -35,7 +39,7 @@ const API_URL =
 interface Props{
 
 
-    rescue:RescueDonation;
+    rescue: RescueDonation;
 
 
 }
@@ -62,35 +66,35 @@ rescue
 
 
 
+    const [remainingTime,setRemainingTime] =
 
+        useState("");
 
-const [remainingTime,setRemainingTime] =
 
-useState("");
 
 
 
+    const [timeStatus,setTimeStatus] =
 
+        useState("");
 
-const [timeStatus,setTimeStatus] =
 
-useState("");
 
 
 
+    const [user,setUser] =
 
+        useState<any>(null);
 
-const [user,setUser] =
 
-useState<any>(null);
 
 
 
+    const [pickupMessage,setPickupMessage] =
 
+        useState("");
 
-const [pickupMessage,setPickupMessage] =
 
-useState("");
 
 
 
@@ -98,96 +102,96 @@ useState("");
 
 
 
+    useEffect(()=>{
 
 
+        const savedUser =
 
+            localStorage.getItem("user");
 
 
-useEffect(()=>{
 
+        if(savedUser){
 
-    const savedUser =
 
-        localStorage.getItem("user");
+            setUser(
 
+                JSON.parse(savedUser)
 
+            );
 
-    if(savedUser){
 
+        }
 
-        setUser(
 
-            JSON.parse(savedUser)
+    },[]);
 
-        );
 
 
-    }
 
 
-},[]);
 
 
 
 
+    function calculateRemainingTime(){
 
 
 
+        const now =
 
+            new Date().getTime();
 
-function calculateRemainingTime(){
 
 
 
-    const now =
 
-        new Date().getTime();
+        const expiry =
 
+            new Date(
 
+                rescue.expiryTime
 
-    const expiry =
+            ).getTime();
 
-        new Date(
 
-            rescue.expiryTime
 
-        ).getTime();
 
 
+        const difference =
 
+            expiry - now;
 
 
-    const difference =
 
-        expiry - now;
 
 
 
 
+        if(difference <= 0){
 
 
 
-    if(difference <= 0){
+            setRemainingTime(
 
+                "Expired"
 
-        setRemainingTime(
+            );
 
-            "Expired"
 
-        );
 
+            setTimeStatus(
 
-        setTimeStatus(
+                "expired"
 
-            "expired"
+            );
 
-        );
 
 
-        return;
+            return;
 
 
-    }
+        }
 
 
 
@@ -195,218 +199,13 @@ function calculateRemainingTime(){
 
 
 
-    const hours =
+        const hours =
 
-        Math.floor(
+            Math.floor(
 
-            difference /
+                difference /
 
-            (1000 * 60 * 60)
-
-        );
-
-
-
-
-
-
-
-    const minutes =
-
-        Math.floor(
-
-            (difference %
-
-            (1000 * 60 * 60))
-
-            /
-
-            (1000 * 60)
-
-        );
-
-
-
-
-
-
-
-    setRemainingTime(
-
-        `${hours} hours ${minutes} minutes`
-
-    );
-
-
-
-
-
-
-
-
-    if(hours < 24){
-
-
-        setTimeStatus(
-
-            "urgent"
-
-        );
-
-
-    }
-
-    else{
-
-
-        setTimeStatus(
-
-            "safe"
-
-        );
-
-
-    }
-
-
-}
-
-
-
-
-
-
-
-
-
-useEffect(()=>{
-
-
-    calculateRemainingTime();
-
-
-
-    const timer =
-
-        setInterval(
-
-            calculateRemainingTime,
-
-            60000
-
-        );
-
-
-
-
-    return()=>{
-
-
-        clearInterval(timer);
-
-
-    };
-
-
-},[]);
-
-
-
-
-
-
-
-
-
-
-// Check whether current user owns this relief post
-
-function isOwnPost(){
-
-
-    return (
-
-        user &&
-
-        user.id === rescue.userId
-
-    );
-
-
-}
-
-
-
-
-
-
-
-
-
-async function requestPickup(){
-
-
-
-    if(!user){
-
-
-        setPickupMessage(
-
-            "Please login first"
-
-        );
-
-
-        return;
-
-
-    }
-
-
-
-
-
-
-
-
-    if(isOwnPost()){
-
-
-        setPickupMessage(
-
-            "You cannot request pickup for your own relief post"
-
-        );
-
-
-        return;
-
-
-    }
-
-
-
-
-
-
-
-
-
-    try{
-
-
-
-        const response =
-
-            await fetch(
-
-`${API_URL}/api/pickups?rescueId=${rescue.id}&volunteerId=${user.id}`,
-
-                {
-
-                    method:"POST"
-
-                }
+                (1000 * 60 * 60)
 
             );
 
@@ -415,9 +214,24 @@ async function requestPickup(){
 
 
 
-        const data =
 
-            await response.json();
+        const minutes =
+
+            Math.floor(
+
+                (
+
+                    difference %
+
+                    (1000 * 60 * 60)
+
+                )
+
+                /
+
+                (1000 * 60)
+
+            );
 
 
 
@@ -426,12 +240,25 @@ async function requestPickup(){
 
 
 
-        if(response.ok){
+        setRemainingTime(
+
+            `${hours}h ${minutes}m remaining`
+
+        );
 
 
-            setPickupMessage(
 
-                "Pickup request sent successfully 🚚"
+
+
+
+
+        if(hours < 24){
+
+
+
+            setTimeStatus(
+
+                "urgent"
 
             );
 
@@ -441,11 +268,10 @@ async function requestPickup(){
         else{
 
 
-            setPickupMessage(
 
-                data.message ||
+            setTimeStatus(
 
-                "Pickup request failed"
+                "safe"
 
             );
 
@@ -456,15 +282,68 @@ async function requestPickup(){
 
     }
 
-    catch(error){
 
 
-        console.log(error);
 
 
-        setPickupMessage(
 
-            "Something went wrong"
+
+
+
+    useEffect(()=>{
+
+
+
+        calculateRemainingTime();
+
+
+
+
+
+        const timer =
+
+            setInterval(
+
+                calculateRemainingTime,
+
+                60000
+
+            );
+
+
+
+
+
+
+        return()=>{
+
+
+            clearInterval(timer);
+
+
+        };
+
+
+
+    },[]);
+
+
+
+
+
+
+
+
+
+    function isOwnPost(){
+
+
+
+        return (
+
+            user &&
+
+            user.id === rescue.userId
 
         );
 
@@ -473,7 +352,78 @@ async function requestPickup(){
 
 
 
-}
+
+
+
+
+
+
+    async function requestPickup(){
+
+
+
+        if(!user){
+
+
+
+            setPickupMessage(
+
+                "Please login first"
+
+            );
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+
+        if(isOwnPost()){
+
+
+
+            setPickupMessage(
+
+                "You cannot request your own relief post"
+
+            );
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+
+
+        try{
+
+
+
+            const response =
+
+                await fetch(
+
+`${API_URL}/api/pickups?rescueId=${rescue.id}&volunteerId=${user.id}`,
+
+                {
+
+                    method:"POST"
+
+                }
+
+                );
 
 
 
@@ -483,22 +433,74 @@ async function requestPickup(){
 
 
 
-function getTypeIcon(){
+            const data =
+
+                await response.json();
 
 
-    if(rescue.type==="FOOD"){
 
 
-        return "🍱";
+
+
+
+
+            if(response.ok){
+
+
+
+                setPickupMessage(
+
+                    "🚚 Pickup request sent successfully"
+
+                );
+
+
+
+            }
+
+            else{
+
+
+
+                setPickupMessage(
+
+                    data.message ||
+
+                    "Pickup request failed"
+
+                );
+
+
+            }
+
+
+
+
+
+        }
+
+        catch(error){
+
+
+
+            console.log(error);
+
+
+
+            setPickupMessage(
+
+                "Something went wrong"
+
+            );
+
+
+        }
+
 
 
     }
 
 
-    return "💊";
-
-
-}
 
 
 
@@ -506,24 +508,24 @@ function getTypeIcon(){
 
 
 
+    function getTypeIcon(){
 
 
-function getTypeName(){
 
+        return rescue.type==="FOOD"
 
-    if(rescue.type==="FOOD"){
+        ?
 
+        "🍱"
 
-        return "Food Support";
+        :
+
+        "💊";
 
 
     }
 
 
-    return "Medicine Support";
-
-
-}
 
 
 
@@ -531,87 +533,118 @@ function getTypeName(){
 
 
 
-
-
-function getStatusStyle(){
-
-
-
-    switch(rescue.status){
+    function getTypeName(){
 
 
 
-        case "AVAILABLE":
+        return rescue.type==="FOOD"
 
-            return "bg-emerald-100 text-emerald-700";
+        ?
+
+        "Food Support"
+
+        :
+
+        "Medicine Support";
 
 
-
-        case "RESERVED":
-
-            return "bg-yellow-100 text-yellow-700";
-
-
-
-        case "PICKED_UP":
-
-            return "bg-blue-100 text-blue-700";
+    }
 
 
 
-        case "DELIVERED":
-
-            return "bg-purple-100 text-purple-700";
 
 
 
-        default:
+
+
+
+    function getStatusStyle(){
+
+
+
+        switch(rescue.status){
+
+
+
+            case "AVAILABLE":
+
+                return "bg-emerald-100 text-emerald-700";
+
+
+
+            case "RESERVED":
+
+                return "bg-yellow-100 text-yellow-700";
+
+
+
+            case "PICKED_UP":
+
+                return "bg-blue-100 text-blue-700";
+
+
+
+            case "DELIVERED":
+
+                return "bg-purple-100 text-purple-700";
+
+
+
+            case "EXPIRED":
+
+                return "bg-red-100 text-red-700";
+
+
+
+            default:
+
+                return "bg-slate-100 text-slate-700";
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+    function getExpiryStyle(){
+
+
+
+        if(timeStatus==="expired"){
+
 
             return "bg-red-100 text-red-700";
 
 
-    }
-
-
-}
+        }
 
 
 
 
+        if(timeStatus==="urgent"){
+
+
+            return "bg-yellow-100 text-yellow-700";
+
+
+        }
 
 
 
 
-
-function getExpiryStyle(){
-
-
-
-    if(timeStatus==="expired"){
-
-
-        return "bg-red-100 text-red-700";
+        return "bg-emerald-100 text-emerald-700";
 
 
     }
-
-
-
-    if(timeStatus==="urgent"){
-
-
-        return "bg-yellow-100 text-yellow-700";
-
-
-    }
-
-
-
-    return "bg-emerald-100 text-emerald-700";
-
-
-}
-return(
+    return(
 
 
 
@@ -620,8 +653,11 @@ rounded-2xl
 bg-white
 p-6
 shadow-md
+border
+border-slate-100
 transition
-hover:shadow-lg
+hover:-translate-y-1
+hover:shadow-xl
 ">
 
 
@@ -634,7 +670,9 @@ hover:shadow-lg
 flex
 items-start
 justify-between
+gap-4
 ">
+
 
 
 
@@ -644,13 +682,11 @@ justify-between
 <div>
 
 
-
 <div className="
 flex
 items-center
 gap-3
 ">
-
 
 
 <span className="
@@ -665,10 +701,9 @@ text-3xl
 
 
 
-
 <span className="
 rounded-full
-bg-emerald-100
+bg-emerald-50
 px-3
 py-1
 text-sm
@@ -679,6 +714,7 @@ text-emerald-700
 {getTypeName()}
 
 </span>
+
 
 
 
@@ -706,8 +742,9 @@ text-slate-900
 
 
 
-
 </div>
+
+
 
 
 
@@ -740,6 +777,8 @@ ${getStatusStyle()}
 
 
 
+
+
 </div>
 
 
@@ -752,6 +791,7 @@ ${getStatusStyle()}
 
 <p className="
 mt-4
+line-clamp-3
 text-slate-600
 ">
 
@@ -774,20 +814,21 @@ rounded-xl
 bg-slate-50
 p-4
 text-sm
-text-slate-600
 ">
 
 
 
 
 
-<p>
+
+
+<p className="text-slate-600">
 
 📦 Quantity:
 
 <span className="
-ml-1
-font-semibold
+ml-2
+font-bold
 text-slate-900
 ">
 
@@ -802,13 +843,16 @@ text-slate-900
 
 
 
-<p>
+
+
+
+<p className="text-slate-600">
 
 📍 Location:
 
 <span className="
-ml-1
-font-semibold
+ml-2
+font-bold
 text-slate-900
 ">
 
@@ -824,6 +868,28 @@ text-slate-900
 
 
 
+
+
+{
+
+rescue.distance !== undefined &&
+
+<p className="text-blue-600 font-semibold">
+
+📍 {rescue.distance} km away
+
+</p>
+
+}
+
+
+
+
+
+
+
+
+
 <div className="
 flex
 items-center
@@ -831,9 +897,7 @@ gap-2
 ">
 
 
-
-
-⏳ Remaining Time:
+⏳ Expiry:
 
 
 <span className={`
@@ -863,13 +927,17 @@ ${getExpiryStyle()}
 
 
 
-<p>
+
+
+<p className="text-slate-600">
+
 
 👤 Shared By:
 
+
 <span className="
-ml-1
-font-semibold
+ml-2
+font-bold
 text-slate-900
 ">
 
@@ -877,7 +945,9 @@ text-slate-900
 
 </span>
 
+
 </p>
+
 
 
 
@@ -897,23 +967,43 @@ text-slate-900
 
 
 
-{
+<div className="
+mt-5
+flex
+gap-3
+">
 
-/*
 
-    Pickup button
 
-    Rules:
 
-    1. Owner cannot request own post
 
-    2. Only AVAILABLE posts can receive requests
+<Link
 
-    3. Other users can request pickup
+href={`/rescue/${rescue.id}`}
 
-*/
+className="
+flex-1
+rounded-xl
+border
+border-emerald-700
+px-4
+py-3
+text-center
+font-semibold
+text-emerald-700
+hover:bg-emerald-50
+"
 
-}
+>
+
+👀 View Details
+
+</Link>
+
+
+
+
+
 
 
 
@@ -933,27 +1023,27 @@ disabled={
 
 rescue.status !== "AVAILABLE"
 
+||
+
+timeStatus==="expired"
+
 }
 
 className="
 
-mt-5
-
-w-full
+flex-1
 
 rounded-xl
 
 bg-emerald-700
 
-px-5
+px-4
 
 py-3
 
 font-semibold
 
 text-white
-
-transition
 
 hover:bg-emerald-800
 
@@ -967,15 +1057,25 @@ disabled:bg-gray-300
 
 {
 
+
 rescue.status !== "AVAILABLE"
 
 ?
 
-"Pickup unavailable"
+"Unavailable"
+
+:
+
+timeStatus==="expired"
+
+?
+
+"Expired"
 
 :
 
 "🚚 Request Pickup"
+
 
 }
 
@@ -984,7 +1084,17 @@ rescue.status !== "AVAILABLE"
 </button>
 
 
+
 }
+
+
+
+
+
+
+
+
+</div>
 
 
 
@@ -1002,21 +1112,13 @@ isOwnPost()
 
 
 <div className="
-
 mt-5
-
 rounded-xl
-
-bg-slate-100
-
+bg-blue-50
 p-3
-
 text-center
-
 font-semibold
-
-text-slate-600
-
+text-blue-700
 ">
 
 👑 This is your relief post
@@ -1040,17 +1142,14 @@ pickupMessage &&
 
 
 <p className="
-
-mt-3
-
+mt-4
+rounded-xl
+bg-emerald-50
+p-3
 text-center
-
 text-sm
-
 font-semibold
-
 text-emerald-700
-
 ">
 
 {pickupMessage}
@@ -1059,6 +1158,7 @@ text-emerald-700
 
 
 }
+
 
 
 
