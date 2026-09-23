@@ -20,14 +20,11 @@ import {
 
 
 
-
 const API_URL =
 
     process.env.NEXT_PUBLIC_API_URL ||
 
     "http://localhost:8080";
-
-
 
 
 
@@ -60,22 +57,39 @@ export default function TimeBankPage(){
 
 
 
+    const [user,setUser] =
 
-    const user =
+        useState<any>(null);
 
-        typeof window !== "undefined"
 
-        ?
 
-        JSON.parse(
 
-            localStorage.getItem("user") || "{}"
 
-        )
 
-        :
 
-        {};
+    useEffect(()=>{
+
+
+        const savedUser =
+
+            localStorage.getItem("user");
+
+
+
+        if(savedUser){
+
+
+            setUser(
+
+                JSON.parse(savedUser)
+
+            );
+
+
+        }
+
+
+    },[]);
 
 
 
@@ -88,14 +102,16 @@ export default function TimeBankPage(){
     useEffect(()=>{
 
 
-        if(user.id){
+        if(user?.id){
+
 
             loadData();
+
 
         }
 
 
-    },[]);
+    },[user]);
 
 
 
@@ -153,11 +169,27 @@ export default function TimeBankPage(){
 
 
 
+        if(!user?.id){
+
+            return;
+
+        }
+
+
+
+
+
+
         const response = await fetch(
 
-            `${API_URL}/api/time-bank/requests`
+
+            `${API_URL}/api/time-bank/requests/${user.id}`
+
 
         );
+
+
+
 
 
 
@@ -168,11 +200,13 @@ export default function TimeBankPage(){
 
         console.log(
 
-            "REQUEST RESPONSE:",
+            "AVAILABLE REQUESTS:",
 
             data
 
         );
+
+
 
 
 
@@ -194,6 +228,7 @@ export default function TimeBankPage(){
         }
 
 
+
     }
 
 
@@ -208,7 +243,7 @@ export default function TimeBankPage(){
 
 
 
-        if(!user.id){
+        if(!user?.id){
 
             return;
 
@@ -216,11 +251,18 @@ export default function TimeBankPage(){
 
 
 
+
+
+
         const response = await fetch(
+
 
             `${API_URL}/api/time-bank/balance/${user.id}`
 
+
         );
+
+
 
 
 
@@ -228,10 +270,15 @@ export default function TimeBankPage(){
 
 
 
-        setBalance(data);
+
+        setBalance(data || 0);
+
 
 
     }
+
+
+
 
 
 
@@ -252,29 +299,60 @@ export default function TimeBankPage(){
         try{
 
 
-            await fetch(
 
-                `${API_URL}/api/time-bank/accept/${requestId}`,
+            const response = await fetch(
+
+
+                `${API_URL}/api/time-bank/accept/${requestId}?helperId=${user.id}`,
+
 
                 {
 
+
                     method:"PUT"
+
 
                 }
 
+
             );
+
+
+
+
+
+
+            if(!response.ok){
+
+
+                throw new Error(
+
+                    "Accept failed"
+
+                );
+
+
+            }
+
+
+
 
 
 
             alert(
 
-                "Request accepted"
+                "Request accepted successfully"
 
             );
 
 
 
+
+
+
             loadRequests();
+
+
 
 
         }
@@ -285,10 +363,20 @@ export default function TimeBankPage(){
             console.log(error);
 
 
+            alert(
+
+                "Unable to accept request"
+
+            );
+
+
         }
 
 
     }
+
+
+
 
 
 
@@ -305,32 +393,10 @@ export default function TimeBankPage(){
         return(
 
 
-            <main className="
-
-            min-h-screen
-
-            flex
-
-            items-center
-
-            justify-center
-
-            bg-slate-50
-
-            ">
+            <main className="min-h-screen flex items-center justify-center bg-slate-50">
 
 
-                <div className="
-
-                rounded-xl
-
-                bg-white
-
-                p-8
-
-                shadow
-
-                ">
+                <div className="rounded-xl bg-white p-8 shadow">
 
 
                     Loading Time Bank...
@@ -358,58 +424,27 @@ export default function TimeBankPage(){
 return(
 
 
-<main className="
 
-min-h-screen
-
-bg-slate-50
-
-p-6
-
-md:p-10
-
-">
+<main className="min-h-screen bg-slate-50 p-6 md:p-10">
 
 
 
-<div className="
-
-mx-auto
-
-max-w-6xl
-
-">
+<div className="mx-auto max-w-6xl">
 
 
 
 
 
 
+<div className="flex justify-between items-center">
 
-<div className="
-
-flex
-
-justify-between
-
-items-center
-
-">
 
 
 <div>
 
 
 
-<h1 className="
-
-text-3xl
-
-font-bold
-
-text-slate-900
-
-">
+<h1 className="text-3xl font-bold text-slate-900">
 
 
 ⏳ Community Time Bank
@@ -419,19 +454,15 @@ text-slate-900
 
 
 
-<p className="
 
-mt-2
-
-text-slate-600
-
-">
+<p className="mt-2 text-slate-600">
 
 
 Give help, earn time credits, use credits later.
 
 
 </p>
+
 
 
 
@@ -443,28 +474,14 @@ Give help, earn time credits, use credits later.
 
 
 
-
 <Link
+
 
 href="/time-bank/request"
 
-className="
 
-rounded-xl
+className="rounded-xl bg-emerald-700 px-5 py-3 font-semibold text-white hover:bg-emerald-800"
 
-bg-emerald-700
-
-px-5
-
-py-3
-
-font-semibold
-
-text-white
-
-hover:bg-emerald-800
-
-"
 
 >
 
@@ -488,19 +505,8 @@ hover:bg-emerald-800
 
 
 
-<div className="
+<div className="mt-8 rounded-3xl bg-emerald-700 p-8 text-white">
 
-mt-8
-
-rounded-3xl
-
-bg-emerald-700
-
-p-8
-
-text-white
-
-">
 
 
 <p className="text-sm">
@@ -514,21 +520,16 @@ My Time Credits
 
 
 
-<h2 className="
 
-mt-3
-
-text-5xl
-
-font-bold
-
-">
+<h2 className="mt-3 text-5xl font-bold">
 
 
 {balance}
 
 
 </h2>
+
+
 
 
 
@@ -542,6 +543,7 @@ hours available
 
 
 
+
 </div>
 
 
@@ -552,23 +554,11 @@ hours available
 
 
 
-<section className="
-
-mt-10
-
-">
+<section className="mt-10">
 
 
 
-<h2 className="
-
-text-2xl
-
-font-bold
-
-text-slate-900
-
-">
+<h2 className="text-2xl font-bold text-slate-900">
 
 
 People Need Help
@@ -582,28 +572,16 @@ People Need Help
 
 
 
-
 {
+
 
 requests.length === 0 ?
 
 
 
-<div className="
 
-mt-5
 
-rounded-2xl
-
-bg-white
-
-p-8
-
-text-center
-
-shadow
-
-">
+<div className="mt-5 rounded-2xl bg-white p-8 text-center shadow">
 
 
 No help requests available.
@@ -615,23 +593,16 @@ No help requests available.
 
 
 
+
+
 :
 
 
 
 
 
-<div className="
 
-mt-6
-
-grid
-
-gap-6
-
-md:grid-cols-2
-
-">
+<div className="mt-6 grid gap-6 md:grid-cols-2">
 
 
 
@@ -643,22 +614,25 @@ requests.map(
 request => (
 
 
-
 <TimeRequestCard
+
 
 key={request.id}
 
+
 request={request}
 
+
 onAccept={handleAccept}
+
 
 />
 
 
 )
 
-)
 
+)
 
 
 }
@@ -673,7 +647,6 @@ onAccept={handleAccept}
 
 
 }
-
 
 
 
@@ -686,8 +659,8 @@ onAccept={handleAccept}
 
 
 
-
 </div>
+
 
 
 </main>
@@ -695,6 +668,7 @@ onAccept={handleAccept}
 
 
 );
+
 
 
 }

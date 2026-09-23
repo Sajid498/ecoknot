@@ -22,13 +22,11 @@ public class TimeBankService {
 
 
 
-
     private final TimeRequestRepository timeRequestRepository;
 
     private final TimeTransactionRepository timeTransactionRepository;
 
     private final UserRepository userRepository;
-
 
 
 
@@ -46,13 +44,11 @@ public class TimeBankService {
 
     ){
 
-
         this.timeRequestRepository = timeRequestRepository;
 
         this.timeTransactionRepository = timeTransactionRepository;
 
         this.userRepository = userRepository;
-
 
     }
 
@@ -64,9 +60,10 @@ public class TimeBankService {
 
 
 
-    // ======================================
-    // Create Help Request
-    // ======================================
+    // ==================================================
+    // CREATE HELP REQUEST
+    // User creates a request
+    // ==================================================
 
 
     public TimeRequest createRequest(
@@ -84,7 +81,7 @@ public class TimeBankService {
     ){
 
 
-        User user = userRepository.findById(userId)
+        User requester = userRepository.findById(userId)
 
                 .orElseThrow(
 
@@ -94,10 +91,9 @@ public class TimeBankService {
 
 
 
-
         TimeRequest request = new TimeRequest(
 
-                user,
+                requester,
 
                 title,
 
@@ -124,18 +120,28 @@ public class TimeBankService {
 
 
 
-    // ======================================
-    // Get Open Requests
-    // ======================================
+    // ==================================================
+    // GET AVAILABLE REQUESTS
+    // Show requests from other users only
+    // ==================================================
 
 
-    public List<TimeRequest> getOpenRequests(){
+    public List<TimeRequest> getOpenRequests(
 
+            Long userId
+
+    ){
 
 
         return timeRequestRepository
 
-                .findByStatus("OPEN");
+                .findByStatusAndRequesterIdNot(
+
+                        "OPEN",
+
+                        userId
+
+                );
 
 
     }
@@ -148,9 +154,9 @@ public class TimeBankService {
 
 
 
-    // ======================================
-    // Get User Requests
-    // ======================================
+    // ==================================================
+    // GET MY REQUESTS
+    // ==================================================
 
 
     public List<TimeRequest> getUserRequests(
@@ -175,17 +181,21 @@ public class TimeBankService {
 
 
 
-    // ======================================
-    // Accept Request
-    // ======================================
+    // ==================================================
+    // ACCEPT REQUEST
+    // User B accepts User A request
+    // ==================================================
 
 
     @Transactional
     public TimeRequest acceptRequest(
 
-            Long requestId
+            Long requestId,
+
+            Long helperId
 
     ){
+
 
 
         TimeRequest request = timeRequestRepository
@@ -194,11 +204,64 @@ public class TimeBankService {
 
                 .orElseThrow(
 
-                () -> new RuntimeException("Request not found")
+                () -> new RuntimeException(
+                        "Request not found"
+                )
 
                 );
 
 
+
+
+
+        if(!request.getStatus().equals("OPEN")){
+
+
+            throw new RuntimeException(
+                    "Request already accepted"
+            );
+
+
+        }
+
+
+
+
+
+
+        User helper = userRepository.findById(helperId)
+
+                .orElseThrow(
+
+                () -> new RuntimeException(
+                        "Helper not found"
+                )
+
+                );
+
+
+
+
+
+
+        // prevent user accepting own request
+
+        if(request.getRequester().getId()
+                .equals(helperId)){
+
+
+            throw new RuntimeException(
+                    "You cannot accept your own request"
+            );
+
+
+        }
+
+
+
+
+
+        request.setHelper(helper);
 
         request.setStatus("ACCEPTED");
 
@@ -217,17 +280,16 @@ public class TimeBankService {
 
 
 
-    // ======================================
-    // Complete Work & Give Credit
-    // ======================================
+    // ==================================================
+    // COMPLETE REQUEST
+    // Helper receives credits
+    // ==================================================
 
 
     @Transactional
     public TimeTransaction completeRequest(
 
-            Long requestId,
-
-            Long helperId
+            Long requestId
 
     ){
 
@@ -239,25 +301,61 @@ public class TimeBankService {
 
                 .orElseThrow(
 
-                () -> new RuntimeException("Request not found")
+                () -> new RuntimeException(
+                        "Request not found"
+                )
 
                 );
 
 
 
-        User helper = userRepository.findById(helperId)
 
-                .orElseThrow(
 
-                () -> new RuntimeException("Helper not found")
 
-                );
+        if(request.getHelper() == null){
+
+
+            throw new RuntimeException(
+                    "No helper accepted this request"
+            );
+
+
+        }
+
+
+
+
+
+
+
+        if(!request.getStatus().equals("ACCEPTED")){
+
+
+            throw new RuntimeException(
+                    "Request is not ready for completion"
+            );
+
+
+        }
+
+
+
+
+
+
+
+        User helper = request.getHelper();
+
+        User requester = request.getRequester();
+
+
 
 
 
 
 
         request.setStatus("COMPLETED");
+
 
         timeRequestRepository.save(request);
 
@@ -267,56 +365,66 @@ public class TimeBankService {
 
 
 
-       TimeTransaction transaction = new TimeTransaction();
-
-
-transaction.setProvider(helper);
-
-
-transaction.setRequester(
-
-        request.getRequester()
-
-);
+        TimeTransaction transaction = new TimeTransaction();
 
 
 
-transaction.setHours(
-
-        request.getRequiredHours()
-
-);
+        // Person who helped
+        transaction.setProvider(helper);
 
 
 
-transaction.setDescription(
-
-        "Completed help request: "
-
-        + request.getTitle()
-
-);
+        // Person who received help
+        transaction.setRequester(requester);
 
 
 
-transaction.setTransactionType(
 
-        "EARN"
+        transaction.setHours(
 
-);
+                request.getRequiredHours()
 
-
-
-transaction.setCreatedAt(
-
-        LocalDateTime.now()
-
-);
+        );
 
 
 
-return timeTransactionRepository.save(transaction);
 
+
+        transaction.setDescription(
+
+                "Completed help request: "
+
+                + request.getTitle()
+
+        );
+
+
+
+
+
+
+        transaction.setTransactionType(
+
+                "EARN"
+
+        );
+
+
+
+
+
+        transaction.setCreatedAt(
+
+                LocalDateTime.now()
+
+        );
+
+
+
+
+
+
+        return timeTransactionRepository.save(transaction);
 
 
     }
@@ -329,9 +437,10 @@ return timeTransactionRepository.save(transaction);
 
 
 
-    // ======================================
-    // Calculate Balance
-    // ======================================
+    // ==================================================
+    // GET BALANCE
+    // Earned credits
+    // ==================================================
 
 
     public Integer getBalance(
@@ -342,16 +451,23 @@ return timeTransactionRepository.save(transaction);
 
 
 
-     List<TimeTransaction> transactions =
+        List<TimeTransaction> transactions =
 
-        timeTransactionRepository
 
-        .findByProviderIdOrderByCreatedAtDesc(userId);
+                timeTransactionRepository
+
+                .findByProviderIdOrderByCreatedAtDesc(
+
+                        userId
+
+                );
+
 
 
 
 
         return transactions.stream()
+
 
                 .mapToInt(
 
@@ -359,8 +475,8 @@ return timeTransactionRepository.save(transaction);
 
                 )
 
-                .sum();
 
+                .sum();
 
 
     }

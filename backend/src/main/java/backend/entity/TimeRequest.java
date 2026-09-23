@@ -15,12 +15,9 @@ import jakarta.persistence.Table;
 
 
 
-
-
 @Entity
 @Table(name = "time_requests")
 public class TimeRequest {
-
 
 
 
@@ -31,12 +28,23 @@ public class TimeRequest {
 
 
 
-
-    // User who needs help
+    // User who created the request
+    // Example: User A needs help
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "requester_id")
     private User requester;
+
+
+
+
+
+    // User who accepts and provides help
+    // Example: User B helps User A
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "helper_id")
+    private User helper;
 
 
 
@@ -60,8 +68,13 @@ public class TimeRequest {
 
 
 
-    private String status;
+    /*
+        OPEN      = waiting for volunteer
+        ACCEPTED  = someone accepted
+        COMPLETED = work finished
+    */
 
+    private String status;
 
 
 
@@ -73,15 +86,15 @@ public class TimeRequest {
 
 
 
-    // ======================================
+
+    // ==============================
     // Constructors
-    // ======================================
+    // ==============================
 
 
     public TimeRequest(){
 
     }
-
 
 
 
@@ -128,10 +141,9 @@ public class TimeRequest {
 
 
 
-    // ======================================
+    // ==============================
     // Getters & Setters
-    // ======================================
-
+    // ==============================
 
 
     public Long getId(){
@@ -144,7 +156,7 @@ public class TimeRequest {
 
     public void setId(Long id){
 
-        this.id=id;
+        this.id = id;
 
     }
 
@@ -164,9 +176,30 @@ public class TimeRequest {
 
     public void setRequester(User requester){
 
-        this.requester=requester;
+        this.requester = requester;
 
     }
+
+
+
+
+
+
+
+    public User getHelper(){
+
+        return helper;
+
+    }
+
+
+
+    public void setHelper(User helper){
+
+        this.helper = helper;
+
+    }
+
 
 
 
@@ -184,9 +217,10 @@ public class TimeRequest {
 
     public void setTitle(String title){
 
-        this.title=title;
+        this.title = title;
 
     }
+
 
 
 
@@ -204,9 +238,10 @@ public class TimeRequest {
 
     public void setDescription(String description){
 
-        this.description=description;
+        this.description = description;
 
     }
+
 
 
 
@@ -224,9 +259,10 @@ public class TimeRequest {
 
     public void setCategory(String category){
 
-        this.category=category;
+        this.category = category;
 
     }
+
 
 
 
@@ -244,9 +280,10 @@ public class TimeRequest {
 
     public void setRequiredHours(Integer requiredHours){
 
-        this.requiredHours=requiredHours;
+        this.requiredHours = requiredHours;
 
     }
+
 
 
 
@@ -264,9 +301,10 @@ public class TimeRequest {
 
     public void setStatus(String status){
 
-        this.status=status;
+        this.status = status;
 
     }
+
 
 
 
@@ -284,11 +322,9 @@ public class TimeRequest {
 
     public void setCreatedAt(LocalDateTime createdAt){
 
-        this.createdAt=createdAt;
+        this.createdAt = createdAt;
 
     }
-
-
 
 
 
