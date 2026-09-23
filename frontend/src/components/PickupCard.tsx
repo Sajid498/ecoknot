@@ -2,6 +2,14 @@
 
 
 import {
+    useState
+} from "react";
+
+
+import toast from "react-hot-toast";
+
+
+import {
     PickupRequest
 } from "@/types/pickup";
 
@@ -9,13 +17,22 @@ import {
 
 
 
+
+
+
+
 interface Props{
+
 
     pickup:PickupRequest;
 
+
     onUpdate:()=>void;
 
+
 }
+
+
 
 
 
@@ -28,6 +45,9 @@ const API_URL =
     process.env.NEXT_PUBLIC_API_URL ||
 
     "http://localhost:8080";
+
+
+
 
 
 
@@ -54,20 +74,45 @@ onUpdate
 
 
 
-async function updateStatus(
 
-    action:string
+    const [updating,setUpdating] =
 
-){
-
+        useState(false);
 
 
-    try{
 
 
-        const response =
 
-            await fetch(
+
+
+
+
+
+
+
+    async function updateStatus(
+
+        action:string
+
+    ){
+
+
+
+        try{
+
+
+
+            setUpdating(true);
+
+
+
+
+
+
+
+            const response =
+
+                await fetch(
 
 `${API_URL}/api/pickups/${pickup.id}/${action}`,
 
@@ -83,10 +128,69 @@ async function updateStatus(
 
 
 
-        if(response.ok){
 
 
-            onUpdate();
+
+
+            if(response.ok){
+
+
+
+                toast.success(
+
+                    "Pickup status updated successfully 🚚"
+
+                );
+
+
+
+                onUpdate();
+
+
+
+            }
+
+            else{
+
+
+
+                toast.error(
+
+                    "Failed to update pickup status"
+
+                );
+
+
+            }
+
+
+
+        }
+
+        catch(error){
+
+
+
+            console.log(error);
+
+
+
+            toast.error(
+
+                "Something went wrong"
+
+            );
+
+
+
+        }
+
+        finally{
+
+
+
+            setUpdating(false);
+
 
 
         }
@@ -95,16 +199,83 @@ async function updateStatus(
 
     }
 
-    catch(error){
 
 
-        console.log(error);
+
+
+
+
+
+
+
+
+
+
+    function getStatusStyle(){
+
+
+
+        switch(pickup.status){
+
+
+
+            case "PENDING":
+
+
+                return "bg-yellow-100 text-yellow-700";
+
+
+
+
+
+            case "APPROVED":
+
+
+                return "bg-emerald-100 text-emerald-700";
+
+
+
+
+
+            case "PICKED_UP":
+
+
+                return "bg-blue-100 text-blue-700";
+
+
+
+
+
+            case "DELIVERED":
+
+
+                return "bg-purple-100 text-purple-700";
+
+
+
+
+
+            case "REJECTED":
+
+
+                return "bg-red-100 text-red-700";
+
+
+
+
+
+            default:
+
+
+                return "bg-slate-100 text-slate-700";
+
+
+        }
 
 
     }
 
 
-}
 
 
 
@@ -114,53 +285,55 @@ async function updateStatus(
 
 
 
-function getStatusStyle(){
+
+    function isCompleted(
+
+        status:string
+
+    ){
 
 
 
-    switch(pickup.status){
+        const steps = [
+
+
+            "PENDING",
+
+
+            "APPROVED",
+
+
+            "PICKED_UP",
+
+
+            "DELIVERED"
+
+
+        ];
 
 
 
-        case "PENDING":
-
-            return "bg-yellow-100 text-yellow-700";
 
 
 
-        case "APPROVED":
+        return (
 
-            return "bg-emerald-100 text-emerald-700";
+            steps.indexOf(
 
+                pickup.status
 
+            )
 
-        case "PICKED_UP":
+            >=
 
-            return "bg-blue-100 text-blue-700";
+            steps.indexOf(status)
 
-
-
-        case "DELIVERED":
-
-            return "bg-purple-100 text-purple-700";
-
-
-
-        case "REJECTED":
-
-            return "bg-red-100 text-red-700";
-
-
-
-        default:
-
-            return "bg-gray-100 text-gray-700";
+        );
 
 
     }
 
 
-}
 
 
 
@@ -170,53 +343,63 @@ function getStatusStyle(){
 
 
 
-function statusText(){
+
+
+    function getStepIcon(
+
+        status:string
+
+    ){
 
 
 
-    switch(pickup.status){
+        if(isCompleted(status)){
 
 
 
-        case "PENDING":
-
-            return "🟡 Waiting for owner approval";
+            switch(status){
 
 
 
-        case "APPROVED":
+                case "PENDING":
 
-            return "🟢 Pickup approved";
-
-
-
-        case "PICKED_UP":
-
-            return "🔵 Item picked up";
+                    return "🟡";
 
 
 
-        case "DELIVERED":
+                case "APPROVED":
 
-            return "🟣 Delivery completed";
-
-
-
-        case "REJECTED":
-
-            return "🔴 Request rejected";
+                    return "🟢";
 
 
 
-        default:
+                case "PICKED_UP":
 
-            return pickup.status;
+                    return "🔵";
+
+
+
+                case "DELIVERED":
+
+                    return "🟣";
+
+
+
+            }
+
+
+        }
+
+
+
+
+
+        return "⚪";
 
 
     }
 
 
-}
 
 
 
@@ -226,48 +409,72 @@ function statusText(){
 
 
 
-function isCompleted(
-
-    status:string
-
-){
 
 
-    const steps = [
-
-        "PENDING",
-
-        "APPROVED",
-
-        "PICKED_UP",
-
-        "DELIVERED"
-
-    ];
+    function statusText(){
 
 
-    return steps.indexOf(
 
-        pickup.status
-
-    )
-
-    >=
-
-    steps.indexOf(status);
+        switch(pickup.status){
 
 
-}
+
+            case "PENDING":
+
+
+                return "Waiting for owner approval ⏳";
 
 
 
 
 
+            case "APPROVED":
+
+
+                return "Pickup approved. Ready to collect 🚚";
 
 
 
 
-return(
+
+            case "PICKED_UP":
+
+
+                return "Item collected. Deliver to destination 📦";
+
+
+
+
+
+            case "DELIVERED":
+
+
+                return "Delivery completed successfully 🎉";
+
+
+
+
+
+            case "REJECTED":
+
+
+                return "Pickup request rejected ❌";
+
+
+
+
+
+            default:
+
+
+                return pickup.status;
+
+
+        }
+
+
+    }
+    return(
 
 
 
@@ -276,6 +483,10 @@ rounded-2xl
 bg-white
 p-6
 shadow-md
+border
+border-slate-100
+transition
+hover:shadow-lg
 ">
 
 
@@ -286,8 +497,8 @@ shadow-md
 
 <div className="
 flex
-justify-between
 items-start
+justify-between
 gap-4
 ">
 
@@ -295,7 +506,10 @@ gap-4
 
 
 
+
+
 <div>
+
 
 
 <h2 className="
@@ -311,6 +525,7 @@ text-slate-900
 
 
 
+
 <p className="
 mt-2
 text-slate-600
@@ -321,6 +536,8 @@ Pickup request for this relief donation.
 </p>
 
 
+
+
 </div>
 
 
@@ -329,9 +546,8 @@ Pickup request for this relief donation.
 
 
 
-<span
 
-className={`
+<span className={`
 
 rounded-full
 
@@ -345,13 +561,13 @@ font-semibold
 
 ${getStatusStyle()}
 
-`}
-
->
+`}>
 
 {pickup.status}
 
 </span>
+
+
 
 
 
@@ -367,70 +583,161 @@ ${getStatusStyle()}
 
 
 
+
+
+
+
 <div className="
-mt-5
-space-y-2
-text-sm
-text-slate-600
+mt-6
+grid
+gap-4
+md:grid-cols-2
 ">
 
 
 
-<p>
 
-🍱 Type:
 
-<span className="
-ml-1
-font-semibold
+
+
+<div className="
+rounded-xl
+bg-slate-50
+p-4
+">
+
+<p className="
+text-sm
+text-slate-500
+">
+
+🍱 Relief Type
+
+</p>
+
+
+<p className="
+mt-1
+font-bold
 text-slate-900
 ">
 
 {pickup.rescueDonation.type}
 
-</span>
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div className="
+rounded-xl
+bg-slate-50
+p-4
+">
+
+<p className="
+text-sm
+text-slate-500
+">
+
+📦 Quantity
 
 </p>
 
 
-
-
-
-<p>
-
-📦 Quantity:
-
-<span className="
-ml-1
-font-semibold
+<p className="
+mt-1
+font-bold
 text-slate-900
 ">
 
 {pickup.rescueDonation.quantity}
 
-</span>
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div className="
+rounded-xl
+bg-slate-50
+p-4
+">
+
+<p className="
+text-sm
+text-slate-500
+">
+
+📍 Pickup Location
 
 </p>
 
 
-
-
-
-<p>
-
-📍 Location:
-
-<span className="
-ml-1
-font-semibold
+<p className="
+mt-1
+font-bold
 text-slate-900
 ">
 
 {pickup.rescueDonation.location}
 
-</span>
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div className="
+rounded-xl
+bg-slate-50
+p-4
+">
+
+<p className="
+text-sm
+text-slate-500
+">
+
+👤 Volunteer
 
 </p>
+
+
+<p className="
+mt-1
+font-bold
+text-slate-900
+">
+
+{pickup.volunteer?.name || "Volunteer"}
+
+</p>
+
+
+</div>
+
 
 
 
@@ -449,20 +756,25 @@ text-slate-900
 {/* STATUS TIMELINE */}
 
 
+
 <div className="
-mt-6
-rounded-xl
+mt-8
+rounded-2xl
 bg-slate-50
-p-5
+p-6
 ">
 
 
+
+
+
 <h3 className="
+text-lg
 font-bold
 text-slate-900
 ">
 
-Pickup Progress
+🚚 Pickup Progress
 
 </h3>
 
@@ -470,9 +782,12 @@ Pickup Progress
 
 
 
+
+
+
 <div className="
-mt-4
-space-y-3
+mt-6
+space-y-5
 ">
 
 
@@ -486,33 +801,66 @@ items-center
 gap-3
 ">
 
-<span>
+
+<span className="text-xl">
 
 {
 
-isCompleted("PENDING")
+getStepIcon(
 
-?
+"PENDING"
 
-"🟡"
-
-:
-
-"⚪"
+)
 
 }
 
 </span>
 
 
-<p>
+<div>
+
+<p className="
+font-semibold
+">
 
 Request Submitted
 
 </p>
 
 
+<p className="
+text-sm
+text-slate-500
+">
+
+Volunteer requested pickup
+
+</p>
+
+
 </div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div className="
+ml-2
+h-6
+border-l-2
+border-slate-300
+">
+
+</div>
+
+
 
 
 
@@ -527,33 +875,64 @@ gap-3
 ">
 
 
-<span>
+<span className="text-xl">
 
 {
 
-isCompleted("APPROVED")
+getStepIcon(
 
-?
+"APPROVED"
 
-"🟢"
-
-:
-
-"⚪"
+)
 
 }
 
 </span>
 
 
-<p>
+<div>
+
+<p className="
+font-semibold
+">
 
 Owner Approved
 
 </p>
 
 
+<p className="
+text-sm
+text-slate-500
+">
+
+Donation owner accepted request
+
+</p>
+
+
 </div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div className="
+ml-2
+h-6
+border-l-2
+border-slate-300
+">
+
+</div>
+
 
 
 
@@ -569,32 +948,62 @@ gap-3
 ">
 
 
-<span>
+<span className="text-xl">
 
 {
 
-isCompleted("PICKED_UP")
+getStepIcon(
 
-?
+"PICKED_UP"
 
-"🔵"
-
-:
-
-"⚪"
+)
 
 }
 
 </span>
 
 
-<p>
+<div>
+
+<p className="
+font-semibold
+">
 
 Item Picked Up
 
 </p>
 
 
+<p className="
+text-sm
+text-slate-500
+">
+
+Volunteer collected the item
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div className="
+ml-2
+h-6
+border-l-2
+border-slate-300
+">
+
 </div>
 
 
@@ -611,28 +1020,38 @@ gap-3
 ">
 
 
-<span>
+<span className="text-xl">
 
 {
 
-isCompleted("DELIVERED")
+getStepIcon(
 
-?
+"DELIVERED"
 
-"🟣"
-
-:
-
-"⚪"
+)
 
 }
 
 </span>
 
 
-<p>
+<div>
+
+<p className="
+font-semibold
+">
 
 Delivered Successfully
+
+</p>
+
+
+<p className="
+text-sm
+text-slate-500
+">
+
+Relief reached destination
 
 </p>
 
@@ -640,12 +1059,18 @@ Delivered Successfully
 </div>
 
 
+</div>
+
+
 
 
 
 
 
 </div>
+
+
+
 
 
 </div>
@@ -661,11 +1086,11 @@ Delivered Successfully
 <p className="
 mt-5
 rounded-xl
-bg-slate-50
-p-3
+bg-emerald-50
+p-4
 text-center
 font-semibold
-text-slate-700
+text-emerald-700
 ">
 
 {statusText()}
@@ -691,6 +1116,8 @@ pickup.status==="APPROVED"
 
 onClick={()=>updateStatus("pickup")}
 
+disabled={updating}
+
 className="
 mt-5
 w-full
@@ -700,12 +1127,27 @@ px-5
 py-3
 font-semibold
 text-white
+transition
 hover:bg-blue-700
+disabled:bg-gray-300
 "
 
 >
 
-🚚 Mark Picked Up
+{
+
+updating
+
+?
+
+"Updating..."
+
+:
+
+"🚚 Confirm Pickup"
+
+}
+
 
 </button>
 
@@ -731,6 +1173,8 @@ pickup.status==="PICKED_UP"
 
 onClick={()=>updateStatus("deliver")}
 
+disabled={updating}
+
 className="
 mt-5
 w-full
@@ -740,12 +1184,27 @@ px-5
 py-3
 font-semibold
 text-white
+transition
 hover:bg-purple-700
+disabled:bg-gray-300
 "
 
 >
 
-✅ Complete Delivery
+{
+
+updating
+
+?
+
+"Updating..."
+
+:
+
+"✅ Complete Delivery"
+
+}
+
 
 </button>
 
@@ -771,13 +1230,13 @@ pickup.status==="DELIVERED"
 mt-5
 rounded-xl
 bg-purple-50
-p-3
+p-4
 text-center
-font-semibold
+font-bold
 text-purple-700
 ">
 
-🎉 Pickup completed successfully
+🎉 Relief delivery completed
 
 </div>
 
@@ -788,7 +1247,12 @@ text-purple-700
 
 
 
+
+
+
+
 </div>
+
 
 
 );

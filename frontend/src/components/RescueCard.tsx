@@ -10,6 +10,9 @@ import {
 import Link from "next/link";
 
 
+import toast from "react-hot-toast";
+
+
 import {
     RescueDonation
 } from "@/types/rescue";
@@ -39,7 +42,7 @@ const API_URL =
 interface Props{
 
 
-    rescue: RescueDonation;
+    rescue:RescueDonation;
 
 
 }
@@ -61,6 +64,8 @@ rescue
 }:Props
 
 ){
+
+
 
 
 
@@ -90,11 +95,6 @@ rescue
 
 
 
-    const [pickupMessage,setPickupMessage] =
-
-        useState("");
-
-
 
 
 
@@ -103,6 +103,7 @@ rescue
 
 
     useEffect(()=>{
+
 
 
         const savedUser =
@@ -114,6 +115,7 @@ rescue
         if(savedUser){
 
 
+
             setUser(
 
                 JSON.parse(savedUser)
@@ -121,10 +123,15 @@ rescue
             );
 
 
+
         }
 
 
+
     },[]);
+
+
+
 
 
 
@@ -160,7 +167,7 @@ rescue
 
         const difference =
 
-            expiry - now;
+            expiry-now;
 
 
 
@@ -239,7 +246,6 @@ rescue
 
 
 
-
         setRemainingTime(
 
             `${hours}h ${minutes}m remaining`
@@ -279,8 +285,10 @@ rescue
         }
 
 
-
     }
+
+
+
 
 
 
@@ -335,6 +343,9 @@ rescue
 
 
 
+
+
+
     function isOwnPost(){
 
 
@@ -358,6 +369,10 @@ rescue
 
 
 
+
+
+
+
     async function requestPickup(){
 
 
@@ -366,17 +381,20 @@ rescue
 
 
 
-            setPickupMessage(
+            toast.error(
 
                 "Please login first"
 
             );
 
 
+
             return;
 
 
         }
+
+
 
 
 
@@ -388,17 +406,19 @@ rescue
 
 
 
-            setPickupMessage(
+            toast.error(
 
                 "You cannot request your own relief post"
 
             );
 
 
+
             return;
 
 
         }
+
 
 
 
@@ -423,8 +443,7 @@ rescue
 
                 }
 
-                );
-
+            );
 
 
 
@@ -448,9 +467,9 @@ rescue
 
 
 
-                setPickupMessage(
+                toast.success(
 
-                    "🚚 Pickup request sent successfully"
+                    "Pickup request sent successfully 🚚"
 
                 );
 
@@ -462,7 +481,7 @@ rescue
 
 
 
-                setPickupMessage(
+                toast.error(
 
                     data.message ||
 
@@ -471,9 +490,8 @@ rescue
                 );
 
 
+
             }
-
-
 
 
 
@@ -487,7 +505,7 @@ rescue
 
 
 
-            setPickupMessage(
+            toast.error(
 
                 "Something went wrong"
 
@@ -499,6 +517,10 @@ rescue
 
 
     }
+
+
+
+
 
 
 
@@ -533,6 +555,9 @@ rescue
 
 
 
+
+
+
     function getTypeName(){
 
 
@@ -549,6 +574,10 @@ rescue
 
 
     }
+
+
+
+
 
 
 
@@ -614,6 +643,9 @@ rescue
 
 
 
+
+
+
     function getExpiryStyle(){
 
 
@@ -629,6 +661,7 @@ rescue
 
 
 
+
         if(timeStatus==="urgent"){
 
 
@@ -636,6 +669,7 @@ rescue
 
 
         }
+
 
 
 
@@ -682,11 +716,13 @@ gap-4
 <div>
 
 
+
 <div className="
 flex
 items-center
 gap-3
 ">
+
 
 
 <span className="
@@ -696,6 +732,8 @@ text-3xl
 {getTypeIcon()}
 
 </span>
+
+
 
 
 
@@ -742,6 +780,8 @@ text-slate-900
 
 
 
+
+
 </div>
 
 
@@ -771,7 +811,6 @@ ${getStatusStyle()}
 🌱 {rescue.status}
 
 </span>
-
 
 
 
@@ -822,9 +861,12 @@ text-sm
 
 
 
+
 <p className="text-slate-600">
 
+
 📦 Quantity:
+
 
 <span className="
 ml-2
@@ -835,6 +877,7 @@ text-slate-900
 {rescue.quantity}
 
 </span>
+
 
 </p>
 
@@ -848,7 +891,9 @@ text-slate-900
 
 <p className="text-slate-600">
 
+
 📍 Location:
+
 
 <span className="
 ml-2
@@ -859,6 +904,7 @@ text-slate-900
 {rescue.location}
 
 </span>
+
 
 </p>
 
@@ -874,11 +920,16 @@ text-slate-900
 
 rescue.distance !== undefined &&
 
-<p className="text-blue-600 font-semibold">
+
+<p className="
+font-semibold
+text-blue-600
+">
 
 📍 {rescue.distance} km away
 
 </p>
+
 
 }
 
@@ -953,6 +1004,8 @@ text-slate-900
 
 
 
+
+
 </div>
 
 
@@ -972,6 +1025,8 @@ mt-5
 flex
 gap-3
 ">
+
+
 
 
 
@@ -1030,33 +1085,23 @@ timeStatus==="expired"
 }
 
 className="
-
 flex-1
-
 rounded-xl
-
 bg-emerald-700
-
 px-4
-
 py-3
-
 font-semibold
-
 text-white
-
+transition
 hover:bg-emerald-800
-
 disabled:cursor-not-allowed
-
 disabled:bg-gray-300
-
 "
 
 >
 
-{
 
+{
 
 rescue.status !== "AVAILABLE"
 
@@ -1075,7 +1120,6 @@ timeStatus==="expired"
 :
 
 "🚚 Request Pickup"
-
 
 }
 
@@ -1124,37 +1168,6 @@ text-blue-700
 👑 This is your relief post
 
 </div>
-
-
-}
-
-
-
-
-
-
-
-
-
-{
-
-pickupMessage &&
-
-
-<p className="
-mt-4
-rounded-xl
-bg-emerald-50
-p-3
-text-center
-text-sm
-font-semibold
-text-emerald-700
-">
-
-{pickupMessage}
-
-</p>
 
 
 }
