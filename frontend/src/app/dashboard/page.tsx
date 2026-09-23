@@ -9,10 +9,6 @@ import {
 
 
 
-
-
-
-
 const API_URL =
 
     process.env.NEXT_PUBLIC_API_URL ||
@@ -24,23 +20,16 @@ const API_URL =
 
 
 
-
-
-
-interface DashboardStats{
+interface Stats{
 
 
     totalRelief:number;
 
-
     foodDonations:number;
-
 
     medicineDonations:number;
 
-
     completedDeliveries:number;
-
 
     totalUsers:number;
 
@@ -63,7 +52,8 @@ export default function DashboardPage(){
 
     const [stats,setStats] =
 
-        useState<DashboardStats | null>(null);
+        useState<Stats | null>(null);
+
 
 
 
@@ -77,13 +67,10 @@ export default function DashboardPage(){
 
 
 
-
-
-
     useEffect(()=>{
 
 
-        loadDashboard();
+        loadStats();
 
 
     },[]);
@@ -96,7 +83,7 @@ export default function DashboardPage(){
 
 
 
-    async function loadDashboard(){
+    async function loadStats(){
 
 
 
@@ -108,28 +95,9 @@ export default function DashboardPage(){
 
                 await fetch(
 
-                    `${API_URL}/api/dashboard/stats`
+`${API_URL}/api/dashboard/stats`
 
                 );
-
-
-
-
-
-
-
-            if(!response.ok){
-
-
-                throw new Error(
-
-                    "Failed to load dashboard"
-
-                );
-
-
-            }
-
 
 
 
@@ -145,34 +113,29 @@ export default function DashboardPage(){
 
 
 
-
             setStats(data);
-
 
 
 
         }
 
-        catch(error){
 
+        catch(error){
 
 
             console.log(error);
 
 
-
         }
 
-        finally{
 
+        finally{
 
 
             setLoading(false);
 
 
-
         }
-
 
 
     }
@@ -185,75 +148,39 @@ export default function DashboardPage(){
 
 
 
-    const cards = [
+    if(loading){
 
 
+        return(
 
-        {
+            <main className="
+            min-h-screen
+            bg-slate-50
+            flex
+            items-center
+            justify-center
+            ">
 
-            title:"Total Relief Posts",
+                <div className="
+                rounded-xl
+                bg-white
+                p-8
+                shadow
+                ">
 
-            value:stats?.totalRelief,
+                    Loading dashboard...
 
-            icon:"🌱"
-
-        },
-
-
-
-
-        {
-
-            title:"Food Donations",
-
-            value:stats?.foodDonations,
-
-            icon:"🍱"
-
-        },
+                </div>
 
 
+            </main>
+
+        );
 
 
-        {
-
-            title:"Medicine Donations",
-
-            value:stats?.medicineDonations,
-
-            icon:"💊"
-
-        },
+    }
 
 
-
-
-        {
-
-            title:"Completed Deliveries",
-
-            value:stats?.completedDeliveries,
-
-            icon:"🚚"
-
-        },
-
-
-
-
-        {
-
-            title:"Community Users",
-
-            value:stats?.totalUsers,
-
-            icon:"👥"
-
-        }
-
-
-
-    ];
 
 
 
@@ -268,35 +195,19 @@ return(
 
 
 <main className="
-
 min-h-screen
-
 bg-slate-50
-
+p-6
+md:p-10
 ">
 
 
 
 
 
-
-
-
-
-
-
-
-
 <div className="
-
 mx-auto
-
 max-w-6xl
-
-px-6
-
-py-10
-
 ">
 
 
@@ -306,35 +217,23 @@ py-10
 
 
 <h1 className="
-
 text-3xl
-
 font-bold
-
 text-slate-900
-
 ">
 
-📊 EcoKnot Dashboard
+🌱 EcoKnot Community Dashboard
 
 </h1>
 
 
 
-
-
-
-
-
 <p className="
-
 mt-2
-
 text-slate-600
-
 ">
 
-Overview of community activities and relief operations.
+See the impact created by our community.
 
 </p>
 
@@ -347,17 +246,12 @@ Overview of community activities and relief operations.
 
 
 <div className="
-
-mt-8
-
+mt-10
 grid
-
+grid-cols-1
 gap-6
-
 sm:grid-cols-2
-
-lg:grid-cols-3
-
+lg:grid-cols-5
 ">
 
 
@@ -366,44 +260,84 @@ lg:grid-cols-3
 
 
 
-{
+<Card
 
-cards.map((card)=>(
+title="Total Users"
 
+value={stats?.totalUsers || 0}
 
+icon="👥"
 
-<div
-
-key={card.title}
-
-className="
-
-rounded-2xl
-
-bg-white
-
-p-6
-
-shadow-md
-
-transition
-
-hover:shadow-lg
-
-"
-
->
+/>
 
 
 
 
-<div className="
 
-text-4xl
 
-">
 
-{card.icon}
+<Card
+
+title="Relief Posts"
+
+value={stats?.totalRelief || 0}
+
+icon="📦"
+
+/>
+
+
+
+
+
+
+
+<Card
+
+title="Food Donations"
+
+value={stats?.foodDonations || 0}
+
+icon="🍱"
+
+/>
+
+
+
+
+
+
+
+<Card
+
+title="Medicine"
+
+value={stats?.medicineDonations || 0}
+
+icon="💊"
+
+/>
+
+
+
+
+
+
+
+<Card
+
+title="Completed"
+
+value={stats?.completedDeliveries || 0}
+
+icon="🚚"
+
+/>
+
+
+
+
+
 
 </div>
 
@@ -413,86 +347,76 @@ text-4xl
 
 
 
-<h2 className="
 
-mt-4
-
-text-sm
-
-font-semibold
-
-text-slate-500
-
+<div className="
+mt-10
+rounded-3xl
+bg-white
+p-8
+shadow
 ">
 
-{card.title}
+
+
+<h2 className="
+text-2xl
+font-bold
+text-slate-900
+">
+
+Community Impact
 
 </h2>
 
 
 
 
-
-
-
-<p className="
-
-mt-2
-
-text-3xl
-
-font-bold
-
-text-slate-900
-
+<div className="
+mt-5
+grid
+gap-4
+md:grid-cols-3
 ">
 
 
-{
 
-loading
+<div className="
+rounded-xl
+bg-emerald-50
+p-5
+">
 
-?
-
-"..."
-
-:
-
-card.value
-
-}
-
-
-
-</p>
-
-
-
-
+🌱 Helping people through relief sharing
 
 </div>
 
 
 
-))
+<div className="
+rounded-xl
+bg-red-50
+p-5
+">
 
-
-
-}
-
-
-
-
-
-
+🩸 Supporting blood donation activities
 
 </div>
 
 
 
+<div className="
+rounded-xl
+bg-blue-50
+p-5
+">
+
+🚚 Delivering resources to communities
+
+</div>
 
 
 
+</div>
 
 
 
@@ -502,14 +426,98 @@ card.value
 
 
 
+
+
+</div>
 
 
 </main>
 
 
-
 );
 
+
+}
+
+
+
+
+
+
+
+
+
+function Card({
+
+title,
+
+value,
+
+icon
+
+}:{
+
+title:string;
+
+value:number;
+
+icon:string;
+
+}){
+
+
+return(
+
+
+<div className="
+rounded-3xl
+bg-white
+p-6
+shadow
+transition
+hover:-translate-y-1
+">
+
+
+<div className="
+text-3xl
+">
+
+{icon}
+
+</div>
+
+
+
+<h3 className="
+mt-4
+text-sm
+text-slate-600
+">
+
+{title}
+
+</h3>
+
+
+
+<p className="
+mt-2
+text-3xl
+font-bold
+text-emerald-700
+">
+
+{value}
+
+</p>
+
+
+
+</div>
+
+
+);
 
 
 }
