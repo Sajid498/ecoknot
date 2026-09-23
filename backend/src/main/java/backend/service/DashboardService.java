@@ -3,16 +3,13 @@ package backend.service;
 
 import org.springframework.stereotype.Service;
 
-
 import backend.dto.DashboardStatsDTO;
-
 import backend.entity.PickupStatus;
-
 import backend.repository.PickupRequestRepository;
 import backend.repository.RescueDonationRepository;
-import backend.repository.UserRepository;
 import backend.repository.TimeOfferRepository;
 import backend.repository.TimeTransactionRepository;
+import backend.repository.UserRepository;
 
 
 
@@ -85,7 +82,7 @@ public class DashboardService {
 
 
 
-    public DashboardStatsDTO getDashboardStats(){
+    public DashboardStatsDTO getStats(){
 
 
 

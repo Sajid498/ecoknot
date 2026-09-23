@@ -6,15 +6,12 @@ import {
     useState
 } from "react";
 
-
+import Link from "next/link";
 import TimeOfferCard from "@/components/TimeOfferCard";
-
 
 import {
     TimeOffer
 } from "@/types/timebank";
-
-
 
 
 
@@ -207,37 +204,74 @@ export default function TimeBankPage(){
 
 
 
-    async function loadOffers(){
+   async function loadOffers(){
+
+
+    try{
+
+
+        const response = await fetch(
+
+            `${API_URL}/api/time-bank/offers`
+
+        );
 
 
 
-        const response =
-
-            await fetch(
-
-`${API_URL}/api/time-bank/offers`
-
-            );
-
-
-
-
-
-
-        const data =
-
-            await response.json();
+        const data = await response.json();
 
 
 
 
 
+        console.log(
+            "Time Bank Offers:",
+            data
+        );
 
-        setOffers(data);
+
+
+
+
+        if(Array.isArray(data)){
+
+
+            setOffers(data);
+
+
+        }
+
+        else{
+
+
+            setOffers([]);
+
+
+        }
 
 
 
     }
+
+
+    catch(error){
+
+
+
+        console.log(
+            "Offer loading error:",
+            error
+        );
+
+
+        setOffers([]);
+
+
+    }
+
+
+
+}
 
 
 
@@ -327,9 +361,47 @@ text-slate-900
 
 </h1>
 
+<Link
 
+href="/time-bank/create"
 
+className="
+mt-5
+inline-block
+rounded-xl
+bg-emerald-700
+px-5
+py-3
+font-semibold
+text-white
+hover:bg-emerald-800
+"
 
+>
+
++ Create Time Offer
+
+</Link>
+
+<Link
+
+href="/time-bank/history"
+
+className="
+ml-3
+rounded-xl
+bg-slate-800
+px-5
+py-3
+font-semibold
+text-white
+"
+
+>
+
+📜 History
+
+</Link>
 
 <p className="
 mt-2

@@ -49,7 +49,7 @@ export default function ProfilePage(){
         useState<any[]>([]);
 
 
-
+const [timeBalance,setTimeBalance] = useState(0);
 
 
     const [donorDashboard,setDonorDashboard] =
@@ -124,87 +124,118 @@ export default function ProfilePage(){
     useEffect(()=>{
 
 
+    const savedUser =
 
-        const savedUser =
-
-            localStorage.getItem("user");
-
+        localStorage.getItem("user");
 
 
 
-
-        if(savedUser){
-
+    if(savedUser){
 
 
-            const userData =
+        const userData =
 
-                JSON.parse(savedUser);
+            JSON.parse(savedUser);
 
 
 
-
-
-            setUser(userData);
-
+        setUser(userData);
 
 
 
+        loadProfile(
 
-            loadProfile(
+            userData.id
 
-                userData.id
+        );
+
+
+
+        loadStats(
+
+            userData.id
+
+        );
+
+
+
+        loadRequests(
+
+            userData.id
+
+        );
+
+
+
+        loadDonorDashboard(
+
+            userData.id
+
+        );
+
+
+        // Volunteer Time Bank Balance
+
+        loadTimeBalance();
+
+
+    }
+
+
+},[]);
+
+
+
+
+
+
+
+
+async function loadTimeBalance(){
+
+    try{
+
+        const user =
+
+            JSON.parse(
+
+                localStorage.getItem("user") || "{}"
 
             );
 
 
+        if(!user.id){
 
-
-
-            loadStats(
-
-                userData.id
-
-            );
-
-
-
-
-
-            loadRequests(
-
-                userData.id
-
-            );
-
-
-
-
-
-            loadDonorDashboard(
-
-                userData.id
-
-            );
-
-
+            return;
 
         }
 
 
+        const response = await fetch(
+
+`http://localhost:8080/api/time-bank/balance/${user.id}`
+
+        );
 
 
-
-    },[]);
-
+        const data = await response.json();
 
 
+        setTimeBalance(data);
 
 
+    }
 
+    catch(error){
 
+        console.log(
+            "Time balance error",
+            error
+        );
 
+    }
 
+}
 
 
 
@@ -1065,7 +1096,106 @@ p-8
 shadow-lg
 ">
 
+{/* TIME BANK */}
 
+
+<div className="
+mt-10
+rounded-3xl
+bg-white
+p-8
+shadow-lg
+">
+
+
+<h2 className="
+text-2xl
+font-bold
+text-slate-900
+">
+
+⏳ Volunteer Time Bank
+
+</h2>
+
+
+
+
+<div className="
+mt-6
+rounded-2xl
+bg-emerald-50
+p-6
+">
+
+
+<p className="
+text-sm
+text-slate-600
+">
+
+Current Time Credits
+
+</p>
+
+
+
+
+<p className="
+mt-2
+text-4xl
+font-bold
+text-emerald-700
+">
+
+{timeBalance}
+
+</p>
+
+
+
+
+<p className="
+mt-1
+text-slate-600
+">
+
+hours available
+
+</p>
+
+
+
+
+</div>
+
+
+
+<a
+
+href="/time-bank"
+
+className="
+mt-6
+inline-block
+rounded-xl
+bg-emerald-700
+px-5
+py-3
+font-semibold
+text-white
+hover:bg-emerald-800
+"
+
+>
+
+Go To Time Bank →
+
+</a>
+
+
+
+</div>
 
 
 

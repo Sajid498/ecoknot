@@ -4,9 +4,7 @@ package backend.entity;
 import java.time.LocalDate;
 import java.util.List;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -190,7 +188,7 @@ public class User {
 
     @OneToMany(
 
-            mappedBy = "receiver",
+            mappedBy = "user",
 
             cascade = CascadeType.ALL
 

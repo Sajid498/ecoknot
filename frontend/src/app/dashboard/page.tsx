@@ -25,13 +25,23 @@ interface Stats{
 
     totalRelief:number;
 
+
     foodDonations:number;
+
 
     medicineDonations:number;
 
+
     completedDeliveries:number;
 
+
     totalUsers:number;
+
+
+    totalTimeOffers:number;
+
+
+    totalTimeCredits:number;
 
 
 }
@@ -251,7 +261,7 @@ grid
 grid-cols-1
 gap-6
 sm:grid-cols-2
-lg:grid-cols-5
+lg:grid-cols-7
 ">
 
 
@@ -335,7 +345,29 @@ icon="🚚"
 />
 
 
+<Card
 
+title="Time Bank Offers"
+
+value={stats?.totalTimeOffers || 0}
+
+icon="⏳"
+
+/>
+
+
+
+
+
+<Card
+
+title="Time Credits"
+
+value={stats?.totalTimeCredits || 0}
+
+icon="⌛"
+
+/>
 
 
 
