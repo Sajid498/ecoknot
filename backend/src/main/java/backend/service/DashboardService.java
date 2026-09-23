@@ -1,16 +1,18 @@
 package backend.service;
 
 
-
 import org.springframework.stereotype.Service;
 
+
 import backend.dto.DashboardStatsDTO;
+
 import backend.entity.PickupStatus;
+
 import backend.repository.PickupRequestRepository;
 import backend.repository.RescueDonationRepository;
 import backend.repository.UserRepository;
-
-
+import backend.repository.TimeOfferRepository;
+import backend.repository.TimeTransactionRepository;
 
 
 
@@ -30,6 +32,13 @@ public class DashboardService {
     private final UserRepository userRepository;
 
 
+    private final TimeOfferRepository timeOfferRepository;
+
+
+    private final TimeTransactionRepository timeTransactionRepository;
+
+
+
 
 
 
@@ -42,16 +51,28 @@ public class DashboardService {
 
             PickupRequestRepository pickupRequestRepository,
 
-            UserRepository userRepository
+            UserRepository userRepository,
+
+            TimeOfferRepository timeOfferRepository,
+
+            TimeTransactionRepository timeTransactionRepository
 
     ){
 
 
         this.rescueDonationRepository = rescueDonationRepository;
 
+
         this.pickupRequestRepository = pickupRequestRepository;
 
+
         this.userRepository = userRepository;
+
+
+        this.timeOfferRepository = timeOfferRepository;
+
+
+        this.timeTransactionRepository = timeTransactionRepository;
 
 
     }
@@ -64,7 +85,10 @@ public class DashboardService {
 
 
 
-    public DashboardStatsDTO getStats(){
+    public DashboardStatsDTO getDashboardStats(){
+
+
+
 
 
 
@@ -77,15 +101,13 @@ public class DashboardService {
 
 
 
+
+
         long foodDonations =
 
                 rescueDonationRepository
 
-                .countByType(
-
-                        "FOOD"
-
-                );
+                        .countByType("FOOD");
 
 
 
@@ -98,11 +120,7 @@ public class DashboardService {
 
                 rescueDonationRepository
 
-                .countByType(
-
-                        "MEDICINE"
-
-                );
+                        .countByType("MEDICINE");
 
 
 
@@ -115,11 +133,11 @@ public class DashboardService {
 
                 pickupRequestRepository
 
-                .countByStatus(
+                        .countByStatus(
 
-                        PickupStatus.DELIVERED
+                                PickupStatus.DELIVERED
 
-                );
+                        );
 
 
 
@@ -138,6 +156,50 @@ public class DashboardService {
 
 
 
+
+
+        // =============================
+        // Volunteer Time Bank Statistics
+        // =============================
+
+
+        long totalTimeOffers =
+
+                timeOfferRepository.count();
+
+
+
+
+
+
+
+
+        long totalTimeCredits =
+
+                timeTransactionRepository
+
+                        .findAll()
+
+                        .stream()
+
+                        .mapToLong(
+
+                                transaction ->
+
+                                        transaction.getAmount()
+
+                        )
+
+                        .sum();
+
+
+
+
+
+
+
+
+
         return new DashboardStatsDTO(
 
                 totalRelief,
@@ -148,14 +210,16 @@ public class DashboardService {
 
                 completedDeliveries,
 
-                totalUsers
+                totalUsers,
+
+                totalTimeOffers,
+
+                totalTimeCredits
 
         );
 
 
-
     }
-
 
 
 

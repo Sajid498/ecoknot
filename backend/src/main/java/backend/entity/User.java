@@ -4,7 +4,9 @@ package backend.entity;
 import java.time.LocalDate;
 import java.util.List;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -25,9 +27,12 @@ public class User {
 
 
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+
 
 
 
@@ -39,7 +44,11 @@ public class User {
 
 
 
+
+
     private String email;
+
+
 
 
 
@@ -51,15 +60,24 @@ public class User {
 
 
 
+
+
     private String role;
 
 
 
 
 
-    // Donor profile information
+
+
+    // ============================
+    // Donor Profile Information
+    // ============================
+
 
     private String location;
+
+
 
 
 
@@ -72,7 +90,11 @@ public class User {
 
 
 
+
+
     private boolean availableForDonation = false;
+
+
 
 
 
@@ -86,6 +108,15 @@ public class User {
 
 
 
+
+
+
+
+
+
+    // ============================
+    // Blood Requests
+    // ============================
 
 
     @OneToMany(mappedBy = "user")
@@ -102,7 +133,14 @@ public class User {
 
 
 
-    // Resource sharing posts
+
+
+
+
+    // ============================
+    // Resource Sharing Posts
+    // ============================
+
 
     @OneToMany(mappedBy = "user")
 
@@ -118,7 +156,14 @@ public class User {
 
 
 
-    // Surplus food & medicine rescue posts
+
+
+
+
+    // ============================
+    // Rescue Donation Posts
+    // ============================
+
 
     @OneToMany(mappedBy = "user")
 
@@ -134,11 +179,18 @@ public class User {
 
 
 
-    // User notifications
+
+
+
+
+    // ============================
+    // Notifications
+    // ============================
+
 
     @OneToMany(
 
-            mappedBy = "user",
+            mappedBy = "receiver",
 
             cascade = CascadeType.ALL
 
@@ -159,7 +211,72 @@ public class User {
 
 
 
-    public Long getId() {
+
+    // ============================
+    // Volunteer Time Bank Offers
+    // ============================
+
+
+    @OneToMany(
+
+            mappedBy = "user",
+
+            cascade = CascadeType.ALL
+
+    )
+
+    @JsonIgnore
+
+    private List<TimeOffer> timeOffers;
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ============================
+    // Volunteer Time Transactions
+    // ============================
+
+
+    @OneToMany(
+
+            mappedBy = "user",
+
+            cascade = CascadeType.ALL
+
+    )
+
+    @JsonIgnore
+
+    private List<TimeTransaction> timeTransactions;
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ============================
+    // GETTERS
+    // ============================
+
+
+
+    public Long getId(){
 
         return id;
 
@@ -171,9 +288,7 @@ public class User {
 
 
 
-
-
-    public String getName() {
+    public String getName(){
 
         return name;
 
@@ -185,9 +300,7 @@ public class User {
 
 
 
-
-
-    public String getEmail() {
+    public String getEmail(){
 
         return email;
 
@@ -199,9 +312,7 @@ public class User {
 
 
 
-
-
-    public String getPassword() {
+    public String getPassword(){
 
         return password;
 
@@ -213,9 +324,7 @@ public class User {
 
 
 
-
-
-    public String getRole() {
+    public String getRole(){
 
         return role;
 
@@ -227,9 +336,7 @@ public class User {
 
 
 
-
-
-    public String getLocation() {
+    public String getLocation(){
 
         return location;
 
@@ -241,9 +348,7 @@ public class User {
 
 
 
-
-
-    public BloodGroup getBloodGroup() {
+    public BloodGroup getBloodGroup(){
 
         return bloodGroup;
 
@@ -255,9 +360,7 @@ public class User {
 
 
 
-
-
-    public boolean isAvailableForDonation() {
+    public boolean isAvailableForDonation(){
 
         return availableForDonation;
 
@@ -269,9 +372,7 @@ public class User {
 
 
 
-
-
-    public LocalDate getLastDonationDate() {
+    public LocalDate getLastDonationDate(){
 
         return lastDonationDate;
 
@@ -283,15 +384,11 @@ public class User {
 
 
 
-
-
-    public List<BloodRequest> getBloodRequests() {
+    public List<BloodRequest> getBloodRequests(){
 
         return bloodRequests;
 
     }
-
-
 
 
 
@@ -311,15 +408,11 @@ public class User {
 
 
 
-
-
     public List<RescueDonation> getRescueDonations(){
 
         return rescueDonations;
 
     }
-
-
 
 
 
@@ -339,13 +432,43 @@ public class User {
 
 
 
+    public List<TimeOffer> getTimeOffers(){
+
+        return timeOffers;
+
+    }
 
 
 
 
 
 
-    public void setName(String name) {
+
+    public List<TimeTransaction> getTimeTransactions(){
+
+        return timeTransactions;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ============================
+    // SETTERS
+    // ============================
+
+
+
+    public void setName(String name){
 
         this.name = name;
 
@@ -357,9 +480,7 @@ public class User {
 
 
 
-
-
-    public void setEmail(String email) {
+    public void setEmail(String email){
 
         this.email = email;
 
@@ -371,9 +492,7 @@ public class User {
 
 
 
-
-
-    public void setPassword(String password) {
+    public void setPassword(String password){
 
         this.password = password;
 
@@ -385,9 +504,7 @@ public class User {
 
 
 
-
-
-    public void setRole(String role) {
+    public void setRole(String role){
 
         this.role = role;
 
@@ -399,9 +516,7 @@ public class User {
 
 
 
-
-
-    public void setLocation(String location) {
+    public void setLocation(String location){
 
         this.location = location;
 
@@ -413,9 +528,7 @@ public class User {
 
 
 
-
-
-    public void setBloodGroup(BloodGroup bloodGroup) {
+    public void setBloodGroup(BloodGroup bloodGroup){
 
         this.bloodGroup = bloodGroup;
 
@@ -427,9 +540,11 @@ public class User {
 
 
 
+    public void setAvailableForDonation(
 
+            boolean availableForDonation
 
-    public void setAvailableForDonation(boolean availableForDonation) {
+    ){
 
         this.availableForDonation = availableForDonation;
 
@@ -441,11 +556,109 @@ public class User {
 
 
 
+    public void setLastDonationDate(
 
+            LocalDate lastDonationDate
 
-    public void setLastDonationDate(LocalDate lastDonationDate) {
+    ){
 
         this.lastDonationDate = lastDonationDate;
+
+    }
+
+
+
+
+
+
+
+    public void setBloodRequests(
+
+            List<BloodRequest> bloodRequests
+
+    ){
+
+        this.bloodRequests = bloodRequests;
+
+    }
+
+
+
+
+
+
+
+    public void setResources(
+
+            List<Resource> resources
+
+    ){
+
+        this.resources = resources;
+
+    }
+
+
+
+
+
+
+
+    public void setRescueDonations(
+
+            List<RescueDonation> rescueDonations
+
+    ){
+
+        this.rescueDonations = rescueDonations;
+
+    }
+
+
+
+
+
+
+
+    public void setNotifications(
+
+            List<Notification> notifications
+
+    ){
+
+        this.notifications = notifications;
+
+    }
+
+
+
+
+
+
+
+    public void setTimeOffers(
+
+            List<TimeOffer> timeOffers
+
+    ){
+
+        this.timeOffers = timeOffers;
+
+    }
+
+
+
+
+
+
+
+    public void setTimeTransactions(
+
+            List<TimeTransaction> timeTransactions
+
+    ){
+
+        this.timeTransactions = timeTransactions;
 
     }
 
