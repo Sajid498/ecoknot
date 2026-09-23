@@ -5,9 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import backend.dto.ProfileStatsDTO;
 import backend.dto.UserProfileDTO;
+
 import backend.entity.User;
+
 import backend.service.UserProfileService;
+
 
 
 
@@ -35,7 +39,9 @@ public class UserProfileController {
 
     ){
 
+
         this.userProfileService = userProfileService;
+
 
     }
 
@@ -109,6 +115,38 @@ public class UserProfileController {
 
     }
 
+
+
+
+
+
+
+
+
+    // Get profile statistics
+
+    @GetMapping("/{userId}/stats")
+
+    public ResponseEntity<ProfileStatsDTO> getProfileStats(
+
+            @PathVariable Long userId
+
+    ){
+
+
+
+        return ResponseEntity.ok(
+
+                userProfileService.getProfileStats(
+
+                        userId
+
+                )
+
+        );
+
+
+    }
 
 
 

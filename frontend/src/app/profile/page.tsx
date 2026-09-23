@@ -1,16 +1,28 @@
 "use client";
 
 
-import { useEffect, useState } from "react";
+import {
+    useEffect,
+    useState
+} from "react";
+
 
 import ProtectedRoute from "@/components/ProtectedRoute";
+
+
+import ProfileStats from "@/components/ProfileStats";
+
 
 
 
 
 const API_URL =
+
     process.env.NEXT_PUBLIC_API_URL ||
+
     "http://localhost:8080";
+
+
 
 
 
@@ -22,43 +34,84 @@ export default function ProfilePage(){
 
 
 
+
+
     const [user,setUser] =
+
         useState<any>(null);
+
+
 
 
 
     const [requests,setRequests] =
+
         useState<any[]>([]);
 
 
 
+
+
     const [donorDashboard,setDonorDashboard] =
+
         useState<any>(null);
 
 
 
+
+
+    // New Phase 2.2 statistics
+
+    const [stats,setStats] =
+
+        useState<any>(null);
+
+
+
+
+
+
+
+
+
     const [location,setLocation] =
+
         useState("");
+
+
 
 
 
     const [bloodGroup,setBloodGroup] =
+
         useState("");
+
+
 
 
 
     const [availableForDonation,setAvailableForDonation] =
+
         useState(false);
 
 
 
+
+
     const [lastDonationDate,setLastDonationDate] =
+
         useState("");
+
+
 
 
 
     const [message,setMessage] =
+
         useState("");
+
+
+
 
 
 
@@ -71,16 +124,24 @@ export default function ProfilePage(){
     useEffect(()=>{
 
 
+
         const savedUser =
+
             localStorage.getItem("user");
+
+
 
 
 
         if(savedUser){
 
 
+
             const userData =
+
                 JSON.parse(savedUser);
+
+
 
 
 
@@ -88,24 +149,49 @@ export default function ProfilePage(){
 
 
 
+
+
             loadProfile(
+
                 userData.id
+
             );
+
+
+
+
+
+            loadStats(
+
+                userData.id
+
+            );
+
+
 
 
 
             loadRequests(
+
                 userData.id
+
             );
+
+
 
 
 
             loadDonorDashboard(
+
                 userData.id
+
             );
 
 
+
         }
+
+
 
 
 
@@ -122,24 +208,54 @@ export default function ProfilePage(){
 
 
 
+    // ============================
+    // LOAD PROFILE
+    // ============================
+
 
     async function loadProfile(
+
         id:number
+
     ){
+
 
 
         try{
 
 
+
             const response =
+
                 await fetch(
-                    `${API_URL}/api/users/${id}`
+
+`${API_URL}/api/profile/${id}`
+
                 );
 
 
 
+
+
+            if(!response.ok){
+
+                throw new Error(
+
+                    "Profile loading failed"
+
+                );
+
+            }
+
+
+
+
+
+
             const data =
+
                 await response.json();
+
 
 
 
@@ -149,43 +265,77 @@ export default function ProfilePage(){
 
 
 
+
+
+
             setLocation(
+
                 data.location || ""
+
             );
+
+
+
 
 
 
             setBloodGroup(
+
                 data.bloodGroup || ""
+
             );
+
+
+
 
 
 
             setAvailableForDonation(
+
                 data.availableForDonation || false
+
             );
+
+
+
 
 
 
             setLastDonationDate(
+
                 data.lastDonationDate || ""
+
             );
+
+
+
+
 
 
 
             localStorage.setItem(
+
                 "user",
+
                 JSON.stringify(data)
+
             );
 
 
 
+
         }
+
         catch(error){
+
+
 
             console.log(error);
 
+
+
         }
+
 
 
     }
@@ -201,20 +351,34 @@ export default function ProfilePage(){
 
 
 
-    async function loadDonorDashboard(
+    // ============================
+    // LOAD PROFILE STATISTICS
+    // ============================
+
+
+    async function loadStats(
+
         id:number
+
     ){
+
 
 
         try{
 
 
+
             const response =
+
                 await fetch(
 
-`${API_URL}/api/users/${id}/donor-dashboard`
+`${API_URL}/api/profile/${id}/stats`
 
                 );
+
+
+
+
 
 
 
@@ -226,24 +390,37 @@ export default function ProfilePage(){
 
 
 
+
+
+
+
             const data =
+
                 await response.json();
 
 
 
-            setDonorDashboard(
-                data
-            );
+
+
+
+
+            setStats(data);
+
 
 
         }
+
+
         catch(error){
+
 
 
             console.log(error);
 
 
+
         }
+
 
 
     }
@@ -259,35 +436,150 @@ export default function ProfilePage(){
 
 
 
-    async function loadRequests(
+    // ============================
+    // LOAD DONOR DASHBOARD
+    // ============================
+
+
+    async function loadDonorDashboard(
+
         id:number
+
     ){
+
 
 
         try{
 
 
+
             const response =
+
                 await fetch(
-                    `${API_URL}/api/blood-requests/user/${id}`
+
+`${API_URL}/api/users/${id}/donor-dashboard`
+
                 );
 
 
 
+
+
+
+
+            if(!response.ok){
+
+                return;
+
+            }
+
+
+
+
+
+
+
             const data =
+
                 await response.json();
+
+
+
+
+
+
+            setDonorDashboard(data);
+
+
+
+
+        }
+
+
+        catch(error){
+
+
+
+            console.log(error);
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ============================
+    // LOAD BLOOD REQUESTS
+    // ============================
+
+
+    async function loadRequests(
+
+        id:number
+
+    ){
+
+
+
+        try{
+
+
+
+            const response =
+
+                await fetch(
+
+`${API_URL}/api/blood-requests/user/${id}`
+
+                );
+
+
+
+
+
+
+
+            const data =
+
+                await response.json();
+
+
+
+
 
 
 
             setRequests(data);
 
 
+
         }
+
+
         catch(error){
+
+
 
             console.log(error);
 
+
+
         }
+
 
 
     }
@@ -303,44 +595,70 @@ export default function ProfilePage(){
 
 
 
+
+    // ============================
+    // UPDATE PROFILE
+    // ============================
+
+
     async function updateProfile(){
+
 
 
         try{
 
 
+
             const response =
+
                 await fetch(
-                    `${API_URL}/api/users/${user.id}`,
+
+`${API_URL}/api/profile/${user.id}`,
+
                     {
 
                         method:"PUT",
 
+
                         headers:{
 
+
                             "Content-Type":
+
                             "application/json"
 
+
                         },
+
 
 
                         body:JSON.stringify({
 
 
+
+                            name:
+
+                            user.name,
+
+
+
                             location,
+
 
 
                             bloodGroup,
 
 
+
                             availableForDonation,
+
 
 
                             lastDonationDate
 
 
-                        })
 
+                        })
 
                     }
 
@@ -350,11 +668,19 @@ export default function ProfilePage(){
 
 
 
+
+
+
             if(!response.ok){
 
+
+
                 throw new Error(
+
                     "Profile update failed"
+
                 );
+
 
             }
 
@@ -363,16 +689,28 @@ export default function ProfilePage(){
 
 
 
+
+
+
             const updatedUser =
+
                 await response.json();
 
 
 
 
 
+
+
+
             setUser(
+
                 updatedUser
+
             );
+
+
+
 
 
 
@@ -390,225 +728,248 @@ export default function ProfilePage(){
 
 
 
-            loadDonorDashboard(
+
+
+
+            loadStats(
+
                 user.id
+
             );
+
+
+
+
+
+
+            loadDonorDashboard(
+
+                user.id
+
+            );
+
+
+
 
 
 
 
 
             setMessage(
+
                 "Profile updated successfully"
+
             );
 
 
 
         }
+
+
+
         catch(error){
+
 
 
             console.log(error);
 
 
 
+
+
             setMessage(
+
                 "Something went wrong"
+
             );
 
 
+
         }
+
 
 
     }
     return(
 
 
-    <ProtectedRoute>
+<ProtectedRoute>
 
 
-        <main className="
-        min-h-screen
-        bg-slate-50
-        ">
+<main className="
+min-h-screen
+bg-slate-50
+p-6
+md:p-10
+">
 
 
-      
 
 
 
+<div className="
+mx-auto
+max-w-6xl
+">
 
-            <div className="
-            mx-auto
-            max-w-5xl
-            px-6
-            py-10
-            ">
 
 
 
 
 
 
+{/* PROFILE HEADER */}
 
-                <div className="
-                rounded-3xl
-                bg-white
-                p-8
-                shadow-lg
-                border
-                border-slate-200
-                ">
 
+<div className="
+rounded-3xl
+bg-white
+p-8
+shadow-lg
+">
 
 
 
 
-                    <div className="
-                    flex
-                    items-center
-                    gap-5
-                    ">
 
+<div className="
+flex
+flex-col
+gap-5
+md:flex-row
+md:items-center
+md:justify-between
+">
 
-                        <div className="
-                        flex
-                        h-20
-                        w-20
-                        items-center
-                        justify-center
-                        rounded-full
-                        bg-emerald-700
-                        text-3xl
-                        font-bold
-                        text-white
-                        ">
 
 
-                            {
-                                user?.name?.charAt(0)
-                                ||
-                                "U"
-                            }
 
 
-                        </div>
+<div className="
+flex
+items-center
+gap-5
+">
 
 
 
 
 
-                        <div>
+<div className="
+flex
+h-20
+w-20
+items-center
+justify-center
+rounded-full
+bg-emerald-100
+text-4xl
+">
 
+👤
 
-                            <h1 className="
-                            text-3xl
-                            font-bold
-                            ">
+</div>
 
-                                {user?.name}
 
-                            </h1>
 
 
 
-                            <p className="
-                            text-slate-500
-                            ">
 
-                                EcoKnot Community Member
 
-                            </p>
+<div>
 
 
-                        </div>
 
+<h1 className="
+text-3xl
+font-bold
+text-slate-900
+">
 
-                    </div>
+{
+user?.name ||
+"User Profile"
+}
 
+</h1>
 
 
 
 
 
+<p className="
+mt-1
+text-slate-600
+">
 
+{
+user?.role
+}
 
+</p>
 
-                    <div className="
-                    mt-8
-                    grid
-                    gap-5
-                    md:grid-cols-2
-                    ">
 
 
 
+</div>
 
-                        <div className="
-                        rounded-xl
-                        bg-slate-50
-                        p-5
-                        ">
 
 
-                            <p className="
-                            text-sm
-                            text-slate-500
-                            ">
 
-                                Email
 
-                            </p>
+</div>
 
 
 
-                            <p className="font-semibold">
 
-                                {user?.email}
 
-                            </p>
 
 
-                        </div>
 
 
+<div className="
+rounded-xl
+bg-emerald-50
+px-5
+py-3
+text-center
+">
 
 
+<p className="
+text-sm
+text-slate-600
+">
 
+Member Since
 
+</p>
 
-                        <div className="
-                        rounded-xl
-                        bg-slate-50
-                        p-5
-                        ">
 
+<p className="
+font-bold
+text-emerald-700
+">
 
-                            <p className="
-                            text-sm
-                            text-slate-500
-                            ">
+EcoKnot Community
 
-                                Role
+</p>
 
-                            </p>
 
+</div>
 
 
-                            <p className="font-semibold">
 
-                                {user?.role}
 
-                            </p>
 
+</div>
 
-                        </div>
 
 
 
-                    </div>
 
 
+</div>
 
 
 
@@ -616,88 +977,63 @@ export default function ProfilePage(){
 
 
 
-                    {/* Donor Reliability Dashboard */}
 
 
-                    {
+{/* PHASE 2.2 STATISTICS */}
 
-                    donorDashboard &&
 
 
-                    <div className="
-                    mt-10
-                    rounded-2xl
-                    bg-gradient-to-r
-                    from-emerald-50
-                    to-teal-50
-                    p-6
-                    border
-                    border-emerald-200
-                    ">
+{
 
+stats &&
 
 
+<ProfileStats
 
-                        <h2 className="
-                        text-2xl
-                        font-bold
-                        ">
+stats={stats}
 
-                            ⭐ Donor Reliability Dashboard
+/>
 
-                        </h2>
 
+}
 
 
 
 
 
 
-                        <div className="
-                        mt-5
-                        grid
-                        gap-4
-                        md:grid-cols-3
-                        ">
 
 
 
 
 
-                            <div className="
-                            rounded-xl
-                            bg-white
-                            p-5
-                            shadow
-                            ">
 
 
-                                <p className="
-                                text-sm
-                                text-slate-500
-                                ">
 
-                                    Completed Donations
+{/* MESSAGE */}
 
-                                </p>
 
+{
 
-                                <p className="
-                                mt-2
-                                text-3xl
-                                font-bold
-                                ">
+message &&
 
-                                    {
-                                        donorDashboard.completedDonations
-                                    }
 
-                                </p>
+<div className="
+mt-6
+rounded-xl
+bg-emerald-100
+p-4
+text-center
+font-semibold
+text-emerald-700
+">
 
+{message}
 
-                            </div>
+</div>
 
 
+}
 
 
 
@@ -705,175 +1041,188 @@ export default function ProfilePage(){
 
 
 
-                            <div className="
-                            rounded-xl
-                            bg-white
-                            p-5
-                            shadow
-                            ">
 
 
-                                <p className="
-                                text-sm
-                                text-slate-500
-                                ">
 
-                                    Reliability Score
 
-                                </p>
 
 
-                                <p className="
-                                mt-2
-                                text-3xl
-                                font-bold
-                                text-emerald-700
-                                ">
 
+{/* DONOR DASHBOARD */}
 
-                                    {
-                                        donorDashboard.reliabilityScore
-                                    }
 
-                                    /20
 
+{
 
-                                </p>
+donorDashboard &&
 
 
-                            </div>
+<div className="
+mt-10
+rounded-3xl
+bg-white
+p-8
+shadow-lg
+">
 
 
 
 
 
+<h2 className="
+text-2xl
+font-bold
+text-slate-900
+">
 
+🩸 Donor Reliability Dashboard
 
+</h2>
 
 
-                            <div className="
-                            rounded-xl
-                            bg-white
-                            p-5
-                            shadow
-                            ">
 
 
-                                <p className="
-                                text-sm
-                                text-slate-500
-                                ">
 
-                                    Level
 
-                                </p>
 
+<div className="
+mt-6
+grid
+gap-5
+md:grid-cols-3
+">
 
-                                <p className="
-                                mt-2
-                                text-xl
-                                font-bold
-                                ">
 
-                                    {
-                                        donorDashboard.reliabilityLevel
-                                    }
 
-                                </p>
 
 
-                            </div>
 
+<div className="
+rounded-2xl
+bg-red-50
+p-5
+">
 
+<p className="
+text-sm
+text-slate-600
+">
 
+Donation Count
 
+</p>
 
-                        </div>
 
+<p className="
+mt-2
+text-3xl
+font-bold
+text-red-700
+">
 
+{
 
+donorDashboard.totalDonations ||
 
+0
 
+}
 
+</p>
 
 
+</div>
 
-                        <div className="
-                        mt-5
-                        rounded-xl
-                        bg-white
-                        p-5
-                        ">
 
 
 
-                            <p>
 
-                                🩸 Last Donation:
 
-                                <span className="font-semibold">
 
-                                {" "}
-                                {
-                                    donorDashboard.lastDonationDate
-                                    ||
-                                    "No donation yet"
-                                }
 
-                                </span>
 
+<div className="
+rounded-2xl
+bg-blue-50
+p-5
+">
 
-                            </p>
+<p className="
+text-sm
+text-slate-600
+">
 
+Requests Helped
 
+</p>
 
 
+<p className="
+mt-2
+text-3xl
+font-bold
+text-blue-700
+">
 
+{
 
-                            <p className="mt-3">
+donorDashboard.requestsHelped ||
 
+0
 
-                                Availability:
+}
 
-                                <span className="font-semibold">
+</p>
 
 
-                                {" "}
+</div>
 
-                                {
 
-                                donorDashboard.availableForDonation
 
-                                ?
 
-                                "Available ✅"
 
-                                :
 
-                                "Unavailable"
 
-                                }
 
 
-                                </span>
+<div className="
+rounded-2xl
+bg-purple-50
+p-5
+">
 
+<p className="
+text-sm
+text-slate-600
+">
 
-                            </p>
+Reliability Score
 
+</p>
 
 
-                        </div>
+<p className="
+mt-2
+text-3xl
+font-bold
+text-purple-700
+">
 
+{
 
+donorDashboard.reliabilityScore ||
 
+0
 
+}
 
+%
 
+</p>
 
-                    </div>
 
+</div>
 
-                    }
 
 
 
@@ -881,260 +1230,266 @@ export default function ProfilePage(){
 
 
 
+</div>
 
 
 
+</div>
 
 
-                    {/* Smart Blood Profile */}
+}
 
 
 
-                    <div className="
-                    mt-10
-                    rounded-2xl
-                    bg-emerald-50
-                    p-6
-                    ">
 
 
-                        <h2 className="
-                        text-2xl
-                        font-bold
-                        ">
 
-                            🩸 Donor Information
 
-                        </h2>
 
 
 
 
 
 
-                        <div className="
-                        mt-5
-                        space-y-5
-                        ">
+{/* DONOR INFORMATION */}
 
 
 
+<div className="
+mt-10
+rounded-3xl
+bg-white
+p-8
+shadow-lg
+">
 
 
-                            <div>
 
 
-                                <label className="font-semibold">
 
-                                    Location
+<h2 className="
+text-2xl
+font-bold
+text-slate-900
+">
 
-                                </label>
+🩸 Donation Information
 
+</h2>
 
-                                <input
 
 
-                                    value={location}
 
 
-                                    onChange={(e)=>
-                                        setLocation(
-                                            e.target.value
-                                        )
-                                    }
 
 
-                                    className="
-                                    mt-2
-                                    w-full
-                                    rounded-lg
-                                    border
-                                    p-3
-                                    "
 
+<div className="
+mt-6
+grid
+gap-6
+md:grid-cols-2
+">
 
-                                    placeholder="Enter your location"
 
 
-                                />
 
 
-                            </div>
 
 
+{/* LOCATION */}
 
 
+<div>
 
 
 
+<label className="
+text-sm
+font-semibold
+text-slate-700
+">
 
+📍 Location
 
-                            <div>
+</label>
 
 
-                                <label className="font-semibold">
 
-                                    Blood Group
+<input
 
-                                </label>
+value={location}
 
+onChange={
 
+(e)=>
 
+setLocation(
 
-                                <select
+e.target.value
 
+)
 
-                                    value={bloodGroup}
+}
 
+className="
+mt-2
+w-full
+rounded-xl
+border
+border-slate-300
+px-4
+py-3
+outline-none
+focus:border-emerald-600
+"
 
-                                    onChange={(e)=>
-                                        setBloodGroup(
-                                            e.target.value
-                                        )
-                                    }
+/>
 
 
-                                    className="
-                                    mt-2
-                                    w-full
-                                    rounded-lg
-                                    border
-                                    p-3
-                                    "
 
+</div>
 
-                                >
 
 
 
-                                    <option value="">
 
-                                        Select Blood Group
 
-                                    </option>
 
 
 
-                                    <option value="A_POSITIVE">
+{/* BLOOD GROUP */}
 
-                                        A+
 
-                                    </option>
 
+<div>
 
 
-                                    <option value="A_NEGATIVE">
+<label className="
+text-sm
+font-semibold
+text-slate-700
+">
 
-                                        A-
+🩸 Blood Group
 
-                                    </option>
+</label>
 
 
 
-                                    <option value="B_POSITIVE">
 
-                                        B+
 
-                                    </option>
+<select
 
+value={bloodGroup}
 
+onChange={
 
-                                    <option value="B_NEGATIVE">
+(e)=>
 
-                                        B-
+setBloodGroup(
 
-                                    </option>
+e.target.value
 
+)
 
+}
 
-                                    <option value="AB_POSITIVE">
+className="
+mt-2
+w-full
+rounded-xl
+border
+border-slate-300
+px-4
+py-3
+outline-none
+focus:border-emerald-600
+"
 
-                                        AB+
+>
 
-                                    </option>
 
+<option value="">
 
+Select Blood Group
 
-                                    <option value="AB_NEGATIVE">
+</option>
 
-                                        AB-
 
-                                    </option>
+<option value="A_POSITIVE">
 
+A+
 
+</option>
 
-                                    <option value="O_POSITIVE">
 
-                                        O+
+<option value="A_NEGATIVE">
 
-                                    </option>
+A-
 
+</option>
 
 
-                                    <option value="O_NEGATIVE">
+<option value="B_POSITIVE">
 
-                                        O-
+B+
 
-                                    </option>
+</option>
 
 
+<option value="B_NEGATIVE">
 
-                                </select>
+B-
 
+</option>
 
 
-                            </div>
+<option value="O_POSITIVE">
 
+O+
 
+</option>
 
 
+<option value="O_NEGATIVE">
 
+O-
 
+</option>
 
 
+<option value="AB_POSITIVE">
 
-                            <div className="
-                            flex
-                            items-center
-                            gap-3
-                            ">
+AB+
 
+</option>
 
 
-                                <input
+<option value="AB_NEGATIVE">
 
+AB-
 
-                                    type="checkbox"
+</option>
 
 
-                                    checked={
-                                        availableForDonation
-                                    }
 
+</select>
 
-                                    onChange={(e)=>
-                                        setAvailableForDonation(
-                                            e.target.checked
-                                        )
-                                    }
 
 
-                                    className="h-5 w-5"
 
+</div>
 
-                                />
 
 
 
-                                <span className="font-semibold">
 
-                                    Available for Donation
 
-                                </span>
 
 
 
-                            </div>
+</div>
 
 
 
@@ -1144,118 +1499,134 @@ export default function ProfilePage(){
 
 
 
-                            <div>
 
 
-                                <label className="font-semibold">
 
-                                    Last Donation Date
 
-                                </label>
+<div className="
+mt-6
+grid
+gap-6
+md:grid-cols-2
+">
 
 
 
-                                <input
 
 
-                                    type="date"
 
 
-                                    value={
-                                        lastDonationDate
-                                    }
+{/* LAST DONATION DATE */}
 
 
-                                    onChange={(e)=>
-                                        setLastDonationDate(
-                                            e.target.value
-                                        )
-                                    }
 
+<div>
 
-                                    className="
-                                    mt-2
-                                    rounded-lg
-                                    border
-                                    p-3
-                                    "
 
+<label className="
+text-sm
+font-semibold
+text-slate-700
+">
 
-                                />
+📅 Last Donation Date
 
+</label>
 
-                            </div>
 
 
+<input
 
+type="date"
 
+value={lastDonationDate}
 
+onChange={
 
+(e)=>
 
+setLastDonationDate(
 
+e.target.value
 
-                            <button
+)
 
+}
 
-                                onClick={updateProfile}
+className="
+mt-2
+w-full
+rounded-xl
+border
+border-slate-300
+px-4
+py-3
+"
 
+/>
 
-                                className="
-                                rounded-xl
-                                bg-emerald-700
-                                px-6
-                                py-3
-                                font-semibold
-                                text-white
-                                "
 
+</div>
 
-                            >
 
-                                Save Profile
 
-                            </button>
 
 
 
 
 
 
-                            {
+{/* AVAILABILITY */}
 
-                                message &&
 
 
-                                <p className="
-                                font-semibold
-                                text-emerald-700
-                                ">
+<div className="
+flex
+items-center
+gap-3
+mt-8
+">
 
 
-                                    {message}
+<input
 
+type="checkbox"
 
-                                </p>
+checked={availableForDonation}
 
+onChange={
 
-                            }
+(e)=>
 
+setAvailableForDonation(
 
+e.target.checked
 
-                        </div>
+)
 
+}
 
-                    </div>
+className="
+h-5
+w-5
+"
 
+/>
 
 
 
+<label className="
+font-semibold
+text-slate-700
+">
 
+Available for Blood Donation
 
+</label>
 
 
-                </div>
 
+</div>
 
 
 
@@ -1265,140 +1636,344 @@ export default function ProfilePage(){
 
 
 
+</div>
 
 
-                <div className="
-                mt-10
-                rounded-3xl
-                bg-white
-                p-8
-                shadow-lg
-                ">
 
 
 
 
-                    <h2 className="
-                    text-2xl
-                    font-bold
-                    ">
 
-                        My Blood Requests
 
-                    </h2>
 
+<button
 
+onClick={updateProfile}
 
+className="
+mt-8
+rounded-xl
+bg-emerald-700
+px-6
+py-3
+font-semibold
+text-white
+hover:bg-emerald-800
+"
 
+>
 
+Save Profile
 
+</button>
 
-                    {
 
-                    requests.length===0
 
-                    ?
 
 
-                    (
 
-                        <p className="
-                        mt-5
-                        text-slate-500
-                        ">
 
-                            No blood requests created yet.
+</div>
+{/* BLOOD REQUEST HISTORY */}
 
-                        </p>
 
+<div className="
+mt-10
+rounded-3xl
+bg-white
+p-8
+shadow-lg
+">
 
-                    )
 
 
-                    :
 
 
-                    requests.map(
+<h2 className="
+text-2xl
+font-bold
+text-slate-900
+">
 
-                        (request)=>(
+🩸 Blood Request History
 
+</h2>
 
-                            <div
 
-                            key={request.id}
 
-                            className="
-                            mt-5
-                            rounded-xl
-                            border
-                            p-5
-                            "
 
 
-                            >
 
 
+{
 
-                                <h3 className="font-bold">
+requests.length === 0 ?
 
-                                    {request.patientName}
 
-                                </h3>
 
+<div className="
+mt-6
+rounded-xl
+bg-slate-50
+p-6
+text-center
+text-slate-600
+">
 
+No blood requests found.
 
-                                <p>
+</div>
 
-                                    Blood:
-                                    {request.bloodGroup}
 
-                                </p>
 
 
 
-                                <p>
+:
 
-                                    Status:
-                                    {request.status}
 
-                                </p>
 
+<div className="
+mt-6
+space-y-4
+">
 
 
-                            </div>
 
 
-                        )
 
-                    )
 
 
-                    }
+{
 
+requests.map((request)=>(
 
 
 
+<div
 
-                </div>
+key={request.id}
 
+className="
+rounded-2xl
+border
+border-slate-200
+p-5
+transition
+hover:shadow-md
+"
 
+>
 
 
 
 
 
 
+<div className="
+flex
+items-center
+justify-between
+gap-4
+">
 
-            </div>
 
 
-        </main>
 
 
-    </ProtectedRoute>
 
+<div>
 
-    );
+
+<h3 className="
+font-bold
+text-slate-900
+">
+
+🩸 {request.bloodGroup}
+
+</h3>
+
+
+
+<p className="
+mt-1
+text-sm
+text-slate-600
+">
+
+{request.hospital}
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+<span className="
+rounded-full
+bg-red-100
+px-3
+py-1
+text-sm
+font-semibold
+text-red-700
+">
+
+{
+
+request.status
+
+}
+
+</span>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div className="
+mt-4
+grid
+gap-2
+text-sm
+text-slate-600
+">
+
+
+
+<p>
+
+📍 Location:
+
+<span className="
+ml-1
+font-semibold
+text-slate-900
+">
+
+{request.location}
+
+</span>
+
+</p>
+
+
+
+
+
+<p>
+
+📅 Required Date:
+
+<span className="
+ml-1
+font-semibold
+text-slate-900
+">
+
+{request.requiredDate}
+
+</span>
+
+</p>
+
+
+
+
+
+<p>
+
+📦 Units Needed:
+
+<span className="
+ml-1
+font-semibold
+text-slate-900
+">
+
+{request.unitsNeeded}
+
+</span>
+
+</p>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+))
+
+
+
+}
+
+
+
+
+
+</div>
+
+
+}
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</main>
+
+
+</ProtectedRoute>
+
+
+);
 
 
 }

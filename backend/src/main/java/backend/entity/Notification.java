@@ -3,12 +3,15 @@ package backend.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 
 
 
@@ -30,9 +33,10 @@ public class Notification {
 
 
 
-    // Receiver user id
-
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
 
 
 
@@ -85,9 +89,7 @@ public class Notification {
 
 
 
-
     public Notification(){
-
 
 
     }
@@ -100,8 +102,42 @@ public class Notification {
 
 
 
+    // New constructor (User relationship)
+
+    public Notification(
+
+            User user,
+
+            String message,
+
+            String type
+
+    ){
 
 
+        this.user = user;
+
+        this.message = message;
+
+        this.type = type;
+
+        this.createdAt = LocalDateTime.now();
+
+        this.readStatus = false;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // Backward compatible constructor
+    // Used by existing services
 
     public Notification(
 
@@ -114,9 +150,6 @@ public class Notification {
     ){
 
 
-
-        this.userId = userId;
-
         this.message = message;
 
         this.type = type;
@@ -126,11 +159,7 @@ public class Notification {
         this.readStatus = false;
 
 
-
     }
-
-
-
 
 
 
@@ -156,10 +185,10 @@ public class Notification {
 
 
 
-    public Long getUserId(){
+    public User getUser(){
 
 
-        return userId;
+        return user;
 
 
     }
@@ -172,10 +201,10 @@ public class Notification {
 
 
 
-    public void setUserId(Long userId){
+    public void setUser(User user){
 
 
-        this.userId = userId;
+        this.user = user;
 
 
     }
@@ -339,6 +368,7 @@ public class Notification {
 
 
     }
+
 
 
 

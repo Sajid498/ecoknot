@@ -7,14 +7,15 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import backend.entity.Notification;
+import backend.entity.User;
 import backend.exception.ResourceNotFoundException;
 import backend.repository.NotificationRepository;
 
 
 
-
 @Service
 public class NotificationService {
+
 
 
 
@@ -47,7 +48,99 @@ public class NotificationService {
 
 
 
-    // Create notification
+    // =====================================
+    // Create notification using User object
+    // =====================================
+
+    public Notification createNotification(
+
+            User user,
+
+            String message,
+
+            String type
+
+    ){
+
+
+
+        Notification notification = new Notification();
+
+
+
+
+        notification.setUser(
+
+                user
+
+        );
+
+
+
+
+        notification.setMessage(
+
+                message
+
+        );
+
+
+
+
+        notification.setType(
+
+                type
+
+        );
+
+
+
+
+        notification.setCreatedAt(
+
+                LocalDateTime.now()
+
+        );
+
+
+
+
+        notification.setReadStatus(
+
+                false
+
+        );
+
+
+
+
+
+
+
+        return notificationRepository.save(
+
+                notification
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    // =====================================
+    // Backward compatible method
+    // Existing modules use Long userId
+    // =====================================
 
     public Notification createNotification(
 
@@ -61,13 +154,45 @@ public class NotificationService {
 
 
 
-        Notification notification = new Notification(
+        Notification notification = new Notification();
 
-                userId,
 
-                message,
+
+
+
+        notification.setMessage(
+
+                message
+
+        );
+
+
+
+
+
+        notification.setType(
 
                 type
+
+        );
+
+
+
+
+
+        notification.setCreatedAt(
+
+                LocalDateTime.now()
+
+        );
+
+
+
+
+
+        notification.setReadStatus(
+
+                false
 
         );
 
@@ -92,7 +217,12 @@ public class NotificationService {
 
 
 
+
+
+
+    // =====================================
     // Get all notifications of a user
+    // =====================================
 
     public List<Notification> getUserNotifications(
 
@@ -121,7 +251,12 @@ public class NotificationService {
 
 
 
+
+
+
+    // =====================================
     // Get unread notification count
+    // =====================================
 
     public long getUnreadCount(
 
@@ -150,7 +285,12 @@ public class NotificationService {
 
 
 
+
+
+
+    // =====================================
     // Mark notification as read
+    // =====================================
 
     public Notification markAsRead(
 
@@ -168,7 +308,9 @@ public class NotificationService {
 
                         .orElseThrow(
 
-                                () -> new ResourceNotFoundException(
+                                () ->
+
+                                new ResourceNotFoundException(
 
                                         "Notification not found with id: "
 
@@ -177,6 +319,7 @@ public class NotificationService {
                                 )
 
                         );
+
 
 
 
@@ -196,11 +339,13 @@ public class NotificationService {
 
 
 
+
         notification.setReadAt(
 
                 LocalDateTime.now()
 
         );
+
 
 
 
@@ -215,9 +360,8 @@ public class NotificationService {
         );
 
 
+
     }
-
-
 
 
 

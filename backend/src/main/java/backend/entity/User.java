@@ -138,7 +138,7 @@ public class User {
 
     @OneToMany(
 
-            mappedBy = "receiver",
+            mappedBy = "user",
 
             cascade = CascadeType.ALL
 
