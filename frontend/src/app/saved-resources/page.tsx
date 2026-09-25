@@ -7,8 +7,6 @@ import {
 } from "react";
 
 
-
-
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 
@@ -240,105 +238,6 @@ export default function SavedResourcesPage(){
 
 
 
-
-
-
-    async function handleRemoveBookmark(
-
-        resourceId:number
-
-    ){
-
-
-
-        const savedUser =
-
-            localStorage.getItem("user");
-
-
-
-
-
-        if(!savedUser){
-
-            return;
-
-        }
-
-
-
-
-
-        const user =
-
-            JSON.parse(savedUser);
-
-
-
-
-
-
-
-
-        const response =
-
-            await fetch(
-
-`${API_URL}/api/bookmarks/remove?userId=${user.id}&resourceId=${resourceId}`,
-
-            {
-
-                method:"DELETE"
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-
-        if(response.ok){
-
-
-
-            setResources(
-
-                previous =>
-
-                previous.filter(
-
-                    resource =>
-
-                    resource.id !== resourceId
-
-                )
-
-            );
-
-
-
-        }
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
     async function handleLike(
 
         id:number
@@ -346,21 +245,43 @@ export default function SavedResourcesPage(){
     ){
 
 
+        try{
 
-        await fetch(
+
+            const response =
+
+                await fetch(
 
 `${API_URL}/api/resources/${id}/like`,
 
-{
+                    {
 
-method:"PUT"
+                        method:"PUT"
 
-}
+                    }
 
-        );
+                );
 
 
-        loadSavedResources();
+
+            if(response.ok){
+
+
+                loadSavedResources();
+
+
+            }
+
+
+        }
+
+        catch(error){
+
+
+            console.log(error);
+
+
+        }
 
 
     }
@@ -380,21 +301,43 @@ method:"PUT"
     ){
 
 
+        try{
 
-        await fetch(
+
+            const response =
+
+                await fetch(
 
 `${API_URL}/api/resources/${id}/share`,
 
-{
+                    {
 
-method:"PUT"
+                        method:"PUT"
 
-}
+                    }
 
-        );
+                );
 
 
-        loadSavedResources();
+
+            if(response.ok){
+
+
+                loadSavedResources();
+
+
+            }
+
+
+        }
+
+        catch(error){
+
+
+            console.log(error);
+
+
+        }
 
 
     }
@@ -407,11 +350,157 @@ method:"PUT"
 
 
 
-    function handleDelete(
+    async function handleDeleteResource(
 
-        id:number
+        resourceId:number
 
     ){
+
+
+        const savedUser =
+
+            localStorage.getItem("user");
+
+
+
+        if(!savedUser){
+
+            return;
+
+        }
+
+
+
+        const user =
+
+            JSON.parse(savedUser);
+
+
+
+        const confirmed =
+
+            window.confirm(
+
+                "Delete this resource post permanently?"
+
+            );
+
+
+
+        if(!confirmed){
+
+            return;
+
+        }
+
+
+
+        try{
+
+
+            const response =
+
+                await fetch(
+
+`${API_URL}/api/resources/${resourceId}?userId=${user.id}`,
+
+                    {
+
+                        method:"DELETE"
+
+                    }
+
+                );
+
+
+
+            if(!response.ok){
+
+
+                const message =
+
+                    await response.text();
+
+
+
+                throw new Error(
+
+                    message ||
+
+                    "Failed to delete resource"
+
+                );
+
+
+            }
+
+
+
+            setResources(
+
+                previous =>
+
+                previous.filter(
+
+                    resource =>
+
+                    resource.id !== resourceId
+
+                )
+
+            );
+
+
+        }
+
+        catch(error){
+
+
+            console.log(error);
+
+
+            alert(
+
+                error instanceof Error
+
+                    ?
+
+                    error.message
+
+                    :
+
+                    "Unable to delete resource"
+
+            );
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+    function handleBookmarkChange(
+
+        resourceId:number,
+
+        saved:boolean
+
+    ){
+
+
+        if(saved){
+
+            return;
+
+        }
 
 
 
@@ -423,7 +512,7 @@ method:"PUT"
 
                 resource =>
 
-                resource.id !== id
+                resource.id !== resourceId
 
             )
 
@@ -440,11 +529,7 @@ method:"PUT"
 
 
 
-
-
-
 return(
-
 
 
 <ProtectedRoute>
@@ -454,8 +539,6 @@ return(
 min-h-screen
 bg-slate-50
 ">
-
-
 
 
 
@@ -645,10 +728,23 @@ onLike={()=>handleLike(resource.id)}
 onShare={()=>handleShare(resource.id)}
 
 
-onDelete={()=>handleRemoveBookmark(resource.id)}
+onDelete={handleDeleteResource}
 
 
 isSaved={true}
+
+
+onBookmarkChange={(saved)=>
+
+handleBookmarkChange(
+
+resource.id,
+
+saved
+
+)
+
+}
 
 
 />

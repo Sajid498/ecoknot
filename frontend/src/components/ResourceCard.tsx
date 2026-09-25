@@ -52,6 +52,9 @@ interface Props{
     isSaved?:boolean;
 
 
+    onBookmarkChange?:(saved:boolean)=>void;
+
+
 }
 
 
@@ -74,7 +77,9 @@ onShare,
 
 onDelete,
 
-isSaved=false
+isSaved=false,
+
+onBookmarkChange
 
 }:Props
 
@@ -703,9 +708,21 @@ method:"POST"
 
 
 
+            const nextSaved = !saved;
+
+
+
             setSaved(
 
-                !saved
+                nextSaved
+
+            );
+
+
+
+            onBookmarkChange?.(
+
+                nextSaved
 
             );
 

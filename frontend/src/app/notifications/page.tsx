@@ -334,6 +334,36 @@ export default function NotificationsPage(){
 
 
 
+            case "DONATION_ACCEPTED":
+
+                return "🤝";
+
+
+
+            case "DONATION_COMPLETED":
+
+                return "❤️";
+
+
+
+            case "DONOR_FOUND":
+
+                return "🧑‍⚕️";
+
+
+
+            case "PICKUP_COMPLETED":
+
+                return "📦";
+
+
+
+            case "DELIVERY_COMPLETE":
+
+                return "🎉";
+
+
+
             default:
 
                 return "🔔";
@@ -388,6 +418,36 @@ export default function NotificationsPage(){
             case "BLOOD_REQUEST":
 
                 return "Blood Request";
+
+
+
+            case "DONATION_ACCEPTED":
+
+                return "Donation Accepted";
+
+
+
+            case "DONATION_COMPLETED":
+
+                return "Donation Completed";
+
+
+
+            case "DONOR_FOUND":
+
+                return "Donor Found";
+
+
+
+            case "PICKUP_COMPLETED":
+
+                return "Pickup Completed";
+
+
+
+            case "DELIVERY_COMPLETE":
+
+                return "Delivery Complete";
 
 
 

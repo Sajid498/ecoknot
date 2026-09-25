@@ -49,15 +49,7 @@ export default function ProfilePage(){
         useState<any[]>([]);
 
 
-
-
-
-    const [timeBalance,setTimeBalance] =
-
-        useState(0);
-
-
-
+const [timeBalance,setTimeBalance] = useState(0);
 
 
     const [donorDashboard,setDonorDashboard] =
@@ -132,160 +124,125 @@ export default function ProfilePage(){
     useEffect(()=>{
 
 
-        const savedUser =
+    const savedUser =
 
-            localStorage.getItem("user");
+        localStorage.getItem("user");
 
 
 
-        if(savedUser){
+    if(savedUser){
 
 
-            const userData =
+        const userData =
 
-                JSON.parse(savedUser);
+            JSON.parse(savedUser);
 
 
 
-            setUser(userData);
+        setUser(userData);
 
 
 
-            loadProfile(
+        loadProfile(
 
-                userData.id
+            userData.id
 
-            );
+        );
 
 
 
-            loadStats(
+        loadStats(
 
-                userData.id
+            userData.id
 
-            );
+        );
 
 
 
-            loadRequests(
+        loadRequests(
 
-                userData.id
+            userData.id
 
-            );
+        );
 
 
 
-            loadDonorDashboard(
+        loadDonorDashboard(
 
-                userData.id
+            userData.id
 
-            );
+        );
 
 
+        // Volunteer Time Bank Balance
 
-            loadTimeBalance(
+        loadTimeBalance(
 
-                userData.id
+            userData.id
 
-            );
-
-
-        }
-
-
-    },[]);
-
-
-
-
-
-
-
-
-
-    // ============================
-    // LOAD TIME BANK BALANCE
-    // ============================
-
-
-    async function loadTimeBalance(
-
-        id:number
-
-    ){
-
-
-        try{
-
-
-
-            const response =
-
-                await fetch(
-
-                    `${API_URL}/api/time-bank/balance/${id}`
-
-                );
-
-
-
-
-
-            if(!response.ok){
-
-
-                throw new Error(
-
-                    "Time balance loading failed"
-
-                );
-
-
-            }
-
-
-
-
-
-            const data =
-
-                await response.json();
-
-
-
-
-
-            setTimeBalance(
-
-                Number(data) || 0
-
-            );
-
-
-        }
-
-        catch(error){
-
-
-            console.log(
-
-                "Time balance error",
-
-                error
-
-            );
-
-
-        }
+        );
 
 
     }
 
 
+},[]);
 
 
 
 
+
+
+
+
+async function loadTimeBalance(
+
+    id:number
+
+){
+
+    try{
+
+        const response = await fetch(
+
+`${API_URL}/api/time-bank/balance/${id}`
+
+        );
+
+
+        if(!response.ok){
+
+            throw new Error(
+
+                "Time balance loading failed"
+
+            );
+
+        }
+
+
+        const data = await response.json();
+
+
+        setTimeBalance(
+
+            Number(data) || 0
+
+        );
+
+
+    }
+
+    catch(error){
+
+        console.log(
+            "Time balance error",
+            error
+        );
+
+    }
+
+}
 
 
 
@@ -648,10 +605,6 @@ export default function ProfilePage(){
 
 
 
-
-
-
-
             const data =
 
                 await response.json();
@@ -717,18 +670,6 @@ export default function ProfilePage(){
 
 
         try{
-
-
-
-            if(!user?.id){
-
-
-                return;
-
-
-            }
-
-
 
 
 
@@ -924,15 +865,6 @@ export default function ProfilePage(){
 
 
     }
-
-
-
-
-
-
-
-
-
     return(
 
 
@@ -1324,6 +1256,7 @@ shadow-lg
 
 
 
+
 <h2 className="
 text-2xl
 font-bold
@@ -1377,7 +1310,7 @@ text-red-700
 
 {
 
-donorDashboard.totalDonations ||
+donorDashboard.completedDonations ||
 
 0
 
@@ -1407,23 +1340,23 @@ text-sm
 text-slate-600
 ">
 
-Requests Helped
+Reliability Level
 
 </p>
 
 
 <p className="
 mt-2
-text-3xl
+text-xl
 font-bold
 text-blue-700
 ">
 
 {
 
-donorDashboard.requestsHelped ||
+donorDashboard.reliabilityLevel ||
 
-0
+"New Donor"
 
 }
 
@@ -1929,15 +1862,6 @@ Save Profile
 
 
 </div>
-
-
-
-
-
-
-
-
-
 {/* BLOOD REQUEST HISTORY */}
 
 

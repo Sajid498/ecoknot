@@ -7,16 +7,10 @@ import {
 } from "react";
 
 
-import {
-    useParams,
-    useRouter
-} from "next/navigation";
-
-
-import Link from "next/link";
-
-
 import ProtectedRoute from "@/components/ProtectedRoute";
+
+
+
 
 
 
@@ -37,44 +31,22 @@ const API_URL =
 
 
 
-
-type RescueDetails = {
+type Notification = {
 
 
     id:number;
 
 
-    title:string;
+    userId:number;
 
 
-    description:string;
+    message:string;
 
 
     type:string;
 
 
-    quantity:number;
-
-
-    location:string;
-
-
-    latitude:number | null;
-
-
-    longitude:number | null;
-
-
-    expiryTime:string;
-
-
-    status:string;
-
-
-    userName:string;
-
-
-    userId:number;
+    readStatus:boolean;
 
 
     createdAt:string;
@@ -90,53 +62,14 @@ type RescueDetails = {
 
 
 
-export default function RescueDetailsPage(){
+
+export default function NotificationsPage(){
 
 
 
-    const params = useParams();
+    const [notifications,setNotifications] =
 
-
-    const router = useRouter();
-
-
-
-
-    const id = params.id as string;
-
-
-
-
-
-
-
-    const [rescue,setRescue] =
-
-        useState<RescueDetails | null>(null);
-
-
-
-
-
-    const [loading,setLoading] =
-
-        useState(true);
-
-
-
-
-
-    const [user,setUser] =
-
-        useState<any>(null);
-
-
-
-
-
-    const [message,setMessage] =
-
-        useState("");
+        useState<Notification[]>([]);
 
 
 
@@ -149,28 +82,32 @@ export default function RescueDetailsPage(){
     useEffect(()=>{
 
 
-        const savedUser =
-
-            localStorage.getItem("user");
-
-
-
-        if(savedUser){
-
-
-            setUser(
-
-                JSON.parse(savedUser)
-
-            );
-
-
-        }
+        loadNotifications();
 
 
 
 
-        loadRescue();
+        const interval =
+
+            setInterval(()=>{
+
+
+                loadNotifications();
+
+
+
+            },10000);
+
+
+
+
+        return()=>{
+
+
+            clearInterval(interval);
+
+
+        };
 
 
 
@@ -184,20 +121,74 @@ export default function RescueDetailsPage(){
 
 
 
-    async function loadRescue(){
+
+    async function loadNotifications(){
 
 
 
         try{
 
 
+
+            const savedUser =
+
+                localStorage.getItem("user");
+
+
+
+
+
+            if(!savedUser){
+
+
+                return;
+
+
+            }
+
+
+
+
+
+
+            const user =
+
+                JSON.parse(savedUser);
+
+
+
+
+
+
+
+
             const response =
 
                 await fetch(
 
-`${API_URL}/api/rescues/${id}`
+`${API_URL}/api/notifications/user/${user.id}`
 
                 );
+
+
+
+
+
+
+
+
+            if(!response.ok){
+
+
+                throw new Error(
+
+                    "Failed to load notifications"
+
+                );
+
+
+            }
+
 
 
 
@@ -211,7 +202,9 @@ export default function RescueDetailsPage(){
 
 
 
-            setRescue(data);
+
+
+            setNotifications(data);
 
 
 
@@ -221,14 +214,6 @@ export default function RescueDetailsPage(){
 
 
             console.log(error);
-
-
-        }
-
-        finally{
-
-
-            setLoading(false);
 
 
         }
@@ -245,48 +230,13 @@ export default function RescueDetailsPage(){
 
 
 
-    async function requestPickup(){
 
 
+    async function markAsRead(
 
-        if(!user){
+        id:number
 
-
-            setMessage(
-
-                "Please login first"
-
-            );
-
-
-            return;
-
-
-        }
-
-
-
-
-
-
-        if(user.id === rescue?.userId){
-
-
-            setMessage(
-
-                "You cannot request your own post"
-
-            );
-
-
-            return;
-
-
-        }
-
-
-
-
+    ){
 
 
 
@@ -298,16 +248,15 @@ export default function RescueDetailsPage(){
 
                 await fetch(
 
-`${API_URL}/api/pickups?rescueId=${id}&volunteerId=${user.id}`,
+`${API_URL}/api/notifications/read/${id}`,
 
-                {
+                    {
 
-                    method:"POST"
+                        method:"PUT"
 
-                }
+                    }
 
                 );
-
 
 
 
@@ -317,26 +266,13 @@ export default function RescueDetailsPage(){
             if(response.ok){
 
 
-                setMessage(
-
-                    "🚚 Pickup request sent successfully"
-
-                );
+                loadNotifications();
 
 
             }
 
-            else{
 
 
-                setMessage(
-
-                    "Pickup request failed"
-
-                );
-
-
-            }
 
 
         }
@@ -350,6 +286,92 @@ export default function RescueDetailsPage(){
         }
 
 
+    }
+
+
+
+
+
+
+
+
+
+
+
+    function getNotificationIcon(
+
+        type:string
+
+    ){
+
+
+
+        switch(type){
+
+
+
+            case "PICKUP_REQUEST":
+
+                return "🚚";
+
+
+
+            case "PICKUP_APPROVED":
+
+                return "✅";
+
+
+
+            case "PICKUP_REJECTED":
+
+                return "❌";
+
+
+
+            case "BLOOD_REQUEST":
+
+                return "🩸";
+
+
+
+            case "DONATION_ACCEPTED":
+
+                return "🤝";
+
+
+
+            case "DONATION_COMPLETED":
+
+                return "❤️";
+
+
+
+            case "DONOR_FOUND":
+
+                return "🧑‍⚕️";
+
+
+
+            case "PICKUP_COMPLETED":
+
+                return "📦";
+
+
+
+            case "DELIVERY_COMPLETE":
+
+                return "🎉";
+
+
+
+            default:
+
+                return "🔔";
+
+
+
+        }
+
 
     }
 
@@ -361,61 +383,86 @@ export default function RescueDetailsPage(){
 
 
 
-    if(loading){
 
 
-        return(
+    function getTypeName(
+
+        type:string
+
+    ){
 
 
-            <main className="
-            min-h-screen
-            bg-slate-50
-            p-10
-            ">
+
+        switch(type){
 
 
-                Loading relief details...
+
+            case "PICKUP_REQUEST":
+
+                return "Pickup Request";
 
 
-            </main>
+
+            case "PICKUP_APPROVED":
+
+                return "Pickup Approved";
 
 
-        );
+
+            case "PICKUP_REJECTED":
+
+                return "Pickup Rejected";
+
+
+
+            case "BLOOD_REQUEST":
+
+                return "Blood Request";
+
+
+
+            case "DONATION_ACCEPTED":
+
+                return "Donation Accepted";
+
+
+
+            case "DONATION_COMPLETED":
+
+                return "Donation Completed";
+
+
+
+            case "DONOR_FOUND":
+
+                return "Donor Found";
+
+
+
+            case "PICKUP_COMPLETED":
+
+                return "Pickup Completed";
+
+
+
+            case "DELIVERY_COMPLETE":
+
+                return "Delivery Complete";
+
+
+
+            default:
+
+                return type;
+
+
+
+        }
 
 
     }
 
 
-
-
-
-
-
-
-
-    if(!rescue){
-
-
-        return(
-
-
-            <main className="
-            min-h-screen
-            bg-slate-50
-            p-10
-            ">
-
-
-                Relief post not found.
-
-
-            </main>
-
-
-        );
-
-
-    }
 
 
 
@@ -436,40 +483,9 @@ return(
 <main className="
 min-h-screen
 bg-slate-50
-p-6
-md:p-10
 ">
 
 
-
-
-
-
-<div className="
-mx-auto
-max-w-4xl
-">
-
-
-
-
-
-
-
-<Link
-
-href="/rescue"
-
-className="
-text-emerald-700
-font-semibold
-"
-
->
-
-← Back to Relief Hub
-
-</Link>
 
 
 
@@ -480,13 +496,135 @@ font-semibold
 
 
 <div className="
-mt-6
+mx-auto
+max-w-4xl
+px-6
+py-10
+">
+
+
+
+
+
+
+<div className="
 rounded-3xl
 bg-white
 p-8
 shadow-lg
+border
+border-slate-200
 ">
 
+
+
+
+
+
+<h1 className="
+text-3xl
+font-bold
+text-slate-900
+">
+
+🔔 Notifications
+
+</h1>
+
+
+
+
+
+
+<p className="
+mt-2
+text-slate-500
+">
+
+Stay updated with your community activities.
+
+</p>
+
+
+
+
+
+
+
+
+{
+
+notifications.length===0 ?
+
+
+
+<div className="
+mt-8
+rounded-xl
+bg-slate-50
+p-6
+text-center
+text-slate-500
+">
+
+No notifications available.
+
+</div>
+
+
+
+
+
+
+:
+
+
+
+<div className="
+mt-8
+space-y-4
+">
+
+
+{
+
+notifications.map(
+
+(notification)=>(
+
+
+
+<div
+
+key={notification.id}
+
+className={`
+
+rounded-2xl
+
+border
+
+p-5
+
+transition
+
+${
+
+notification.readStatus
+
+?
+
+"bg-white border-slate-200"
+
+:
+
+"bg-emerald-50 border-emerald-300 shadow"
+
+}
+
+`}
+
+>
 
 
 
@@ -495,10 +633,36 @@ shadow-lg
 
 <div className="
 flex
-justify-between
 items-start
+justify-between
 gap-4
 ">
+
+
+
+
+
+<div className="
+flex
+gap-3
+">
+
+
+
+
+
+<div className="
+text-3xl
+">
+
+{getNotificationIcon(
+
+notification.type
+
+)}
+
+</div>
+
 
 
 
@@ -508,41 +672,37 @@ gap-4
 
 
 
-<div className="
-text-5xl
-">
-
-{
-
-rescue.type==="FOOD"
-
-?
-
-"🍱"
-
-:
-
-"💊"
-
-}
-
-</div>
-
-
-
-
-
-
-<h1 className="
-mt-4
-text-3xl
+<h2 className="
 font-bold
 text-slate-900
 ">
 
-{rescue.title}
+{getTypeName(
 
-</h1>
+notification.type
+
+)}
+
+</h2>
+
+
+
+
+
+<p className="
+mt-2
+text-slate-700
+">
+
+{notification.message}
+
+</p>
+
+
+
+</div>
+
+
 
 
 
@@ -558,14 +718,15 @@ text-slate-900
 
 <span className="
 rounded-full
-bg-emerald-100
-px-4
-py-2
+bg-emerald-700
+px-3
+py-1
+text-xs
 font-semibold
-text-emerald-700
+text-white
 ">
 
-{rescue.status}
+{notification.type}
 
 </span>
 
@@ -574,7 +735,6 @@ text-emerald-700
 
 
 
-
 </div>
 
 
@@ -583,181 +743,30 @@ text-emerald-700
 
 
 
+<div className="
+mt-4
+flex
+items-center
+justify-between
+">
 
 
 <p className="
-mt-6
-text-lg
-text-slate-600
-">
-
-{rescue.description}
-
-</p>
-
-
-
-
-
-
-
-
-
-<div className="
-mt-8
-grid
-gap-4
-md:grid-cols-2
-">
-
-
-
-
-
-<div className="
-rounded-xl
-bg-slate-50
-p-5
-">
-
-📦 Quantity
-
-<h3 className="
-mt-2
-font-bold
-">
-
-{rescue.quantity}
-
-</h3>
-
-</div>
-
-
-
-
-
-
-
-<div className="
-rounded-xl
-bg-slate-50
-p-5
-">
-
-📍 Location
-
-<h3 className="
-mt-2
-font-bold
-">
-
-{rescue.location}
-
-</h3>
-
-</div>
-
-
-
-
-
-
-
-<div className="
-rounded-xl
-bg-slate-50
-p-5
-">
-
-⏳ Expiry
-
-<h3 className="
-mt-2
-font-bold
+text-sm
+text-slate-500
 ">
 
 {
 
 new Date(
 
-rescue.expiryTime
+notification.createdAt
 
-)
-
-.toLocaleString()
+).toLocaleString()
 
 }
 
-</h3>
-
-</div>
-
-
-
-
-
-
-
-<div className="
-rounded-xl
-bg-slate-50
-p-5
-">
-
-👤 Shared By
-
-<h3 className="
-mt-2
-font-bold
-">
-
-{rescue.userName}
-
-</h3>
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<button
-
-onClick={requestPickup}
-
-disabled={rescue.status!=="AVAILABLE"}
-
-className="
-mt-8
-w-full
-rounded-xl
-bg-emerald-700
-py-4
-font-bold
-text-white
-hover:bg-emerald-800
-disabled:bg-gray-300
-"
-
->
-
-🚚 Request Pickup
-
-</button>
-
-
+</p>
 
 
 
@@ -766,33 +775,40 @@ disabled:bg-gray-300
 
 {
 
-message &&
+!notification.readStatus &&
 
 
-<p className="
-mt-4
-rounded-xl
-bg-emerald-50
-p-3
-text-center
+
+<button
+
+onClick={()=>markAsRead(
+
+notification.id
+
+)}
+
+className="
+rounded-lg
+bg-emerald-700
+px-4
+py-2
+text-sm
 font-semibold
-text-emerald-700
-">
+text-white
+hover:bg-emerald-800
+"
 
-{message}
+>
 
-</p>
+Mark as Read
+
+</button>
 
 
 }
 
 
 
-
-
-
-
-
 </div>
 
 
@@ -803,6 +819,32 @@ text-emerald-700
 
 </div>
 
+
+
+)
+
+
+)
+
+}
+
+
+
+</div>
+
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+</div>
 
 
 
