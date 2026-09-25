@@ -13,7 +13,11 @@ import Link from "next/link";
 import TimeRequestCard from "@/components/TimeRequestCard";
 
 
+import TimeOfferCard from "@/components/TimeOfferCard";
+
+
 import {
+    TimeOffer,
     TimeRequest
 } from "@/types/timebank";
 
@@ -25,6 +29,20 @@ const API_URL =
     process.env.NEXT_PUBLIC_API_URL ||
 
     "http://localhost:8080";
+
+
+
+
+
+type LoggedInUser = {
+
+    id: number;
+
+    name?: string;
+
+    email?: string;
+
+};
 
 
 
@@ -42,6 +60,12 @@ export default function TimeBankPage(){
 
 
 
+    const [offers,setOffers] =
+
+        useState<TimeOffer[]>([]);
+
+
+
     const [balance,setBalance] =
 
         useState<number>(0);
@@ -54,12 +78,15 @@ export default function TimeBankPage(){
 
 
 
+    const [error,setError] =
+
+        useState("");
 
 
 
     const [user,setUser] =
 
-        useState<any>(null);
+        useState<LoggedInUser | null>(null);
 
 
 
@@ -79,11 +106,56 @@ export default function TimeBankPage(){
         if(savedUser){
 
 
-            setUser(
+            try{
 
-                JSON.parse(savedUser)
+
+                setUser(
+
+                    JSON.parse(savedUser)
+
+                );
+
+
+            }
+
+            catch(error){
+
+
+                console.log(
+
+                    "Unable to parse user data:",
+
+                    error
+
+                );
+
+
+                setError(
+
+                    "Unable to load logged-in user information."
+
+                );
+
+
+                setLoading(false);
+
+
+            }
+
+
+        }
+
+        else{
+
+
+            setError(
+
+                "Please login to use the Time Bank."
 
             );
+
+
+            setLoading(false);
 
 
         }
@@ -127,9 +199,17 @@ export default function TimeBankPage(){
         try{
 
 
+            setLoading(true);
+
+            setError("");
+
+
+
             await Promise.all([
 
                 loadRequests(),
+
+                loadOffers(),
 
                 loadBalance()
 
@@ -142,6 +222,21 @@ export default function TimeBankPage(){
 
 
             console.log(error);
+
+
+            setError(
+
+                error instanceof Error
+
+                    ?
+
+                    error.message
+
+                    :
+
+                    "Unable to load Time Bank data."
+
+            );
 
 
         }
@@ -193,18 +288,31 @@ export default function TimeBankPage(){
 
 
 
+        if(!response.ok){
+
+
+            const message =
+
+                await response.text();
+
+
+
+            throw new Error(
+
+                message ||
+
+                "Unable to load help requests."
+
+            );
+
+
+        }
+
+
+
+
+
         const data = await response.json();
-
-
-
-
-        console.log(
-
-            "AVAILABLE REQUESTS:",
-
-            data
-
-        );
 
 
 
@@ -223,6 +331,82 @@ export default function TimeBankPage(){
 
 
             setRequests([]);
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async function loadOffers(){
+
+
+
+        const response = await fetch(
+
+
+            `${API_URL}/api/time-bank/offers`
+
+
+        );
+
+
+
+
+
+
+        if(!response.ok){
+
+
+            const message =
+
+                await response.text();
+
+
+
+            throw new Error(
+
+                message ||
+
+                "Unable to load time offers."
+
+            );
+
+
+        }
+
+
+
+
+
+        const data = await response.json();
+
+
+
+
+
+
+        if(Array.isArray(data)){
+
+
+            setOffers(data);
+
+
+        }
+
+        else{
+
+
+            setOffers([]);
 
 
         }
@@ -266,19 +450,45 @@ export default function TimeBankPage(){
 
 
 
+
+        if(!response.ok){
+
+
+            const message =
+
+                await response.text();
+
+
+
+            throw new Error(
+
+                message ||
+
+                "Unable to load Time Bank balance."
+
+            );
+
+
+        }
+
+
+
+
+
         const data = await response.json();
 
 
 
 
-        setBalance(data || 0);
+        setBalance(
+
+            Number(data) || 0
+
+        );
 
 
 
     }
-
-
-
 
 
 
@@ -293,6 +503,14 @@ export default function TimeBankPage(){
         requestId:number
 
     ){
+
+
+
+        if(!user?.id){
+
+            return;
+
+        }
 
 
 
@@ -325,7 +543,15 @@ export default function TimeBankPage(){
             if(!response.ok){
 
 
+                const message =
+
+                    await response.text();
+
+
+
                 throw new Error(
+
+                    message ||
 
                     "Accept failed"
 
@@ -350,7 +576,7 @@ export default function TimeBankPage(){
 
 
 
-            loadRequests();
+            await loadRequests();
 
 
 
@@ -365,7 +591,15 @@ export default function TimeBankPage(){
 
             alert(
 
-                "Unable to accept request"
+                error instanceof Error
+
+                    ?
+
+                    error.message
+
+                    :
+
+                    "Unable to accept request"
 
             );
 
@@ -383,9 +617,6 @@ export default function TimeBankPage(){
 
 
 
-
-
-
     if(loading){
 
 
@@ -393,10 +624,21 @@ export default function TimeBankPage(){
         return(
 
 
-            <main className="min-h-screen flex items-center justify-center bg-slate-50">
+            <main className="
+            min-h-screen
+            flex
+            items-center
+            justify-center
+            bg-slate-50
+            ">
 
 
-                <div className="rounded-xl bg-white p-8 shadow">
+                <div className="
+                rounded-xl
+                bg-white
+                p-8
+                shadow
+                ">
 
 
                     Loading Time Bank...
@@ -425,18 +667,33 @@ return(
 
 
 
-<main className="min-h-screen bg-slate-50 p-6 md:p-10">
+<main className="
+min-h-screen
+bg-slate-50
+p-6
+md:p-10
+">
 
 
 
-<div className="mx-auto max-w-6xl">
+<div className="
+mx-auto
+max-w-6xl
+">
 
 
 
 
 
 
-<div className="flex justify-between items-center">
+<div className="
+flex
+flex-col
+gap-5
+md:flex-row
+md:items-center
+md:justify-between
+">
 
 
 
@@ -444,7 +701,11 @@ return(
 
 
 
-<h1 className="text-3xl font-bold text-slate-900">
+<h1 className="
+text-3xl
+font-bold
+text-slate-900
+">
 
 
 ⏳ Community Time Bank
@@ -455,7 +716,10 @@ return(
 
 
 
-<p className="mt-2 text-slate-600">
+<p className="
+mt-2
+text-slate-600
+">
 
 
 Give help, earn time credits, use credits later.
@@ -474,13 +738,29 @@ Give help, earn time credits, use credits later.
 
 
 
+<div className="
+flex
+flex-wrap
+gap-3
+">
+
+
+
 <Link
 
 
 href="/time-bank/request"
 
 
-className="rounded-xl bg-emerald-700 px-5 py-3 font-semibold text-white hover:bg-emerald-800"
+className="
+rounded-xl
+bg-emerald-700
+px-5
+py-3
+font-semibold
+text-white
+hover:bg-emerald-800
+"
 
 
 >
@@ -490,6 +770,76 @@ className="rounded-xl bg-emerald-700 px-5 py-3 font-semibold text-white hover:bg
 
 
 </Link>
+
+
+
+
+
+
+
+<Link
+
+
+href="/time-bank/create"
+
+
+className="
+rounded-xl
+border
+border-emerald-700
+bg-white
+px-5
+py-3
+font-semibold
+text-emerald-700
+hover:bg-emerald-50
+"
+
+
+>
+
+
++ Offer a Skill
+
+
+</Link>
+
+
+
+
+
+
+
+<Link
+
+
+href="/time-bank/history"
+
+
+className="
+rounded-xl
+border
+border-slate-300
+bg-white
+px-5
+py-3
+font-semibold
+text-slate-700
+hover:bg-slate-100
+"
+
+
+>
+
+
+History
+
+
+</Link>
+
+
+
+</div>
 
 
 
@@ -505,11 +855,52 @@ className="rounded-xl bg-emerald-700 px-5 py-3 font-semibold text-white hover:bg
 
 
 
-<div className="mt-8 rounded-3xl bg-emerald-700 p-8 text-white">
+{
+
+error &&
+
+
+<div className="
+mt-6
+rounded-xl
+border
+border-red-200
+bg-red-50
+p-4
+font-medium
+text-red-700
+">
+
+
+⚠️ {error}
+
+
+</div>
+
+
+}
 
 
 
-<p className="text-sm">
+
+
+
+
+
+
+<div className="
+mt-8
+rounded-3xl
+bg-emerald-700
+p-8
+text-white
+">
+
+
+
+<p className="
+text-sm
+">
 
 
 My Time Credits
@@ -521,7 +912,11 @@ My Time Credits
 
 
 
-<h2 className="mt-3 text-5xl font-bold">
+<h2 className="
+mt-3
+text-5xl
+font-bold
+">
 
 
 {balance}
@@ -533,7 +928,9 @@ My Time Credits
 
 
 
-<p className="mt-2">
+<p className="
+mt-2
+">
 
 
 hours available
@@ -554,17 +951,45 @@ hours available
 
 
 
-<section className="mt-10">
+<section className="
+mt-10
+">
 
 
 
-<h2 className="text-2xl font-bold text-slate-900">
+<div>
+
+
+
+<h2 className="
+text-2xl
+font-bold
+text-slate-900
+">
 
 
 People Need Help
 
 
 </h2>
+
+
+
+<p className="
+mt-1
+text-sm
+text-slate-600
+">
+
+
+Accept a request and earn time credits after completion.
+
+
+</p>
+
+
+
+</div>
 
 
 
@@ -581,7 +1006,14 @@ requests.length === 0 ?
 
 
 
-<div className="mt-5 rounded-2xl bg-white p-8 text-center shadow">
+<div className="
+mt-5
+rounded-2xl
+bg-white
+p-8
+text-center
+shadow
+">
 
 
 No help requests available.
@@ -602,7 +1034,12 @@ No help requests available.
 
 
 
-<div className="mt-6 grid gap-6 md:grid-cols-2">
+<div className="
+mt-6
+grid
+gap-6
+md:grid-cols-2
+">
 
 
 
@@ -624,6 +1061,191 @@ request={request}
 
 
 onAccept={handleAccept}
+
+
+/>
+
+
+)
+
+
+)
+
+
+}
+
+
+
+
+
+</div>
+
+
+
+
+}
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<section className="
+mt-12
+">
+
+
+
+<div className="
+flex
+flex-col
+gap-2
+sm:flex-row
+sm:items-center
+sm:justify-between
+">
+
+
+
+<div>
+
+
+
+<h2 className="
+text-2xl
+font-bold
+text-slate-900
+">
+
+
+Skills Offered by the Community
+
+
+</h2>
+
+
+
+<p className="
+mt-1
+text-sm
+text-slate-600
+">
+
+
+See what skills and time community members are offering.
+
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+<Link
+
+
+href="/time-bank/create"
+
+
+className="
+text-sm
+font-bold
+text-emerald-700
+"
+
+
+>
+
+
+Offer your skill →
+
+
+</Link>
+
+
+
+</div>
+
+
+
+
+
+
+
+{
+
+
+offers.length === 0 ?
+
+
+
+
+
+<div className="
+mt-5
+rounded-2xl
+bg-white
+p-8
+text-center
+shadow
+">
+
+
+No available skill offers yet.
+
+
+</div>
+
+
+
+
+
+
+
+:
+
+
+
+
+
+
+<div className="
+mt-6
+grid
+gap-6
+md:grid-cols-2
+">
+
+
+
+{
+
+
+offers.map(
+
+offer => (
+
+
+<TimeOfferCard
+
+
+key={offer.id}
+
+
+offer={offer}
 
 
 />

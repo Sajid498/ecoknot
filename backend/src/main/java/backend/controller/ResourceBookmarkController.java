@@ -59,7 +59,6 @@ public class ResourceBookmarkController {
     // Save resource
 
     @PostMapping("/save")
-
     public ResponseEntity<?> saveBookmark(
 
 
@@ -108,10 +107,7 @@ public class ResourceBookmarkController {
 
     // Remove saved resource
 
-
     @DeleteMapping("/remove")
-
-
     public ResponseEntity<?> removeBookmark(
 
 
@@ -156,12 +152,50 @@ public class ResourceBookmarkController {
 
 
 
+    // Check if resource is already bookmarked
+
+    @GetMapping("/check")
+    public ResponseEntity<Boolean> checkBookmark(
+
+
+            @RequestParam Long userId,
+
+
+            @RequestParam Long resourceId
+
+
+    ){
+
+
+
+        return ResponseEntity.ok(
+
+                resourceBookmarkService
+
+                .isBookmarked(
+
+                        userId,
+
+                        resourceId
+
+                )
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
     // Get user's saved resources
 
-
     @GetMapping("/user/{userId}")
-
-
     public ResponseEntity<List<ResourceBookmark>> getUserBookmarks(
 
 

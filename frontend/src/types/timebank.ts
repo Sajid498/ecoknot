@@ -1,6 +1,5 @@
 export interface TimeRequest {
 
-
     id: number;
 
 
@@ -46,8 +45,43 @@ export interface TimeRequest {
 
 
 
-export interface TimeTransaction {
+export interface TimeOffer {
 
+    id: number;
+
+
+
+    title: string;
+
+
+
+    description: string;
+
+
+
+    skillCategory: string;
+
+
+
+    availableHours: number;
+
+
+
+    status: string;
+
+
+
+    createdAt: string;
+
+
+
+}
+
+
+
+
+
+export interface TimeTransaction {
 
     id: number;
 
@@ -102,7 +136,6 @@ export interface TimeTransaction {
 
 
 export interface TimeBalance {
-
 
     balance: number;
 

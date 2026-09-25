@@ -1,35 +1,57 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import {
+    useState
+} from "react";
+
+import {
+    useRouter
+} from "next/navigation";
+
+
+const API_URL =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:8080";
 
 
 export default function LoginPage() {
 
 
-    const router = useRouter();
+    const router =
+        useRouter();
 
 
-    const [email, setEmail] = useState("");
-
-    const [password, setPassword] = useState("");
-
+    const [email,setEmail] =
+        useState("");
 
 
+    const [password,setPassword] =
+        useState("");
 
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const [submitting,setSubmitting] =
+        useState(false);
+
+
+
+
+    const handleLogin = async (
+        e:React.FormEvent
+    )=>{
 
 
         e.preventDefault();
 
 
 
-        // Validation
+        if(
+            !email ||
+            !password
+        ){
 
-        if(!email || !password){
-
-            alert("Please enter email and password");
+            alert(
+                "Please enter email and password"
+            );
 
             return;
 
@@ -38,32 +60,36 @@ export default function LoginPage() {
 
 
 
-        try {
+        try{
 
 
-            const response = await fetch(
-                "http://localhost:8080/api/users/login",
-                {
-
-                    method: "POST",
-
-                    headers: {
-
-                        "Content-Type": "application/json"
-
-                    },
+            setSubmitting(true);
 
 
-                    body: JSON.stringify({
+            const response =
+                await fetch(
+                    `${API_URL}/api/users/login`,
+                    {
 
-                        email,
+                        method:"POST",
 
-                        password
+                        headers:{
 
-                    })
+                            "Content-Type":
+                                "application/json"
 
-                }
-            );
+                        },
+
+                        body:JSON.stringify({
+
+                            email,
+
+                            password
+
+                        })
+
+                    }
+                );
 
 
 
@@ -72,7 +98,14 @@ export default function LoginPage() {
             if(!response.ok){
 
 
-                throw new Error("Login failed");
+                const message =
+                    await response.text();
+
+
+                throw new Error(
+                    message ||
+                    "Login failed"
+                );
 
 
             }
@@ -82,12 +115,9 @@ export default function LoginPage() {
 
 
 
-            const user = await response.json();
+            const user =
+                await response.json();
 
-
-
-
-            console.log(user);
 
 
 
@@ -105,7 +135,11 @@ export default function LoginPage() {
 
 
 
-            alert("Login successful");
+
+            alert(
+                "Login successful"
+            );
+
 
 
 
@@ -125,7 +159,17 @@ export default function LoginPage() {
             console.log(error);
 
 
-            alert("Invalid email or password");
+            alert(
+                "Invalid email or password"
+            );
+
+
+        }
+
+        finally{
+
+
+            setSubmitting(false);
 
 
         }
@@ -138,25 +182,57 @@ export default function LoginPage() {
 
 
 
-    return (
+    return(
 
 
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-6">
+        <div className="
+        min-h-screen
+        flex
+        items-center
+        justify-center
+        bg-gradient-to-br
+        from-emerald-50
+        via-white
+        to-teal-50
+        px-6
+        ">
 
 
 
-            <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl border border-slate-200">
+            <div className="
+            w-full
+            max-w-md
+            rounded-3xl
+            bg-white
+            p-8
+            shadow-xl
+            border
+            border-slate-200
+            ">
 
 
 
 
 
-                {/* Logo */}
+                <div className="
+                text-center
+                mb-8
+                ">
 
-                <div className="text-center mb-8">
 
-
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-700 text-2xl font-bold text-white">
+                    <div className="
+                    mx-auto
+                    flex
+                    h-14
+                    w-14
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-emerald-700
+                    text-2xl
+                    font-bold
+                    text-white
+                    ">
 
 
                         E
@@ -167,7 +243,12 @@ export default function LoginPage() {
 
 
 
-                    <h1 className="mt-4 text-3xl font-bold text-slate-900">
+                    <h1 className="
+                    mt-4
+                    text-3xl
+                    font-bold
+                    text-slate-900
+                    ">
 
 
                         Welcome Back
@@ -178,7 +259,10 @@ export default function LoginPage() {
 
 
 
-                    <p className="mt-2 text-slate-500">
+                    <p className="
+                    mt-2
+                    text-slate-500
+                    ">
 
 
                         Login to your EcoKnot account
@@ -201,7 +285,9 @@ export default function LoginPage() {
 
                     onSubmit={handleLogin}
 
-                    className="space-y-5"
+                    className="
+                    space-y-5
+                    "
 
                 >
 
@@ -209,13 +295,14 @@ export default function LoginPage() {
 
 
 
-                    {/* Email */}
-
-
                     <div>
 
 
-                        <label className="text-sm font-medium text-slate-700">
+                        <label className="
+                        text-sm
+                        font-medium
+                        text-slate-700
+                        ">
 
 
                             Email
@@ -237,13 +324,28 @@ export default function LoginPage() {
                             value={email}
 
 
-                            onChange={(e)=>setEmail(e.target.value)}
+                            onChange={(e)=>
+                                setEmail(
+                                    e.target.value
+                                )
+                            }
 
 
                             required
 
 
-                            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-emerald-600"
+                            className="
+                            mt-2
+                            w-full
+                            rounded-xl
+                            border
+                            border-slate-300
+                            px-4
+                            py-3
+                            outline-none
+                            transition
+                            focus:border-emerald-600
+                            "
 
 
 
@@ -261,14 +363,15 @@ export default function LoginPage() {
 
 
 
-                    {/* Password */}
-
-
                     <div>
 
 
 
-                        <label className="text-sm font-medium text-slate-700">
+                        <label className="
+                        text-sm
+                        font-medium
+                        text-slate-700
+                        ">
 
 
                             Password
@@ -292,13 +395,28 @@ export default function LoginPage() {
                             value={password}
 
 
-                            onChange={(e)=>setPassword(e.target.value)}
+                            onChange={(e)=>
+                                setPassword(
+                                    e.target.value
+                                )
+                            }
 
 
                             required
 
 
-                            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-emerald-600"
+                            className="
+                            mt-2
+                            w-full
+                            rounded-xl
+                            border
+                            border-slate-300
+                            px-4
+                            py-3
+                            outline-none
+                            transition
+                            focus:border-emerald-600
+                            "
 
 
 
@@ -317,17 +435,27 @@ export default function LoginPage() {
 
 
 
-                    {/* Button */}
-
-
-
                     <button
 
 
                         type="submit"
 
 
-                        className="w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white transition hover:bg-emerald-800"
+                        disabled={submitting}
+
+
+                        className="
+                        w-full
+                        rounded-xl
+                        bg-emerald-700
+                        py-3
+                        font-semibold
+                        text-white
+                        transition
+                        hover:bg-emerald-800
+                        disabled:cursor-not-allowed
+                        disabled:opacity-60
+                        "
 
 
 
@@ -335,7 +463,13 @@ export default function LoginPage() {
 
 
 
-                        Login
+                        {
+                            submitting
+                                ?
+                                "Logging in..."
+                                :
+                                "Login"
+                        }
 
 
 
@@ -355,7 +489,12 @@ export default function LoginPage() {
 
 
 
-                <p className="mt-6 text-center text-sm text-slate-600">
+                <p className="
+                mt-6
+                text-center
+                text-sm
+                text-slate-600
+                ">
 
 
 
@@ -369,7 +508,12 @@ export default function LoginPage() {
                         href="/signup"
 
 
-                        className="ml-2 font-semibold text-emerald-700 hover:underline"
+                        className="
+                        ml-2
+                        font-semibold
+                        text-emerald-700
+                        hover:underline
+                        "
 
 
 

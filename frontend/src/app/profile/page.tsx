@@ -49,7 +49,15 @@ export default function ProfilePage(){
         useState<any[]>([]);
 
 
-const [timeBalance,setTimeBalance] = useState(0);
+
+
+
+    const [timeBalance,setTimeBalance] =
+
+        useState(0);
+
+
+
 
 
     const [donorDashboard,setDonorDashboard] =
@@ -124,118 +132,160 @@ const [timeBalance,setTimeBalance] = useState(0);
     useEffect(()=>{
 
 
-    const savedUser =
+        const savedUser =
 
-        localStorage.getItem("user");
-
-
-
-    if(savedUser){
-
-
-        const userData =
-
-            JSON.parse(savedUser);
+            localStorage.getItem("user");
 
 
 
-        setUser(userData);
+        if(savedUser){
+
+
+            const userData =
+
+                JSON.parse(savedUser);
 
 
 
-        loadProfile(
-
-            userData.id
-
-        );
+            setUser(userData);
 
 
 
-        loadStats(
+            loadProfile(
 
-            userData.id
-
-        );
-
-
-
-        loadRequests(
-
-            userData.id
-
-        );
-
-
-
-        loadDonorDashboard(
-
-            userData.id
-
-        );
-
-
-        // Volunteer Time Bank Balance
-
-        loadTimeBalance();
-
-
-    }
-
-
-},[]);
-
-
-
-
-
-
-
-
-async function loadTimeBalance(){
-
-    try{
-
-        const user =
-
-            JSON.parse(
-
-                localStorage.getItem("user") || "{}"
+                userData.id
 
             );
 
 
-        if(!user.id){
 
-            return;
+            loadStats(
+
+                userData.id
+
+            );
+
+
+
+            loadRequests(
+
+                userData.id
+
+            );
+
+
+
+            loadDonorDashboard(
+
+                userData.id
+
+            );
+
+
+
+            loadTimeBalance(
+
+                userData.id
+
+            );
+
 
         }
 
 
-        const response = await fetch(
-
-`http://localhost:8080/api/time-bank/balance/${user.id}`
-
-        );
+    },[]);
 
 
-        const data = await response.json();
 
 
-        setTimeBalance(data);
+
+
+
+
+
+    // ============================
+    // LOAD TIME BANK BALANCE
+    // ============================
+
+
+    async function loadTimeBalance(
+
+        id:number
+
+    ){
+
+
+        try{
+
+
+
+            const response =
+
+                await fetch(
+
+                    `${API_URL}/api/time-bank/balance/${id}`
+
+                );
+
+
+
+
+
+            if(!response.ok){
+
+
+                throw new Error(
+
+                    "Time balance loading failed"
+
+                );
+
+
+            }
+
+
+
+
+
+            const data =
+
+                await response.json();
+
+
+
+
+
+            setTimeBalance(
+
+                Number(data) || 0
+
+            );
+
+
+        }
+
+        catch(error){
+
+
+            console.log(
+
+                "Time balance error",
+
+                error
+
+            );
+
+
+        }
 
 
     }
 
-    catch(error){
 
-        console.log(
-            "Time balance error",
-            error
-        );
 
-    }
 
-}
+
+
 
 
 
@@ -584,6 +634,24 @@ async function loadTimeBalance(){
 
 
 
+            if(!response.ok){
+
+
+                throw new Error(
+
+                    "Blood request history loading failed"
+
+                );
+
+
+            }
+
+
+
+
+
+
+
             const data =
 
                 await response.json();
@@ -594,7 +662,19 @@ async function loadTimeBalance(){
 
 
 
-            setRequests(data);
+            setRequests(
+
+                Array.isArray(data)
+
+                    ?
+
+                    data
+
+                    :
+
+                    []
+
+            );
 
 
 
@@ -637,6 +717,18 @@ async function loadTimeBalance(){
 
 
         try{
+
+
+
+            if(!user?.id){
+
+
+                return;
+
+
+            }
+
+
 
 
 
@@ -784,6 +876,17 @@ async function loadTimeBalance(){
 
 
 
+            loadTimeBalance(
+
+                user.id
+
+            );
+
+
+
+
+
+
 
 
             setMessage(
@@ -821,6 +924,15 @@ async function loadTimeBalance(){
 
 
     }
+
+
+
+
+
+
+
+
+
     return(
 
 
@@ -1079,23 +1191,6 @@ text-emerald-700
 
 
 
-{/* DONOR DASHBOARD */}
-
-
-
-{
-
-donorDashboard &&
-
-
-<div className="
-mt-10
-rounded-3xl
-bg-white
-p-8
-shadow-lg
-">
-
 {/* TIME BANK */}
 
 
@@ -1196,6 +1291,36 @@ Go To Time Bank →
 
 
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/* DONOR DASHBOARD */}
+
+
+
+{
+
+donorDashboard &&
+
+
+<div className="
+mt-10
+rounded-3xl
+bg-white
+p-8
+shadow-lg
+">
 
 
 
@@ -1804,6 +1929,15 @@ Save Profile
 
 
 </div>
+
+
+
+
+
+
+
+
+
 {/* BLOOD REQUEST HISTORY */}
 
 

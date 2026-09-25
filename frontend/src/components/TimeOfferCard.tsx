@@ -15,9 +15,6 @@ interface Props {
     offer: TimeOffer;
 
 
-    onComplete?:()=>void;
-
-
 }
 
 
@@ -32,89 +29,11 @@ export default function TimeOfferCard(
 
 {
 
-offer,
-
-onComplete
+offer
 
 }:Props
 
 ){
-
-
-
-
-
-
-
-async function completeOffer(){
-
-
-
-    try{
-
-
-        const user =
-
-            JSON.parse(
-
-                localStorage.getItem("user") || "{}"
-
-            );
-
-
-
-
-
-        const response =
-
-            await fetch(
-
-`http://localhost:8080/api/time-bank/complete/${offer.id}?userId=${user.id}`,
-
-                {
-
-                    method:"PUT"
-
-                }
-
-            );
-
-
-
-
-
-
-
-        if(response.ok){
-
-
-            if(onComplete){
-
-                onComplete();
-
-            }
-
-
-        }
-
-
-
-    }
-
-    catch(error){
-
-
-        console.log(error);
-
-
-    }
-
-
-}
-
-
-
-
 
 
 
@@ -145,6 +64,7 @@ hover:shadow-lg
 flex
 items-start
 justify-between
+gap-4
 "
 
 >
@@ -275,7 +195,7 @@ text-slate-900
 
 <p>
 
-👤 Volunteer:
+📅 Posted:
 
 <span className="
 ml-1
@@ -283,7 +203,11 @@ font-semibold
 text-slate-900
 ">
 
-{offer.userName || "Community Member"}
+{
+    new Date(
+        offer.createdAt
+    ).toLocaleDateString()
+}
 
 </span>
 
@@ -302,40 +226,20 @@ text-slate-900
 
 
 
-
-{
-
-offer.status === "AVAILABLE"
-
-&&
-
-
-<button
-
-onClick={completeOffer}
-
-className="
+<div className="
 mt-5
-w-full
 rounded-xl
-bg-emerald-700
-px-5
+bg-emerald-50
+px-4
 py-3
-font-semibold
-text-white
-transition
-hover:bg-emerald-800
-"
+text-sm
+font-medium
+text-emerald-800
+">
 
->
+🤝 This skill is currently available to the community.
 
-🤝 Complete Exchange
-
-</button>
-
-
-
-}
+</div>
 
 
 

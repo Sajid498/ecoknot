@@ -1,36 +1,51 @@
 "use client";
 
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import {
+    useState
+} from "react";
+
+import {
+    useRouter
+} from "next/navigation";
+
+
+const API_URL =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:8080";
+
+
+export default function SignupPage(){
 
 
 
-export default function SignupPage() {
-
-
-
-    const router = useRouter();
+    const router =
+        useRouter();
 
 
 
     const [name,setName] =
         useState("");
 
+
     const [email,setEmail] =
         useState("");
 
+
     const [password,setPassword] =
         useState("");
+
 
     const [role,setRole] =
         useState("USER");
 
 
-    // NEW: Blood Group
-
     const [bloodGroup,setBloodGroup] =
         useState("");
+
+
+    const [submitting,setSubmitting] =
+        useState(false);
 
 
 
@@ -75,10 +90,13 @@ export default function SignupPage() {
         try{
 
 
+            setSubmitting(true);
+
+
 
             const response =
                 await fetch(
-                    "http://localhost:8080/api/users/signup",
+                    `${API_URL}/api/users/signup`,
                     {
 
 
@@ -88,7 +106,7 @@ export default function SignupPage() {
                         headers:{
 
                             "Content-Type":
-                            "application/json"
+                                "application/json"
 
                         },
 
@@ -127,7 +145,12 @@ export default function SignupPage() {
             if(!response.ok){
 
 
+                const message =
+                    await response.text();
+
+
                 throw new Error(
+                    message ||
                     "Signup failed"
                 );
 
@@ -140,12 +163,8 @@ export default function SignupPage() {
 
 
 
-            const data =
-                await response.json();
+            await response.json();
 
-
-
-            console.log(data);
 
 
 
@@ -173,8 +192,20 @@ export default function SignupPage() {
 
 
             alert(
-                "Signup failed. The local backend and MySQL database must be running for account creation. You can still view the fundraising sample demo from the Campaigns page."
+                error instanceof Error
+                    ?
+                    error.message
+                    :
+                    "Signup failed"
             );
+
+
+        }
+
+        finally{
+
+
+            setSubmitting(false);
 
 
         }
@@ -191,7 +222,7 @@ export default function SignupPage() {
 
 
 
-    return (
+    return(
 
 
         <div className="
@@ -221,9 +252,6 @@ export default function SignupPage() {
 
 
 
-
-
-                {/* Logo */}
 
 
                 <div className="
@@ -292,11 +320,11 @@ export default function SignupPage() {
 
                 <form
 
-                onSubmit={handleSignup}
+                    onSubmit={handleSignup}
 
-                className="
-                space-y-5
-                "
+                    className="
+                    space-y-5
+                    "
 
                 >
 
@@ -304,9 +332,6 @@ export default function SignupPage() {
 
 
 
-
-
-                    {/* Name */}
 
 
                     <div>
@@ -343,6 +368,9 @@ export default function SignupPage() {
                             }
 
 
+                            required
+
+
                             className="
                             mt-2
                             w-full
@@ -368,9 +396,6 @@ export default function SignupPage() {
 
 
 
-
-
-                    {/* Email */}
 
 
                     <div>
@@ -408,6 +433,9 @@ export default function SignupPage() {
                             }
 
 
+                            required
+
+
                             className="
                             mt-2
                             w-full
@@ -434,9 +462,6 @@ export default function SignupPage() {
 
 
 
-
-
-                    {/* Password */}
 
 
                     <div>
@@ -474,6 +499,8 @@ export default function SignupPage() {
                             }
 
 
+                            required
+
 
                             className="
                             mt-2
@@ -500,9 +527,6 @@ export default function SignupPage() {
 
 
 
-
-
-                    {/* Blood Group NEW */}
 
 
                     <div>
@@ -532,6 +556,9 @@ export default function SignupPage() {
                                     e.target.value
                                 )
                             }
+
+
+                            required
 
 
                             className="
@@ -634,6 +661,9 @@ export default function SignupPage() {
                         type="submit"
 
 
+                        disabled={submitting}
+
+
                         className="
                         w-full
                         rounded-xl
@@ -643,12 +673,20 @@ export default function SignupPage() {
                         text-white
                         transition
                         hover:bg-emerald-800
+                        disabled:cursor-not-allowed
+                        disabled:opacity-60
                         "
 
 
                     >
 
-                        Signup
+                        {
+                            submitting
+                                ?
+                                "Creating account..."
+                                :
+                                "Signup"
+                        }
 
                     </button>
 

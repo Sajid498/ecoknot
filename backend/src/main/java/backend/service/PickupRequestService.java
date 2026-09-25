@@ -77,149 +77,83 @@ public class PickupRequestService {
 
     // Volunteer requests pickup
 
-public PickupRequestDTO createPickupRequest(
+    public PickupRequestDTO createPickupRequest(
 
-        Long rescueId,
+            Long rescueId,
 
-        Long volunteerId
-
-){
-
-
-    RescueDonation rescue =
-
-            rescueDonationRepository
-
-            .findById(rescueId)
-
-            .orElseThrow(
-
-                    () -> new RuntimeException(
-
-                            "Relief post not found"
-
-                    )
-
-            );
-
-
-
-
-
-    User volunteer =
-
-            userRepository
-
-            .findById(volunteerId)
-
-            .orElseThrow(
-
-                    () -> new RuntimeException(
-
-                            "Volunteer not found"
-
-                    )
-
-            );
-
-
-
-
-
-
-
-    /*
-     * Security validation
-     *
-     * A user cannot request pickup
-     * from their own relief post
-     */
-
-    if(
-
-        rescue.getUser()
-
-              .getId()
-
-              .equals(volunteerId)
+            Long volunteerId
 
     ){
 
 
-        throw new RuntimeException(
+        RescueDonation rescue =
 
-                "You cannot request pickup for your own relief post"
+                rescueDonationRepository
 
-        );
+                .findById(rescueId)
 
+                .orElseThrow(
 
-    }
+                        () -> new RuntimeException(
 
+                                "Relief post not found"
 
+                        )
 
-
-
-
-
-
-
-    PickupRequest request =
-
-            new PickupRequest();
+                );
 
 
 
 
 
-    request.setRescueDonation(
+        User volunteer =
 
-            rescue
+                userRepository
 
-    );
+                .findById(volunteerId)
 
+                .orElseThrow(
 
+                        () -> new RuntimeException(
 
+                                "Volunteer not found"
 
+                        )
 
-    request.setVolunteer(
-
-            volunteer
-
-    );
-
-
-
-
-
-    request.setStatus(
-
-            PickupStatus.PENDING
-
-    );
+                );
 
 
 
 
 
-    request.setRequestedAt(
-
-            LocalDateTime.now()
-
-    );
 
 
+        /*
+         * Security validation
+         *
+         * A user cannot request pickup
+         * from their own relief post
+         */
+
+        if(
+
+            rescue.getUser()
+
+                  .getId()
+
+                  .equals(volunteerId)
+
+        ){
 
 
+            throw new RuntimeException(
 
-    PickupRequest saved =
-
-            pickupRequestRepository.save(
-
-                    request
+                    "You cannot request pickup for your own relief post"
 
             );
 
 
+        }
 
 
 
@@ -227,22 +161,30 @@ public PickupRequestDTO createPickupRequest(
 
 
 
-    notificationService.createNotification(
 
 
-            rescue.getUser().getId(),
+        /*
+         * Pickup requests can only be created
+         * while the relief post is available
+         */
+
+        if(
+
+            rescue.getStatus()
+
+                  != RescueStatus.AVAILABLE
+
+        ){
 
 
-            volunteer.getName()
+            throw new RuntimeException(
 
-            + " requested pickup for your relief donation: "
+                    "This relief post is no longer available for pickup"
 
-            + rescue.getTitle(),
+            );
 
 
-            "PICKUP_REQUEST"
-
-    );
+        }
 
 
 
@@ -250,10 +192,163 @@ public PickupRequestDTO createPickupRequest(
 
 
 
-    return convertToDTO(saved);
 
 
-}
+        /*
+         * Prevent the same volunteer from creating
+         * multiple active pickup requests
+         * for the same relief post
+         */
+
+        boolean activeRequestExists =
+
+                pickupRequestRepository
+
+                .findByRescueDonationId(rescueId)
+
+                .stream()
+
+                .anyMatch(
+
+                        existing ->
+
+                                existing.getVolunteer()
+
+                                        .getId()
+
+                                        .equals(volunteerId)
+
+                                &&
+
+                                existing.getStatus()
+
+                                        != PickupStatus.REJECTED
+
+                                &&
+
+                                existing.getStatus()
+
+                                        != PickupStatus.DELIVERED
+
+                );
+
+
+
+
+
+
+
+        if(activeRequestExists){
+
+
+            throw new RuntimeException(
+
+                    "You already have an active pickup request for this relief post"
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
+        PickupRequest request =
+
+                new PickupRequest();
+
+
+
+
+
+        request.setRescueDonation(
+
+                rescue
+
+        );
+
+
+
+
+
+        request.setVolunteer(
+
+                volunteer
+
+        );
+
+
+
+
+
+        request.setStatus(
+
+                PickupStatus.PENDING
+
+        );
+
+
+
+
+
+        request.setRequestedAt(
+
+                LocalDateTime.now()
+
+        );
+
+
+
+
+
+        PickupRequest saved =
+
+                pickupRequestRepository.save(
+
+                        request
+
+                );
+
+
+
+
+
+
+
+
+
+        notificationService.createNotification(
+
+
+                rescue.getUser().getId(),
+
+
+                volunteer.getName()
+
+                + " requested pickup for your relief donation: "
+
+                + rescue.getTitle(),
+
+
+                "PICKUP_REQUEST"
+
+        );
+
+
+
+
+
+
+
+        return convertToDTO(saved);
+
+
+    }
 
 
 
@@ -346,28 +441,28 @@ public PickupRequestDTO createPickupRequest(
 
 
 
-// Get all pickup requests
-// from relief posts owned by a user
+    // Get all pickup requests
+    // from relief posts owned by a user
 
-public List<PickupRequestDTO> getOwnerRequests(
+    public List<PickupRequestDTO> getOwnerRequests(
 
-        Long userId
+            Long userId
 
-){
-
-
-    return pickupRequestRepository
-
-            .findByRescueDonationUserId(userId)
-
-            .stream()
-
-            .map(this::convertToDTO)
-
-            .toList();
+    ){
 
 
-}
+        return pickupRequestRepository
+
+                .findByRescueDonationUserId(userId)
+
+                .stream()
+
+                .map(this::convertToDTO)
+
+                .toList();
+
+
+    }
 
 
 
@@ -408,6 +503,68 @@ public List<PickupRequestDTO> getOwnerRequests(
 
 
 
+        if(
+
+            request.getStatus()
+
+                   != PickupStatus.PENDING
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "Only pending pickup requests can be approved"
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
+        RescueDonation rescue =
+
+                request.getRescueDonation();
+
+
+
+
+
+
+
+        if(
+
+            rescue.getStatus()
+
+                  != RescueStatus.AVAILABLE
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "This relief post is no longer available"
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
         request.setStatus(
 
                 PickupStatus.APPROVED
@@ -428,6 +585,39 @@ public List<PickupRequestDTO> getOwnerRequests(
 
 
 
+
+
+
+
+        /*
+         * Reserve relief post so another volunteer
+         * cannot be approved for the same donation
+         */
+
+        rescue.setStatus(
+
+                RescueStatus.RESERVED
+
+        );
+
+
+
+
+
+        rescueDonationRepository.save(
+
+                rescue
+
+        );
+
+
+
+
+
+
+
+
+
         PickupRequest saved =
 
                 pickupRequestRepository.save(
@@ -435,6 +625,104 @@ public List<PickupRequestDTO> getOwnerRequests(
                         request
 
                 );
+
+
+
+
+
+
+
+
+
+        /*
+         * Reject every other pending request
+         * for this relief post
+         */
+
+        List<PickupRequest> otherRequests =
+
+                pickupRequestRepository
+
+                .findByRescueDonationId(
+
+                        rescue.getId()
+
+                );
+
+
+
+
+
+
+
+        for(
+
+            PickupRequest otherRequest
+
+            :
+
+            otherRequests
+
+        ){
+
+
+            if(
+
+                !otherRequest.getId()
+
+                             .equals(requestId)
+
+                &&
+
+                otherRequest.getStatus()
+
+                            == PickupStatus.PENDING
+
+            ){
+
+
+                otherRequest.setStatus(
+
+                        PickupStatus.REJECTED
+
+                );
+
+
+
+
+
+                pickupRequestRepository.save(
+
+                        otherRequest
+
+                );
+
+
+
+
+
+                notificationService.createNotification(
+
+
+                        otherRequest.getVolunteer().getId(),
+
+
+                        "Your pickup request for "
+
+                        + rescue.getTitle()
+
+                        + " was closed because another volunteer was selected.",
+
+
+                        "PICKUP_REJECTED"
+
+                );
+
+
+            }
+
+
+        }
 
 
 
@@ -513,6 +801,30 @@ public List<PickupRequestDTO> getOwnerRequests(
                 userId
 
         );
+
+
+
+
+
+
+
+        if(
+
+            request.getStatus()
+
+                   != PickupStatus.PENDING
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "Only pending pickup requests can be rejected"
+
+            );
+
+
+        }
 
 
 
@@ -606,9 +918,67 @@ public List<PickupRequestDTO> getOwnerRequests(
 
 
 
+        if(
+
+            request.getStatus()
+
+                   != PickupStatus.APPROVED
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "Pickup must be approved before it can be collected"
+
+            );
+
+
+        }
+
+
+
+
+
+
+
         request.setStatus(
 
                 PickupStatus.PICKED_UP
+
+        );
+
+
+
+
+
+
+
+
+
+        RescueDonation rescue =
+
+                request.getRescueDonation();
+
+
+
+
+
+
+        rescue.setStatus(
+
+                RescueStatus.PICKED_UP
+
+        );
+
+
+
+
+
+
+        rescueDonationRepository.save(
+
+                rescue
 
         );
 
@@ -687,6 +1057,30 @@ public List<PickupRequestDTO> getOwnerRequests(
         PickupRequest request =
 
                 getRequest(requestId);
+
+
+
+
+
+
+        if(
+
+            request.getStatus()
+
+                   != PickupStatus.PICKED_UP
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "The item must be picked up before delivery can be completed"
+
+            );
+
+
+        }
+
 
 
 

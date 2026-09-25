@@ -146,11 +146,7 @@ useState(false);
 
 
 
-
-
-
 useEffect(()=>{
-
 
 
     const savedUser =
@@ -159,13 +155,132 @@ useEffect(()=>{
 
 
 
-
     if(savedUser){
 
 
-        setUser(
+        try{
 
-            JSON.parse(savedUser)
+
+            const currentUser =
+
+                JSON.parse(savedUser);
+
+
+
+            setUser(currentUser);
+
+
+
+            if(!isSaved){
+
+
+                checkBookmarkStatus(
+
+                    currentUser.id
+
+                );
+
+
+            }
+
+
+        }
+
+        catch(error){
+
+
+            console.log(
+
+                "Unable to parse user:",
+
+                error
+
+            );
+
+
+        }
+
+
+    }
+
+
+},[
+    resource.id,
+    isSaved
+]);
+
+
+
+
+
+
+
+
+
+useEffect(()=>{
+
+
+    setSaved(isSaved);
+
+
+},[isSaved]);
+
+
+
+
+
+
+
+
+
+async function checkBookmarkStatus(
+
+    userId:number
+
+){
+
+
+
+    try{
+
+
+        const response =
+
+            await fetch(
+
+`${API_URL}/api/bookmarks/check?userId=${userId}&resourceId=${resource.id}`
+
+            );
+
+
+
+
+
+        if(response.ok){
+
+
+            const data:boolean =
+
+                await response.json();
+
+
+
+            setSaved(data);
+
+
+        }
+
+
+    }
+
+    catch(error){
+
+
+        console.log(
+
+            "Bookmark status error:",
+
+            error
 
         );
 
@@ -173,8 +288,7 @@ useEffect(()=>{
     }
 
 
-
-},[]);
+}
 
 
 
@@ -598,6 +712,24 @@ method:"POST"
 
         }
 
+        else{
+
+
+            const message =
+
+                await response.text();
+
+
+
+            console.log(
+
+                message
+
+            );
+
+
+        }
+
 
 
     }
@@ -1006,6 +1138,8 @@ py-2
 font-semibold
 text-purple-700
 hover:bg-purple-100
+disabled:cursor-not-allowed
+disabled:opacity-60
 "
 
 >

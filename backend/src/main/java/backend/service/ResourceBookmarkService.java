@@ -232,7 +232,6 @@ public class ResourceBookmarkService {
 
     // Remove bookmark
 
-
     public void removeBookmark(
 
 
@@ -271,8 +270,47 @@ public class ResourceBookmarkService {
 
 
 
-    // Get user's saved resources
+    // Check bookmark status
 
+    public boolean isBookmarked(
+
+
+            Long userId,
+
+
+            Long resourceId
+
+
+    ){
+
+
+
+        return resourceBookmarkRepository
+
+                .existsByUserIdAndResourceId(
+
+                        userId,
+
+                        resourceId
+
+                );
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    // Get user's saved resources
 
     public List<ResourceBookmark> getUserBookmarks(
 
