@@ -17,11 +17,13 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 
 
+
 const API_URL =
 
     process.env.NEXT_PUBLIC_API_URL ||
 
     "http://localhost:8080";
+
 
 
 
@@ -60,6 +62,7 @@ type Notification = {
 
 
 
+
 export default function NotificationsPage(){
 
 
@@ -67,6 +70,7 @@ export default function NotificationsPage(){
     const [notifications,setNotifications] =
 
         useState<Notification[]>([]);
+
 
 
 
@@ -97,7 +101,6 @@ export default function NotificationsPage(){
 
 
 
-
         return()=>{
 
 
@@ -109,6 +112,7 @@ export default function NotificationsPage(){
 
 
     },[]);
+
 
 
 
@@ -134,7 +138,6 @@ export default function NotificationsPage(){
 
 
 
-
             if(!savedUser){
 
 
@@ -142,7 +145,6 @@ export default function NotificationsPage(){
 
 
             }
-
 
 
 
@@ -192,7 +194,6 @@ export default function NotificationsPage(){
 
 
 
-
             const data =
 
                 await response.json();
@@ -229,6 +230,8 @@ export default function NotificationsPage(){
 
 
 
+
+
     async function markAsRead(
 
         id:number
@@ -245,7 +248,7 @@ export default function NotificationsPage(){
 
                 await fetch(
 
-`${API_URL}/api/notifications/${id}/read`,
+`${API_URL}/api/notifications/read/${id}`,
 
                     {
 
@@ -284,6 +287,8 @@ export default function NotificationsPage(){
 
 
     }
+
+
 
 
 
@@ -348,6 +353,8 @@ export default function NotificationsPage(){
 
 
 
+
+
     function getTypeName(
 
         type:string
@@ -394,6 +401,8 @@ export default function NotificationsPage(){
 
 
     }
+
+
 
 
 
@@ -467,7 +476,6 @@ text-slate-900
 
 
 
-
 <p className="
 mt-2
 text-slate-500
@@ -476,7 +484,6 @@ text-slate-500
 Stay updated with your community activities.
 
 </p>
-
 
 
 
