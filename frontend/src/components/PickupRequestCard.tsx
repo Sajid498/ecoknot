@@ -18,6 +18,9 @@ interface Props{
     onUpdate:()=>void;
 
 
+    userId:number;
+
+
 }
 
 
@@ -45,7 +48,9 @@ export default function PickupRequestCard(
 
 pickup,
 
-onUpdate
+onUpdate,
+
+userId
 
 }:Props
 
@@ -71,7 +76,7 @@ async function updateRequest(
 
             await fetch(
 
-`${API_URL}/api/pickups/${pickup.id}/${action}`,
+`${API_URL}/api/pickups/${pickup.id}/${action}?userId=${userId}`,
 
                 {
 

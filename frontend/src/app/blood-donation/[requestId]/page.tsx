@@ -256,6 +256,39 @@ export default function BloodRequestDetailsPage() {
             setLoading(true);
 
 
+            const eligibilityResponse =
+                await fetch(
+
+                    `${API_URL}/api/users/${user.id}/eligibility`
+
+                );
+
+
+            if (!eligibilityResponse.ok) {
+
+                throw new Error(
+                    "Unable to check donation eligibility"
+                );
+
+            }
+
+
+            const eligibility =
+                await eligibilityResponse.json();
+
+
+            if (!eligibility.eligible) {
+
+                toast.error(
+                    eligibility.message ||
+                    "You are not eligible to donate blood yet"
+                );
+
+                return;
+
+            }
+
+
             const response =
                 await fetch(
 
@@ -300,7 +333,12 @@ export default function BloodRequestDetailsPage() {
 
             if (!response.ok) {
 
+                const message =
+                    await response.text();
+
+
                 throw new Error(
+                    message ||
                     "Donation failed"
                 );
 
@@ -326,7 +364,8 @@ export default function BloodRequestDetailsPage() {
         catch (error: any) {
 
             toast.error(
-                "You already applied for this request"
+                error?.message ||
+                "Unable to submit donation request"
             );
 
         }
@@ -383,6 +422,79 @@ export default function BloodRequestDetailsPage() {
 
             toast.error(
                 "Something went wrong"
+            );
+
+        }
+
+    }
+
+
+    async function completeDonation(
+        id: number
+    ) {
+
+        if (!user?.id) {
+
+            toast.error(
+                "Please login first"
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+
+                    `${API_URL}/api/donation-response/${id}/complete?requesterId=${user.id}`,
+
+                    {
+
+                        method: "PUT"
+
+                    }
+
+                );
+
+
+            if (!response.ok) {
+
+                const message =
+                    await response.text();
+
+
+                throw new Error(
+                    message ||
+                    "Donation completion failed"
+                );
+
+            }
+
+
+            toast.success(
+                "Donation completed successfully"
+            );
+
+
+            await Promise.all([
+                loadDonors(),
+                loadRequest()
+            ]);
+
+        }
+
+        catch (error) {
+
+            console.log(error);
+
+
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : "Something went wrong"
             );
 
         }
@@ -1030,9 +1142,8 @@ export default function BloodRequestDetailsPage() {
                                                         <button
 
                                                             onClick={() =>
-                                                                updateDonationStatus(
-                                                                    donor.id,
-                                                                    "COMPLETED"
+                                                                completeDonation(
+                                                                    donor.id
                                                                 )
                                                             }
 

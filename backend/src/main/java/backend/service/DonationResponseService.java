@@ -38,6 +38,7 @@ public class DonationResponseService {
     private final NotificationService notificationService;
 
 
+    private final EligibilityService eligibilityService;
 
 
 
@@ -53,7 +54,9 @@ public class DonationResponseService {
 
             UserRepository userRepository,
 
-            NotificationService notificationService
+            NotificationService notificationService,
+
+            EligibilityService eligibilityService
 
     ){
 
@@ -76,6 +79,10 @@ public class DonationResponseService {
 
         this.notificationService =
                 notificationService;
+
+
+        this.eligibilityService =
+                eligibilityService;
 
 
     }
@@ -160,6 +167,58 @@ public class DonationResponseService {
             throw new RuntimeException(
 
                     "You cannot donate to your own request"
+
+            );
+
+
+        }
+
+
+
+        userRepository
+
+                .findById(
+
+                        response.getDonorId()
+
+                )
+
+                .orElseThrow(
+
+                        () -> new ResourceNotFoundException(
+
+                                "Donor not found"
+
+                        )
+
+                );
+
+
+
+
+
+        if(
+
+                !eligibilityService
+
+                        .isEligible(
+
+                                response.getDonorId()
+
+                        )
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    eligibilityService
+
+                            .getEligibilityMessage(
+
+                                    response.getDonorId()
+
+                            )
 
             );
 
