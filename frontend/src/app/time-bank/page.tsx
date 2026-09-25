@@ -23,14 +23,11 @@ import {
 
 
 
-
 const API_URL =
 
     process.env.NEXT_PUBLIC_API_URL ||
 
     "http://localhost:8080";
-
-
 
 
 
@@ -46,12 +43,7 @@ type LoggedInUser = {
 
 
 
-
-
-
-
 export default function TimeBankPage(){
-
 
 
     const [requests,setRequests] =
@@ -59,11 +51,14 @@ export default function TimeBankPage(){
         useState<TimeRequest[]>([]);
 
 
+    const [myRequests,setMyRequests] =
+
+        useState<TimeRequest[]>([]);
+
 
     const [offers,setOffers] =
 
         useState<TimeOffer[]>([]);
-
 
 
     const [balance,setBalance] =
@@ -71,11 +66,9 @@ export default function TimeBankPage(){
         useState<number>(0);
 
 
-
     const [loading,setLoading] =
 
         useState(true);
-
 
 
     const [error,setError] =
@@ -83,13 +76,14 @@ export default function TimeBankPage(){
         useState("");
 
 
-
     const [user,setUser] =
 
         useState<LoggedInUser | null>(null);
 
 
+    const [completingId,setCompletingId] =
 
+        useState<number | null>(null);
 
 
 
@@ -100,7 +94,6 @@ export default function TimeBankPage(){
         const savedUser =
 
             localStorage.getItem("user");
-
 
 
         if(savedUser){
@@ -117,17 +110,10 @@ export default function TimeBankPage(){
 
 
             }
-
             catch(error){
 
 
-                console.log(
-
-                    "Unable to parse user data:",
-
-                    error
-
-                );
+                console.log(error);
 
 
                 setError(
@@ -144,7 +130,6 @@ export default function TimeBankPage(){
 
 
         }
-
         else{
 
 
@@ -166,11 +151,6 @@ export default function TimeBankPage(){
 
 
 
-
-
-
-
-
     useEffect(()=>{
 
 
@@ -188,11 +168,6 @@ export default function TimeBankPage(){
 
 
 
-
-
-
-
-
     async function loadData(){
 
 
@@ -204,10 +179,11 @@ export default function TimeBankPage(){
             setError("");
 
 
-
             await Promise.all([
 
                 loadRequests(),
+
+                loadMyRequests(),
 
                 loadOffers(),
 
@@ -217,7 +193,6 @@ export default function TimeBankPage(){
 
 
         }
-
         catch(error){
 
 
@@ -240,7 +215,6 @@ export default function TimeBankPage(){
 
 
         }
-
         finally{
 
 
@@ -255,13 +229,7 @@ export default function TimeBankPage(){
 
 
 
-
-
-
-
-
     async function loadRequests(){
-
 
 
         if(!user?.id){
@@ -271,37 +239,26 @@ export default function TimeBankPage(){
         }
 
 
+        const response =
+            await fetch(
 
+                `${API_URL}/api/time-bank/requests/${user.id}`
 
-
-
-        const response = await fetch(
-
-
-            `${API_URL}/api/time-bank/requests/${user.id}`
-
-
-        );
-
-
-
-
+            );
 
 
         if(!response.ok){
 
 
             const message =
-
                 await response.text();
-
 
 
             throw new Error(
 
                 message ||
 
-                "Unable to load help requests."
+                "Unable to load available requests."
 
             );
 
@@ -309,32 +266,23 @@ export default function TimeBankPage(){
         }
 
 
+        const data =
+            await response.json();
 
 
+        setRequests(
 
-        const data = await response.json();
+            Array.isArray(data)
 
+                ?
 
+                data
 
+                :
 
+                []
 
-
-        if(Array.isArray(data)){
-
-
-            setRequests(data);
-
-
-        }
-
-        else{
-
-
-            setRequests([]);
-
-
-        }
-
+        );
 
 
     }
@@ -342,7 +290,63 @@ export default function TimeBankPage(){
 
 
 
+    async function loadMyRequests(){
 
+
+        if(!user?.id){
+
+            return;
+
+        }
+
+
+        const response =
+            await fetch(
+
+                `${API_URL}/api/time-bank/my-requests/${user.id}`
+
+            );
+
+
+        if(!response.ok){
+
+
+            const message =
+                await response.text();
+
+
+            throw new Error(
+
+                message ||
+
+                "Unable to load your requests."
+
+            );
+
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        setMyRequests(
+
+            Array.isArray(data)
+
+                ?
+
+                data
+
+                :
+
+                []
+
+        );
+
+
+    }
 
 
 
@@ -350,27 +354,19 @@ export default function TimeBankPage(){
     async function loadOffers(){
 
 
+        const response =
+            await fetch(
 
-        const response = await fetch(
+                `${API_URL}/api/time-bank/offers`
 
-
-            `${API_URL}/api/time-bank/offers`
-
-
-        );
-
-
-
-
+            );
 
 
         if(!response.ok){
 
 
             const message =
-
                 await response.text();
-
 
 
             throw new Error(
@@ -385,32 +381,23 @@ export default function TimeBankPage(){
         }
 
 
+        const data =
+            await response.json();
 
 
+        setOffers(
 
-        const data = await response.json();
+            Array.isArray(data)
 
+                ?
 
+                data
 
+                :
 
+                []
 
-
-        if(Array.isArray(data)){
-
-
-            setOffers(data);
-
-
-        }
-
-        else{
-
-
-            setOffers([]);
-
-
-        }
-
+        );
 
 
     }
@@ -418,13 +405,7 @@ export default function TimeBankPage(){
 
 
 
-
-
-
-
-
     async function loadBalance(){
-
 
 
         if(!user?.id){
@@ -434,37 +415,26 @@ export default function TimeBankPage(){
         }
 
 
+        const response =
+            await fetch(
 
+                `${API_URL}/api/time-bank/balance/${user.id}`
 
-
-
-        const response = await fetch(
-
-
-            `${API_URL}/api/time-bank/balance/${user.id}`
-
-
-        );
-
-
-
-
+            );
 
 
         if(!response.ok){
 
 
             const message =
-
                 await response.text();
-
 
 
             throw new Error(
 
                 message ||
 
-                "Unable to load Time Bank balance."
+                "Unable to load balance."
 
             );
 
@@ -472,12 +442,8 @@ export default function TimeBankPage(){
         }
 
 
-
-
-
-        const data = await response.json();
-
-
+        const data =
+            await response.json();
 
 
         setBalance(
@@ -487,13 +453,7 @@ export default function TimeBankPage(){
         );
 
 
-
     }
-
-
-
-
-
 
 
 
@@ -505,7 +465,6 @@ export default function TimeBankPage(){
     ){
 
 
-
         if(!user?.id){
 
             return;
@@ -513,40 +472,28 @@ export default function TimeBankPage(){
         }
 
 
-
         try{
 
 
+            const response =
+                await fetch(
 
-            const response = await fetch(
+                    `${API_URL}/api/time-bank/accept/${requestId}?helperId=${user.id}`,
 
+                    {
 
-                `${API_URL}/api/time-bank/accept/${requestId}?helperId=${user.id}`,
+                        method:"PUT"
 
+                    }
 
-                {
-
-
-                    method:"PUT"
-
-
-                }
-
-
-            );
-
-
-
-
+                );
 
 
             if(!response.ok){
 
 
                 const message =
-
                     await response.text();
-
 
 
                 throw new Error(
@@ -561,10 +508,6 @@ export default function TimeBankPage(){
             }
 
 
-
-
-
-
             alert(
 
                 "Request accepted successfully"
@@ -572,17 +515,16 @@ export default function TimeBankPage(){
             );
 
 
+            await Promise.all([
 
+                loadRequests(),
 
+                loadMyRequests()
 
-
-            await loadRequests();
-
-
+            ]);
 
 
         }
-
         catch(error){
 
 
@@ -612,13 +554,138 @@ export default function TimeBankPage(){
 
 
 
+    async function handleComplete(
 
+        requestId:number
+
+    ){
+
+
+        if(!user?.id){
+
+            return;
+
+        }
+
+
+        const confirmed =
+            window.confirm(
+
+                "Confirm that this help request has been completed?"
+
+            );
+
+
+        if(!confirmed){
+
+            return;
+
+        }
+
+
+        try{
+
+
+            setCompletingId(
+
+                requestId
+
+            );
+
+
+            const response =
+                await fetch(
+
+                    `${API_URL}/api/time-bank/complete/${requestId}?requesterId=${user.id}`,
+
+                    {
+
+                        method:"PUT"
+
+                    }
+
+                );
+
+
+            if(!response.ok){
+
+
+                const message =
+                    await response.text();
+
+
+                throw new Error(
+
+                    message ||
+
+                    "Unable to complete request."
+
+                );
+
+
+            }
+
+
+            alert(
+
+                "Request completed and time credits transferred successfully."
+
+            );
+
+
+            await Promise.all([
+
+                loadMyRequests(),
+
+                loadRequests(),
+
+                loadBalance()
+
+            ]);
+
+
+        }
+        catch(error){
+
+
+            console.log(error);
+
+
+            alert(
+
+                error instanceof Error
+
+                    ?
+
+                    error.message
+
+                    :
+
+                    "Unable to complete request."
+
+            );
+
+
+        }
+        finally{
+
+
+            setCompletingId(
+
+                null
+
+            );
+
+
+        }
+
+
+    }
 
 
 
 
     if(loading){
-
 
 
         return(
@@ -658,639 +725,688 @@ export default function TimeBankPage(){
 
 
 
+    return(
 
 
+        <main className="
+        min-h-screen
+        bg-slate-50
+        p-6
+        md:p-10
+        ">
 
 
+            <div className="
+            mx-auto
+            max-w-6xl
+            ">
 
-return(
 
 
 
-<main className="
-min-h-screen
-bg-slate-50
-p-6
-md:p-10
-">
+                <div className="
+                flex
+                flex-col
+                gap-5
+                md:flex-row
+                md:items-center
+                md:justify-between
+                ">
 
 
+                    <div>
 
-<div className="
-mx-auto
-max-w-6xl
-">
 
+                        <h1 className="
+                        text-3xl
+                        font-bold
+                        text-slate-900
+                        ">
 
 
+                            ⏳ Community Time Bank
 
 
+                        </h1>
 
-<div className="
-flex
-flex-col
-gap-5
-md:flex-row
-md:items-center
-md:justify-between
-">
 
+                        <p className="
+                        mt-2
+                        text-slate-600
+                        ">
 
 
-<div>
+                            Give help, earn time credits, and use credits later.
 
 
+                        </p>
 
-<h1 className="
-text-3xl
-font-bold
-text-slate-900
-">
 
+                    </div>
 
-⏳ Community Time Bank
 
 
-</h1>
 
+                    <div className="
+                    flex
+                    flex-wrap
+                    gap-3
+                    ">
 
 
+                        <Link
 
-<p className="
-mt-2
-text-slate-600
-">
+                            href="/time-bank/request"
 
+                            className="
+                            rounded-xl
+                            bg-emerald-700
+                            px-5
+                            py-3
+                            font-semibold
+                            text-white
+                            hover:bg-emerald-800
+                            "
 
-Give help, earn time credits, use credits later.
+                        >
 
+                            + Create Request
 
-</p>
+                        </Link>
 
 
 
 
-</div>
+                        <Link
 
+                            href="/time-bank/create"
 
+                            className="
+                            rounded-xl
+                            border
+                            border-emerald-700
+                            bg-white
+                            px-5
+                            py-3
+                            font-semibold
+                            text-emerald-700
+                            hover:bg-emerald-50
+                            "
 
+                        >
 
+                            + Offer a Skill
 
+                        </Link>
 
 
-<div className="
-flex
-flex-wrap
-gap-3
-">
 
 
+                        <Link
 
-<Link
+                            href="/time-bank/history"
 
+                            className="
+                            rounded-xl
+                            border
+                            border-slate-300
+                            bg-white
+                            px-5
+                            py-3
+                            font-semibold
+                            text-slate-700
+                            hover:bg-slate-100
+                            "
 
-href="/time-bank/request"
+                        >
 
+                            History
 
-className="
-rounded-xl
-bg-emerald-700
-px-5
-py-3
-font-semibold
-text-white
-hover:bg-emerald-800
-"
+                        </Link>
 
 
->
+                    </div>
 
 
-+ Create Request
+                </div>
 
 
-</Link>
 
 
+                {
+                    error &&
 
 
+                    <div className="
+                    mt-6
+                    rounded-xl
+                    border
+                    border-red-200
+                    bg-red-50
+                    p-4
+                    font-medium
+                    text-red-700
+                    ">
 
 
+                        ⚠️ {error}
 
-<Link
 
+                    </div>
+                }
 
-href="/time-bank/create"
 
 
-className="
-rounded-xl
-border
-border-emerald-700
-bg-white
-px-5
-py-3
-font-semibold
-text-emerald-700
-hover:bg-emerald-50
-"
 
+                <div className="
+                mt-8
+                rounded-3xl
+                bg-emerald-700
+                p-8
+                text-white
+                ">
 
->
 
+                    <p className="
+                    text-sm
+                    ">
 
-+ Offer a Skill
+                        My Time Credits
 
+                    </p>
 
-</Link>
 
+                    <h2 className="
+                    mt-3
+                    text-5xl
+                    font-bold
+                    ">
 
+                        {balance}
 
+                    </h2>
 
 
+                    <p className="
+                    mt-2
+                    ">
 
+                        hours available
 
-<Link
+                    </p>
 
 
-href="/time-bank/history"
+                </div>
 
 
-className="
-rounded-xl
-border
-border-slate-300
-bg-white
-px-5
-py-3
-font-semibold
-text-slate-700
-hover:bg-slate-100
-"
 
 
->
+                <section className="
+                mt-10
+                ">
 
 
-History
+                    <h2 className="
+                    text-2xl
+                    font-bold
+                    text-slate-900
+                    ">
 
+                        My Help Requests
 
-</Link>
+                    </h2>
 
 
+                    <p className="
+                    mt-1
+                    text-sm
+                    text-slate-600
+                    ">
 
-</div>
+                        Track your requests and confirm completion after receiving help.
 
+                    </p>
 
 
 
 
-</div>
+                    {
+                        myRequests.length === 0
 
+                            ?
 
+                            <div className="
+                            mt-5
+                            rounded-2xl
+                            bg-white
+                            p-8
+                            text-center
+                            shadow
+                            ">
 
+                                You have not created any help requests yet.
 
+                            </div>
 
+                            :
 
+                            <div className="
+                            mt-6
+                            grid
+                            gap-6
+                            md:grid-cols-2
+                            ">
 
 
+                                {
+                                    myRequests.map(
+                                        request => (
 
-{
 
-error &&
+                                            <div
 
+                                                key={request.id}
 
-<div className="
-mt-6
-rounded-xl
-border
-border-red-200
-bg-red-50
-p-4
-font-medium
-text-red-700
-">
+                                                className="
+                                                rounded-2xl
+                                                border
+                                                border-slate-200
+                                                bg-white
+                                                p-6
+                                                shadow-sm
+                                                "
 
+                                            >
 
-⚠️ {error}
 
+                                                <div className="
+                                                flex
+                                                items-start
+                                                justify-between
+                                                gap-4
+                                                ">
 
-</div>
 
+                                                    <div>
 
-}
 
+                                                        <h3 className="
+                                                        text-xl
+                                                        font-bold
+                                                        text-slate-900
+                                                        ">
 
+                                                            {request.title}
 
+                                                        </h3>
 
 
+                                                        <p className="
+                                                        mt-2
+                                                        text-sm
+                                                        text-slate-600
+                                                        ">
 
+                                                            {request.description}
 
+                                                        </p>
 
 
-<div className="
-mt-8
-rounded-3xl
-bg-emerald-700
-p-8
-text-white
-">
+                                                    </div>
 
 
 
-<p className="
-text-sm
-">
 
+                                                    <span className="
+                                                    rounded-full
+                                                    bg-slate-100
+                                                    px-3
+                                                    py-1
+                                                    text-sm
+                                                    font-semibold
+                                                    text-slate-700
+                                                    ">
 
-My Time Credits
+                                                        {request.status}
 
+                                                    </span>
 
-</p>
 
+                                                </div>
 
 
 
 
-<h2 className="
-mt-3
-text-5xl
-font-bold
-">
+                                                <div className="
+                                                mt-5
+                                                space-y-2
+                                                text-sm
+                                                text-slate-700
+                                                ">
 
 
-{balance}
+                                                    <p>
 
+                                                        🛠 Category:{" "}
 
-</h2>
+                                                        <strong>
+                                                            {request.category}
+                                                        </strong>
 
+                                                    </p>
 
 
+                                                    <p>
 
+                                                        ⏳ Required Time:{" "}
 
-<p className="
-mt-2
-">
+                                                        <strong>
+                                                            {request.requiredHours} hours
+                                                        </strong>
 
+                                                    </p>
 
-hours available
 
+                                                    {
+                                                        request.helper &&
 
-</p>
 
+                                                        <p>
 
+                                                            🤝 Helper:{" "}
 
+                                                            <strong>
+                                                                {request.helper.name}
+                                                            </strong>
 
-</div>
+                                                        </p>
+                                                    }
 
 
+                                                </div>
 
 
 
 
+                                                {
+                                                    request.status === "ACCEPTED" &&
 
 
+                                                    <button
 
-<section className="
-mt-10
-">
+                                                        onClick={() =>
+                                                            handleComplete(
+                                                                request.id
+                                                            )
+                                                        }
 
+                                                        disabled={
+                                                            completingId === request.id
+                                                        }
 
+                                                        className="
+                                                        mt-6
+                                                        w-full
+                                                        rounded-xl
+                                                        bg-blue-700
+                                                        py-3
+                                                        font-semibold
+                                                        text-white
+                                                        hover:bg-blue-800
+                                                        disabled:cursor-not-allowed
+                                                        disabled:opacity-60
+                                                        "
 
-<div>
+                                                    >
 
+                                                        {
+                                                            completingId === request.id
 
+                                                                ?
 
-<h2 className="
-text-2xl
-font-bold
-text-slate-900
-">
+                                                                "Completing..."
 
+                                                                :
 
-People Need Help
+                                                                "Complete Request"
+                                                        }
 
+                                                    </button>
+                                                }
 
-</h2>
 
+                                            </div>
 
 
-<p className="
-mt-1
-text-sm
-text-slate-600
-">
+                                        )
+                                    )
+                                }
 
 
-Accept a request and earn time credits after completion.
+                            </div>
+                    }
 
 
-</p>
+                </section>
 
 
 
-</div>
 
+                <section className="
+                mt-12
+                ">
 
 
+                    <h2 className="
+                    text-2xl
+                    font-bold
+                    text-slate-900
+                    ">
 
+                        People Need Help
 
+                    </h2>
 
 
-{
+                    <p className="
+                    mt-1
+                    text-sm
+                    text-slate-600
+                    ">
 
+                        Accept a request and earn time credits after completion.
 
-requests.length === 0 ?
+                    </p>
 
 
 
 
+                    {
+                        requests.length === 0
 
-<div className="
-mt-5
-rounded-2xl
-bg-white
-p-8
-text-center
-shadow
-">
+                            ?
 
+                            <div className="
+                            mt-5
+                            rounded-2xl
+                            bg-white
+                            p-8
+                            text-center
+                            shadow
+                            ">
 
-No help requests available.
+                                No help requests available.
 
+                            </div>
 
-</div>
+                            :
 
+                            <div className="
+                            mt-6
+                            grid
+                            gap-6
+                            md:grid-cols-2
+                            ">
 
 
+                                {
+                                    requests.map(
+                                        request => (
 
 
+                                            <TimeRequestCard
 
+                                                key={request.id}
 
-:
+                                                request={request}
 
+                                                onAccept={handleAccept}
 
+                                            />
 
 
+                                        )
+                                    )
+                                }
 
 
-<div className="
-mt-6
-grid
-gap-6
-md:grid-cols-2
-">
+                            </div>
+                    }
 
 
+                </section>
 
-{
 
 
-requests.map(
 
-request => (
+                <section className="
+                mt-12
+                ">
 
 
-<TimeRequestCard
+                    <div className="
+                    flex
+                    flex-col
+                    gap-2
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                    ">
 
 
-key={request.id}
+                        <div>
 
 
-request={request}
+                            <h2 className="
+                            text-2xl
+                            font-bold
+                            text-slate-900
+                            ">
 
+                                Skills Offered by the Community
 
-onAccept={handleAccept}
+                            </h2>
 
 
-/>
+                            <p className="
+                            mt-1
+                            text-sm
+                            text-slate-600
+                            ">
 
+                                See what skills and time community members are offering.
 
-)
+                            </p>
 
 
-)
+                        </div>
 
 
-}
 
 
+                        <Link
 
+                            href="/time-bank/create"
 
+                            className="
+                            text-sm
+                            font-bold
+                            text-emerald-700
+                            "
 
-</div>
+                        >
 
+                            Offer your skill →
 
+                        </Link>
 
 
-}
+                    </div>
 
 
 
-</section>
 
+                    {
+                        offers.length === 0
 
+                            ?
 
+                            <div className="
+                            mt-5
+                            rounded-2xl
+                            bg-white
+                            p-8
+                            text-center
+                            shadow
+                            ">
 
+                                No available skill offers yet.
 
+                            </div>
 
+                            :
 
+                            <div className="
+                            mt-6
+                            grid
+                            gap-6
+                            md:grid-cols-2
+                            ">
 
 
-<section className="
-mt-12
-">
+                                {
+                                    offers.map(
+                                        offer => (
 
 
+                                            <TimeOfferCard
 
-<div className="
-flex
-flex-col
-gap-2
-sm:flex-row
-sm:items-center
-sm:justify-between
-">
+                                                key={offer.id}
 
+                                                offer={offer}
 
+                                            />
 
-<div>
 
+                                        )
+                                    )
+                                }
 
 
-<h2 className="
-text-2xl
-font-bold
-text-slate-900
-">
+                            </div>
+                    }
 
 
-Skills Offered by the Community
+                </section>
 
 
-</h2>
+            </div>
 
 
+        </main>
 
-<p className="
-mt-1
-text-sm
-text-slate-600
-">
 
-
-See what skills and time community members are offering.
-
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-<Link
-
-
-href="/time-bank/create"
-
-
-className="
-text-sm
-font-bold
-text-emerald-700
-"
-
-
->
-
-
-Offer your skill →
-
-
-</Link>
-
-
-
-</div>
-
-
-
-
-
-
-
-{
-
-
-offers.length === 0 ?
-
-
-
-
-
-<div className="
-mt-5
-rounded-2xl
-bg-white
-p-8
-text-center
-shadow
-">
-
-
-No available skill offers yet.
-
-
-</div>
-
-
-
-
-
-
-
-:
-
-
-
-
-
-
-<div className="
-mt-6
-grid
-gap-6
-md:grid-cols-2
-">
-
-
-
-{
-
-
-offers.map(
-
-offer => (
-
-
-<TimeOfferCard
-
-
-key={offer.id}
-
-
-offer={offer}
-
-
-/>
-
-
-)
-
-
-)
-
-
-}
-
-
-
-
-
-</div>
-
-
-
-
-}
-
-
-
-</section>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-</main>
-
-
-
-);
-
+    );
 
 
 }

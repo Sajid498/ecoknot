@@ -49,7 +49,9 @@ public class TimeBankService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(
-                        () -> new RuntimeException("User not found")
+                        () -> new RuntimeException(
+                                "User not found"
+                        )
                 );
 
         if (title == null || title.trim().isEmpty()) {
@@ -76,15 +78,18 @@ public class TimeBankService {
             );
         }
 
-        TimeOffer offer = new TimeOffer(
-                user,
-                title.trim(),
-                description.trim(),
-                skillCategory.trim(),
-                hours
-        );
+        TimeOffer offer =
+                new TimeOffer(
+                        user,
+                        title.trim(),
+                        description.trim(),
+                        skillCategory.trim(),
+                        hours
+                );
 
-        return timeOfferRepository.save(offer);
+        return timeOfferRepository.save(
+                offer
+        );
     }
 
     // ==================================================
@@ -126,12 +131,14 @@ public class TimeBankService {
             Integer hours
     ) {
 
-        User requester = userRepository.findById(userId)
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "User not found"
-                        )
-                );
+        User requester =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "User not found"
+                                )
+                        );
 
         if (title == null || title.trim().isEmpty()) {
             throw new RuntimeException(
@@ -157,15 +164,18 @@ public class TimeBankService {
             );
         }
 
-        TimeRequest request = new TimeRequest(
-                requester,
-                title.trim(),
-                description.trim(),
-                category.trim(),
-                hours
-        );
+        TimeRequest request =
+                new TimeRequest(
+                        requester,
+                        title.trim(),
+                        description.trim(),
+                        category.trim(),
+                        hours
+                );
 
-        return timeRequestRepository.save(request);
+        return timeRequestRepository.save(
+                request
+        );
     }
 
     // ==================================================
@@ -201,8 +211,6 @@ public class TimeBankService {
 
     // ==================================================
     // ACCEPT REQUEST
-    // Helper accepts another user's request
-    // Requester must have enough credits
     // ==================================================
     @Transactional
     public TimeRequest acceptRequest(
@@ -210,13 +218,14 @@ public class TimeBankService {
             Long helperId
     ) {
 
-        TimeRequest request = timeRequestRepository
-                .findById(requestId)
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "Request not found"
-                        )
-                );
+        TimeRequest request =
+                timeRequestRepository
+                        .findById(requestId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Request not found"
+                                )
+                        );
 
         if (!"OPEN".equals(request.getStatus())) {
             throw new RuntimeException(
@@ -224,16 +233,19 @@ public class TimeBankService {
             );
         }
 
-        User helper = userRepository
-                .findById(helperId)
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "Helper not found"
-                        )
-                );
+        User helper =
+                userRepository
+                        .findById(helperId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Helper not found"
+                                )
+                        );
 
         Long requesterId =
-                request.getRequester().getId();
+                request
+                        .getRequester()
+                        .getId();
 
         if (requesterId.equals(helperId)) {
             throw new RuntimeException(
@@ -242,7 +254,9 @@ public class TimeBankService {
         }
 
         Integer requesterBalance =
-                getBalance(requesterId);
+                getBalance(
+                        requesterId
+                );
 
         Integer requiredHours =
                 request.getRequiredHours();
@@ -253,36 +267,48 @@ public class TimeBankService {
             );
         }
 
-        request.setHelper(helper);
-        request.setStatus("ACCEPTED");
+        request.setHelper(
+                helper
+        );
 
-        return timeRequestRepository.save(request);
+        request.setStatus(
+                "ACCEPTED"
+        );
+
+        return timeRequestRepository.save(
+                request
+        );
     }
 
     // ==================================================
     // COMPLETE REQUEST
-    //
-    // One transaction represents a transfer:
-    //
-    // Helper:
-    // +hours
-    //
-    // Requester:
-    // -hours
-    //
+    // Only requester can complete
     // ==================================================
     @Transactional
     public TimeTransaction completeRequest(
-            Long requestId
+            Long requestId,
+            Long requesterId
     ) {
 
-        TimeRequest request = timeRequestRepository
-                .findById(requestId)
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "Request not found"
-                        )
-                );
+        TimeRequest request =
+                timeRequestRepository
+                        .findById(requestId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Request not found"
+                                )
+                        );
+
+        Long actualRequesterId =
+                request
+                        .getRequester()
+                        .getId();
+
+        if (!actualRequesterId.equals(requesterId)) {
+            throw new RuntimeException(
+                    "Only the requester can complete this request"
+            );
+        }
 
         if (request.getHelper() == null) {
             throw new RuntimeException(
@@ -310,7 +336,6 @@ public class TimeBankService {
                         requester.getId()
                 );
 
-        // Recheck balance before completion
         if (requesterBalance < requiredHours) {
             throw new RuntimeException(
                     "Requester does not have enough time credits to complete this transaction"
@@ -353,13 +378,13 @@ public class TimeBankService {
                 LocalDateTime.now()
         );
 
-        return timeTransactionRepository
-                .save(transaction);
+        return timeTransactionRepository.save(
+                transaction
+        );
     }
 
     // ==================================================
-    // GET TIME BANK HISTORY
-    // User may appear as provider or requester
+    // GET HISTORY
     // ==================================================
     public List<TimeTransaction> getHistory(
             Long userId
@@ -380,13 +405,7 @@ public class TimeBankService {
 
     // ==================================================
     // GET BALANCE
-    //
-    // Balance =
-    //
-    // total earned hours
-    // -
-    // total spent hours
-    //
+    // earned - spent
     // ==================================================
     public Integer getBalance(
             Long userId
@@ -411,14 +430,16 @@ public class TimeBankService {
                         );
 
         int earnedHours =
-                earnedTransactions.stream()
+                earnedTransactions
+                        .stream()
                         .mapToInt(
                                 TimeTransaction::getHours
                         )
                         .sum();
 
         int spentHours =
-                spentTransactions.stream()
+                spentTransactions
+                        .stream()
                         .mapToInt(
                                 TimeTransaction::getHours
                         )

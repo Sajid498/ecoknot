@@ -14,35 +14,35 @@ export interface TimeRequest {
     };
 
 
+    helper?: {
+
+        id: number;
+
+        name: string;
+
+        email: string;
+
+    } | null;
+
 
     title: string;
-
 
 
     description: string;
 
 
-
     category: string;
-
 
 
     requiredHours: number;
 
 
-
     status: string;
-
 
 
     createdAt: string;
 
-
-
 }
-
-
-
 
 
 export interface TimeOffer {
@@ -50,35 +50,24 @@ export interface TimeOffer {
     id: number;
 
 
-
     title: string;
-
 
 
     description: string;
 
 
-
     skillCategory: string;
-
 
 
     availableHours: number;
 
 
-
     status: string;
-
 
 
     createdAt: string;
 
-
-
 }
-
-
-
 
 
 export interface TimeTransaction {
@@ -86,9 +75,7 @@ export interface TimeTransaction {
     id: number;
 
 
-
     provider: {
-
 
         id: number;
 
@@ -97,12 +84,10 @@ export interface TimeTransaction {
         email: string;
 
     };
-
 
 
     requester: {
 
-
         id: number;
 
         name: string;
@@ -110,29 +95,20 @@ export interface TimeTransaction {
         email: string;
 
     };
-
 
 
     hours: number;
 
 
-
     description: string;
-
 
 
     transactionType: string;
 
 
-
     createdAt: string;
 
-
-
 }
-
-
-
 
 
 export interface TimeBalance {

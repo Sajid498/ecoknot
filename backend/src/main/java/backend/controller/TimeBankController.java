@@ -27,7 +27,8 @@ public class TimeBankController {
     public TimeBankController(
             TimeBankService timeBankService
     ) {
-        this.timeBankService = timeBankService;
+        this.timeBankService =
+                timeBankService;
     }
 
     // ==================================================
@@ -54,7 +55,7 @@ public class TimeBankController {
     }
 
     // ==================================================
-    // GET AVAILABLE TIME OFFERS
+    // GET AVAILABLE OFFERS
     // ==================================================
     @GetMapping("/offers")
     public ResponseEntity<List<TimeOffer>>
@@ -77,7 +78,9 @@ public class TimeBankController {
 
         return ResponseEntity.ok(
                 timeBankService
-                        .getUserOffers(userId)
+                        .getUserOffers(
+                                userId
+                        )
         );
     }
 
@@ -116,7 +119,9 @@ public class TimeBankController {
 
         return ResponseEntity.ok(
                 timeBankService
-                        .getOpenRequests(userId)
+                        .getOpenRequests(
+                                userId
+                        )
         );
     }
 
@@ -131,7 +136,9 @@ public class TimeBankController {
 
         return ResponseEntity.ok(
                 timeBankService
-                        .getUserRequests(userId)
+                        .getUserRequests(
+                                userId
+                        )
         );
     }
 
@@ -155,21 +162,25 @@ public class TimeBankController {
 
     // ==================================================
     // COMPLETE REQUEST
+    // Only requester can complete
     // ==================================================
     @PutMapping("/complete/{requestId}")
     public ResponseEntity<TimeTransaction>
     completeRequest(
-            @PathVariable Long requestId
+            @PathVariable Long requestId,
+            @RequestParam Long requesterId
     ) {
 
         return ResponseEntity.ok(
-                timeBankService
-                        .completeRequest(requestId)
+                timeBankService.completeRequest(
+                        requestId,
+                        requesterId
+                )
         );
     }
 
     // ==================================================
-    // GET TIME BANK HISTORY
+    // GET HISTORY
     // ==================================================
     @GetMapping("/history/{userId}")
     public ResponseEntity<List<TimeTransaction>>
@@ -179,7 +190,9 @@ public class TimeBankController {
 
         return ResponseEntity.ok(
                 timeBankService
-                        .getHistory(userId)
+                        .getHistory(
+                                userId
+                        )
         );
     }
 
@@ -194,7 +207,9 @@ public class TimeBankController {
 
         return ResponseEntity.ok(
                 timeBankService
-                        .getBalance(userId)
+                        .getBalance(
+                                userId
+                        )
         );
     }
 }
