@@ -240,22 +240,11 @@ public class DonationResponseController {
 
             @PathVariable Long id,
 
-            @RequestParam DonationStatus status
+            @RequestParam DonationStatus status,
+
+            @RequestParam Long requesterId
 
     ){
-
-
-        System.out.println(
-
-                "Donation ID: "
-                +
-                id
-                +
-                " Status: "
-                +
-                status
-
-        );
 
 
 
@@ -265,7 +254,9 @@ public class DonationResponseController {
 
                         id,
 
-                        status
+                        status,
+
+                        requesterId
 
                 );
 
@@ -277,12 +268,6 @@ public class DonationResponseController {
 
 
 
-
-
-
-    // ==================================================
-    // Delete donation response
-    // ==================================================
 
     @DeleteMapping("/{id}")
     public String deleteResponse(

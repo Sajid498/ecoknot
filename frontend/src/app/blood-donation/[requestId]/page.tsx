@@ -384,49 +384,91 @@ export default function BloodRequestDetailsPage() {
         status: string
     ) {
 
+        if (!user?.id) {
+
+            toast.error(
+                "Please login first"
+            );
+
+            return;
+        }
+
+
         try {
 
             const response =
                 await fetch(
 
-                    `${API_URL}/api/donation-response/${id}?status=${status}`,
+                    `${API_URL}/api/donation-response/${id}?status=${status}&requesterId=${user.id}`,
 
                     {
-
                         method: "PUT"
-
                     }
-
                 );
 
 
             if (!response.ok) {
 
+                const message =
+                    await response.text();
+
+
                 throw new Error(
-                    "Update failed"
+                    message ||
+                    "Unable to update donor status"
                 );
 
             }
 
 
-            loadDonors();
+            toast.success(
 
-            loadRequest();
+                status === "ACCEPTED"
+
+                    ?
+
+                    "Donor accepted successfully"
+
+                    :
+
+                    "Donor rejected successfully"
+
+            );
+
+
+            await Promise.all([
+                loadDonors(),
+                loadRequest()
+            ]);
 
         }
-
         catch (error) {
 
             console.log(error);
 
 
             toast.error(
-                "Something went wrong"
+
+                error instanceof Error
+
+                    ?
+
+                    error.message
+
+                    :
+
+                    "Something went wrong"
+
             );
 
         }
 
     }
+
+
+
+
+
 
 
     async function completeDonation(

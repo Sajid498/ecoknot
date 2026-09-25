@@ -19,6 +19,8 @@ import backend.repository.UserRepository;
 @Service
 public class TimeBankService {
 
+    private static final int STARTER_CREDITS = 5;
+
     private final TimeRequestRepository timeRequestRepository;
     private final TimeTransactionRepository timeTransactionRepository;
     private final TimeOfferRepository timeOfferRepository;
@@ -405,7 +407,13 @@ public class TimeBankService {
 
     // ==================================================
     // GET BALANCE
-    // earned - spent
+    //
+    // New users start with 5 credits so the Time Bank
+    // can be used immediately even before the first
+    // completed exchange.
+    //
+    // Balance =
+    // starter credits + earned hours - spent hours
     // ==================================================
     public Integer getBalance(
             Long userId
@@ -445,6 +453,8 @@ public class TimeBankService {
                         )
                         .sum();
 
-        return earnedHours - spentHours;
+        return STARTER_CREDITS
+                + earnedHours
+                - spentHours;
     }
 }

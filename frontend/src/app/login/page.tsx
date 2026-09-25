@@ -10,7 +10,8 @@ import {
 
 
 const API_URL =
-    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.NEXT_PUBLIC_API_URL
+    ||
     "http://localhost:8080";
 
 
@@ -35,9 +36,12 @@ export default function LoginPage() {
 
 
 
-    const handleLogin = async (
-        e:React.FormEvent
-    )=>{
+
+
+    const handleLogin =
+        async (
+            e: React.FormEvent
+        ) => {
 
 
         e.preventDefault();
@@ -45,13 +49,16 @@ export default function LoginPage() {
 
 
         if(
-            !email ||
+            !email.trim()
+            ||
             !password
         ){
+
 
             alert(
                 "Please enter email and password"
             );
+
 
             return;
 
@@ -60,15 +67,21 @@ export default function LoginPage() {
 
 
 
-        try{
+
+        try {
 
 
-            setSubmitting(true);
+            setSubmitting(
+                true
+            );
+
 
 
             const response =
                 await fetch(
+
                     `${API_URL}/api/users/login`,
+
                     {
 
                         method:"POST",
@@ -82,13 +95,15 @@ export default function LoginPage() {
 
                         body:JSON.stringify({
 
-                            email,
+                            email:
+                                email.trim(),
 
                             password
 
                         })
 
                     }
+
                 );
 
 
@@ -103,8 +118,11 @@ export default function LoginPage() {
 
 
                 throw new Error(
-                    message ||
+
+                    message
+                    ||
                     "Login failed"
+
                 );
 
 
@@ -114,10 +132,26 @@ export default function LoginPage() {
 
 
 
-
-            const user =
+            const data =
                 await response.json();
 
+
+
+            if(
+                !data?.user
+                ||
+                !data?.token
+            ){
+
+
+                throw new Error(
+
+                    "Invalid login response"
+
+                );
+
+
+            }
 
 
 
@@ -127,10 +161,21 @@ export default function LoginPage() {
 
                 "user",
 
-                JSON.stringify(user)
+                JSON.stringify(
+                    data.user
+                )
 
             );
 
+
+
+            localStorage.setItem(
+
+                "token",
+
+                data.token
+
+            );
 
 
 
@@ -142,34 +187,42 @@ export default function LoginPage() {
 
 
 
-
-
-
-            router.push("/");
-
-
-
-
-
-        }
-
-        catch(error){
-
-
-            console.log(error);
-
-
-            alert(
-                "Invalid email or password"
+            router.push(
+                "/"
             );
 
 
         }
+        catch(error){
 
+
+            console.log(
+                error
+            );
+
+
+            alert(
+
+                error instanceof Error
+
+                    ?
+
+                    error.message
+
+                    :
+
+                    "Invalid email or password"
+
+            );
+
+
+        }
         finally{
 
 
-            setSubmitting(false);
+            setSubmitting(
+                false
+            );
 
 
         }
@@ -182,7 +235,7 @@ export default function LoginPage() {
 
 
 
-    return(
+    return (
 
 
         <div className="
@@ -283,7 +336,9 @@ export default function LoginPage() {
 
                 <form
 
-                    onSubmit={handleLogin}
+                    onSubmit={
+                        handleLogin
+                    }
 
                     className="
                     space-y-5
@@ -314,25 +369,28 @@ export default function LoginPage() {
 
                         <input
 
-
                             type="email"
 
+                            placeholder="
+                            Enter your email
+                            "
 
-                            placeholder="Enter your email"
-
-
-                            value={email}
-
-
-                            onChange={(e)=>
-                                setEmail(
-                                    e.target.value
-                                )
+                            value={
+                                email
                             }
 
+                            onChange={
+                                (e)=>
+                                    setEmail(
+                                        e.target.value
+                                    )
+                            }
 
                             required
 
+                            disabled={
+                                submitting
+                            }
 
                             className="
                             mt-2
@@ -345,9 +403,8 @@ export default function LoginPage() {
                             outline-none
                             transition
                             focus:border-emerald-600
+                            disabled:opacity-60
                             "
-
-
 
                         />
 
@@ -381,29 +438,30 @@ export default function LoginPage() {
 
 
 
-
-
                         <input
-
 
                             type="password"
 
+                            placeholder="
+                            Enter your password
+                            "
 
-                            placeholder="Enter your password"
-
-
-                            value={password}
-
-
-                            onChange={(e)=>
-                                setPassword(
-                                    e.target.value
-                                )
+                            value={
+                                password
                             }
 
+                            onChange={
+                                (e)=>
+                                    setPassword(
+                                        e.target.value
+                                    )
+                            }
 
                             required
 
+                            disabled={
+                                submitting
+                            }
 
                             className="
                             mt-2
@@ -416,12 +474,10 @@ export default function LoginPage() {
                             outline-none
                             transition
                             focus:border-emerald-600
+                            disabled:opacity-60
                             "
 
-
-
                         />
-
 
 
 
@@ -437,17 +493,17 @@ export default function LoginPage() {
 
                     <button
 
-
                         type="submit"
 
-
-                        disabled={submitting}
-
+                        disabled={
+                            submitting
+                        }
 
                         className="
                         w-full
                         rounded-xl
                         bg-emerald-700
+                        px-5
                         py-3
                         font-semibold
                         text-white
@@ -457,25 +513,23 @@ export default function LoginPage() {
                         disabled:opacity-60
                         "
 
-
-
                     >
-
 
 
                         {
                             submitting
+
                                 ?
+
                                 "Logging in..."
+
                                 :
+
                                 "Login"
                         }
 
 
-
                     </button>
-
-
 
 
 
@@ -485,64 +539,14 @@ export default function LoginPage() {
 
 
 
-
-
-
-
-                <p className="
-                mt-6
-                text-center
-                text-sm
-                text-slate-600
-                ">
-
-
-
-                    Don't have an account?
-
-
-
-                    <a
-
-
-                        href="/signup"
-
-
-                        className="
-                        ml-2
-                        font-semibold
-                        text-emerald-700
-                        hover:underline
-                        "
-
-
-
-                    >
-
-
-                        Signup
-
-
-                    </a>
-
-
-
-                </p>
-
-
-
-
-
-
             </div>
-
 
 
 
         </div>
 
 
-
     );
+
 
 }

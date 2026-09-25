@@ -1,7 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import {
+    useEffect,
+    useState
+} from "react";
+
+import {
+    useRouter
+} from "next/navigation";
 
 
 export default function ProtectedRoute({
@@ -11,33 +17,157 @@ export default function ProtectedRoute({
 }) {
 
 
-    const router = useRouter();
+    const router =
+        useRouter();
+
+
+    const [checkingAuth,setCheckingAuth] =
+        useState(true);
+
+
+    const [authorized,setAuthorized] =
+        useState(false);
 
 
 
-    useEffect(() => {
 
-        const user = localStorage.getItem("user");
+    useEffect(()=>{
 
 
-        if(!user){
+        const savedUser =
+            localStorage.getItem("user");
 
-            router.push("/login");
+
+        if(!savedUser){
+
+
+            setAuthorized(false);
+
+            setCheckingAuth(false);
+
+            router.replace("/login");
+
+            return;
+
 
         }
 
 
-    }, [router]);
+        try{
+
+
+            const user =
+                JSON.parse(savedUser);
+
+
+            if(
+                !user
+                ||
+                typeof user !== "object"
+                ||
+                !user.id
+                ||
+                !user.email
+            ){
+
+
+                localStorage.removeItem("user");
+
+                setAuthorized(false);
+
+                setCheckingAuth(false);
+
+                router.replace("/login");
+
+                return;
+
+
+            }
+
+
+            setAuthorized(true);
+
+            setCheckingAuth(false);
+
+
+        }
+        catch(error){
+
+
+            console.log(
+                "Invalid saved user session:",
+                error
+            );
+
+
+            localStorage.removeItem("user");
+
+            setAuthorized(false);
+
+            setCheckingAuth(false);
+
+            router.replace("/login");
+
+
+        }
+
+
+    },[router]);
 
 
 
 
-    return (
+    if(checkingAuth){
+
+
+        return(
+
+
+            <div className="
+            min-h-[40vh]
+            flex
+            items-center
+            justify-center
+            text-slate-500
+            ">
+
+
+                Checking session...
+
+
+            </div>
+
+
+        );
+
+
+    }
+
+
+
+
+    if(!authorized){
+
+
+        return null;
+
+
+    }
+
+
+
+
+    return(
+
 
         <>
+
             {children}
+
         </>
 
+
     );
+
 
 }

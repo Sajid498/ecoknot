@@ -5,7 +5,8 @@ import Link from "next/link";
 
 
 import {
-    usePathname
+    usePathname,
+    useSearchParams
 } from "next/navigation";
 
 
@@ -24,6 +25,18 @@ export default function ReliefNavbar(){
 
 
 
+    const searchParams =
+
+        useSearchParams();
+
+
+
+    const nearbyMode =
+
+        searchParams.get("nearby") === "true";
+
+
+
 
 
 
@@ -39,7 +52,33 @@ export default function ReliefNavbar(){
         if(path === "/rescue"){
 
 
-            return pathname === "/rescue";
+            return (
+
+                pathname === "/rescue"
+
+                &&
+
+                !nearbyMode
+
+            );
+
+
+        }
+
+
+
+        if(path === "/rescue?nearby=true"){
+
+
+            return (
+
+                pathname === "/rescue"
+
+                &&
+
+                nearbyMode
+
+            );
 
 
         }
@@ -602,13 +641,13 @@ export default function ReliefNavbar(){
 
                 <Link
 
-                    href="/nearby-relief"
+                    href="/rescue?nearby=true"
 
                     className={
 
                         navClass(
 
-                            "/nearby-relief"
+                            "/rescue?nearby=true"
 
                         )
 
@@ -627,7 +666,7 @@ export default function ReliefNavbar(){
 
                         isActive(
 
-                            "/nearby-relief"
+                            "/rescue?nearby=true"
 
                         )
 

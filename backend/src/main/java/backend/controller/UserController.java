@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import backend.dto.AuthResponse;
 import backend.dto.DonorProfileDTO;
 import backend.entity.BloodGroup;
 import backend.entity.User;
 import backend.service.EligibilityService;
+import backend.service.JwtService;
 import backend.service.UserService;
 
 
@@ -38,6 +40,9 @@ public class UserController {
     private final EligibilityService eligibilityService;
 
 
+    private final JwtService jwtService;
+
+
 
 
 
@@ -48,7 +53,9 @@ public class UserController {
 
             UserService userService,
 
-            EligibilityService eligibilityService
+            EligibilityService eligibilityService,
+
+            JwtService jwtService
 
     ){
 
@@ -59,6 +66,10 @@ public class UserController {
 
         this.eligibilityService =
                 eligibilityService;
+
+
+        this.jwtService =
+                jwtService;
 
 
     }
@@ -103,18 +114,44 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public User login(
+    public AuthResponse login(
 
             @RequestBody User user
 
     ){
 
 
-        return userService.login(
+        User loggedInUser =
 
-                user.getEmail(),
+                userService.login(
 
-                user.getPassword()
+                        user.getEmail(),
+
+                        user.getPassword()
+
+                );
+
+
+
+
+
+        String token =
+
+                jwtService.generateToken(
+
+                        loggedInUser
+
+                );
+
+
+
+
+
+        return new AuthResponse(
+
+                loggedInUser,
+
+                token
 
         );
 

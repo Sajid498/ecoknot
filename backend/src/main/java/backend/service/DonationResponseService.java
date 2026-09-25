@@ -1013,14 +1013,15 @@ public class DonationResponseService {
 
             Long id,
 
-            DonationStatus status
+            DonationStatus status,
+
+            Long requesterId
 
     ){
 
 
 
         DonationResponse response =
-
 
                 donationResponseRepository
 
@@ -1040,11 +1041,61 @@ public class DonationResponseService {
 
 
 
+        BloodRequest request =
+
+                bloodRequestRepository
+
+                        .findById(
+
+                                response.getRequestId()
+
+                        )
+
+                        .orElseThrow(
+
+                                () -> new ResourceNotFoundException(
+
+                                        "Blood request not found"
+
+                                )
+
+                        );
 
 
 
 
-        // Prevent direct completion
+
+        // Only the blood request owner can accept/reject donors
+
+        if(
+
+                request.getUser() == null
+
+                ||
+
+                !request.getUser()
+
+                        .getId()
+
+                        .equals(requesterId)
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "Only the request owner can update donor status"
+
+            );
+
+
+        }
+
+
+
+
+
+        // COMPLETED must use the dedicated requester-confirmation endpoint
 
         if(
 
@@ -1066,6 +1117,113 @@ public class DonationResponseService {
 
 
 
+        // Accept/reject is only valid while this response is pending
+
+        if(
+
+                response.getStatus()
+
+                != DonationStatus.PENDING
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "Only pending donor responses can be accepted or rejected"
+
+            );
+
+
+        }
+
+
+
+
+
+        if(
+
+                status != DonationStatus.ACCEPTED
+
+                &&
+
+                status != DonationStatus.REJECTED
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "Only ACCEPTED or REJECTED status is allowed here"
+
+            );
+
+
+        }
+
+
+
+
+
+        if(
+
+                status == DonationStatus.ACCEPTED
+
+        ){
+
+
+            boolean alreadyAccepted =
+
+                    donationResponseRepository
+
+                            .findByRequestId(
+
+                                    response.getRequestId()
+
+                            )
+
+                            .stream()
+
+                            .anyMatch(
+
+                                    donor ->
+
+                                            !donor.getId()
+
+                                                    .equals(
+
+                                                            response.getId()
+
+                                                    )
+
+                                            &&
+
+                                            donor.getStatus()
+
+                                                    == DonationStatus.ACCEPTED
+
+                            );
+
+
+
+
+
+            if(alreadyAccepted){
+
+
+                throw new RuntimeException(
+
+                        "A donor is already accepted for this request"
+
+                );
+
+
+            }
+
+
+        }
+
+
 
 
 
@@ -1079,12 +1237,7 @@ public class DonationResponseService {
 
 
 
-
-
-
-
         DonationResponse savedResponse =
-
 
                 donationResponseRepository.save(
 
@@ -1096,16 +1249,11 @@ public class DonationResponseService {
 
 
 
-
-
-
-
         if(
 
                 status == DonationStatus.ACCEPTED
 
         ){
-
 
 
             bloodRequestService
@@ -1119,6 +1267,14 @@ public class DonationResponseService {
                     );
 
 
+
+
+
+            rejectOtherDonors(
+
+                    response
+
+            );
 
 
 
@@ -1137,18 +1293,10 @@ public class DonationResponseService {
 
 
 
-
-
-
         return savedResponse;
 
 
     }
-
-
-
-
-
 
 
 

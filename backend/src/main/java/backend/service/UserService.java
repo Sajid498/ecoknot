@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import backend.dto.DonorProfileDTO;
 import backend.entity.BloodGroup;
@@ -28,6 +29,9 @@ public class UserService {
     private final DonationResponseRepository donationResponseRepository;
 
 
+    private final PasswordEncoder passwordEncoder;
+
+
 
 
 
@@ -36,7 +40,9 @@ public class UserService {
 
             UserRepository userRepository,
 
-            DonationResponseRepository donationResponseRepository
+            DonationResponseRepository donationResponseRepository,
+
+            PasswordEncoder passwordEncoder
 
     ) {
 
@@ -47,6 +53,10 @@ public class UserService {
 
         this.donationResponseRepository =
                 donationResponseRepository;
+
+
+        this.passwordEncoder =
+                passwordEncoder;
 
 
     }
@@ -94,6 +104,57 @@ public class UserService {
         }
 
 
+
+
+
+        if(
+
+                user.getPassword() == null
+
+                ||
+
+                user.getPassword().trim().isEmpty()
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "Password is required"
+
+            );
+
+
+        }
+
+
+
+
+
+        /*
+         * Public signup must never be able
+         * to create an administrator account.
+         */
+
+        user.setRole(
+
+                "USER"
+
+        );
+
+
+
+
+
+        user.setPassword(
+
+                passwordEncoder.encode(
+
+                        user.getPassword()
+
+                )
+
+        );
 
 
 
@@ -159,11 +220,128 @@ public class UserService {
 
         if(
 
-                !user.getPassword()
+                password == null
 
-                        .equals(password)
+                ||
 
-        ) {
+                password.isBlank()
+
+        ){
+
+
+            throw new RuntimeException(
+
+                    "Invalid password"
+
+            );
+
+
+        }
+
+
+
+
+
+        String storedPassword =
+
+                user.getPassword();
+
+
+
+
+
+        boolean passwordMatches;
+
+
+
+
+
+        if(
+
+                isBcryptHash(
+
+                        storedPassword
+
+                )
+
+        ){
+
+
+            passwordMatches =
+
+                    passwordEncoder.matches(
+
+                            password,
+
+                            storedPassword
+
+                    );
+
+
+        }
+
+        else{
+
+
+            /*
+             * Backward compatibility:
+             * old EcoKnot users may still have
+             * plaintext passwords in the database.
+             *
+             * If the old password matches once,
+             * migrate it immediately to BCrypt.
+             */
+
+            passwordMatches =
+
+                    storedPassword != null
+
+                    &&
+
+                    storedPassword.equals(
+
+                            password
+
+                    );
+
+
+
+
+
+            if(passwordMatches){
+
+
+                user.setPassword(
+
+                        passwordEncoder.encode(
+
+                                password
+
+                        )
+
+                );
+
+
+
+
+
+                userRepository.save(
+
+                        user
+
+                );
+
+
+            }
+
+
+        }
+
+
+
+
+
+        if(!passwordMatches){
 
 
             throw new RuntimeException(
@@ -182,6 +360,56 @@ public class UserService {
 
 
         return user;
+
+
+    }
+
+
+
+
+
+
+
+    private boolean isBcryptHash(
+
+            String password
+
+    ){
+
+
+        if(password == null){
+
+
+            return false;
+
+
+        }
+
+
+
+
+
+        return password.startsWith(
+
+                "$2a$"
+
+        )
+
+        ||
+
+        password.startsWith(
+
+                "$2b$"
+
+        )
+
+        ||
+
+        password.startsWith(
+
+                "$2y$"
+
+        );
 
 
     }

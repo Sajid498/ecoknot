@@ -3,11 +3,17 @@
 
 import {
     useEffect,
+    useRef,
     useState
 } from "react";
 
 
 import Link from "next/link";
+
+
+import {
+    useSearchParams
+} from "next/navigation";
 
 
 import RescueCard from "@/components/RescueCard";
@@ -62,6 +68,18 @@ const API_URL =
 
 
 export default function ReliefHubPage(){
+
+
+
+    const searchParams =
+
+        useSearchParams();
+
+
+
+    const nearbyInitialized =
+
+        useRef(false);
 
 
 
@@ -148,6 +166,37 @@ export default function ReliefHubPage(){
 
 
     },[]);
+
+
+
+
+
+
+
+    useEffect(()=>{
+
+
+        if(
+
+            searchParams.get("nearby") === "true"
+
+            &&
+
+            !nearbyInitialized.current
+
+        ){
+
+
+            nearbyInitialized.current = true;
+
+
+            findNearbyRelief();
+
+
+        }
+
+
+    },[searchParams]);
 
 
 
