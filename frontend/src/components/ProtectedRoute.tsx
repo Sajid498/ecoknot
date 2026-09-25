@@ -35,17 +35,37 @@ export default function ProtectedRoute({
 
 
         const savedUser =
-            localStorage.getItem("user");
+            localStorage.getItem(
+                "user"
+            );
 
 
-        if(!savedUser){
+        const token =
+            localStorage.getItem(
+                "token"
+            );
 
 
-            setAuthorized(false);
+        if(
+            !savedUser
+            ||
+            !token
+        ){
 
-            setCheckingAuth(false);
 
-            router.replace("/login");
+            clearSession();
+
+            setAuthorized(
+                false
+            );
+
+            setCheckingAuth(
+                false
+            );
+
+            router.replace(
+                "/login"
+            );
 
             return;
 
@@ -57,7 +77,9 @@ export default function ProtectedRoute({
 
 
             const user =
-                JSON.parse(savedUser);
+                JSON.parse(
+                    savedUser
+                );
 
 
             if(
@@ -68,16 +90,26 @@ export default function ProtectedRoute({
                 !user.id
                 ||
                 !user.email
+                ||
+                isJwtExpired(
+                    token
+                )
             ){
 
 
-                localStorage.removeItem("user");
+                clearSession();
 
-                setAuthorized(false);
+                setAuthorized(
+                    false
+                );
 
-                setCheckingAuth(false);
+                setCheckingAuth(
+                    false
+                );
 
-                router.replace("/login");
+                router.replace(
+                    "/login"
+                );
 
                 return;
 
@@ -85,9 +117,13 @@ export default function ProtectedRoute({
             }
 
 
-            setAuthorized(true);
+            setAuthorized(
+                true
+            );
 
-            setCheckingAuth(false);
+            setCheckingAuth(
+                false
+            );
 
 
         }
@@ -95,18 +131,24 @@ export default function ProtectedRoute({
 
 
             console.log(
-                "Invalid saved user session:",
+                "Invalid saved session:",
                 error
             );
 
 
-            localStorage.removeItem("user");
+            clearSession();
 
-            setAuthorized(false);
+            setAuthorized(
+                false
+            );
 
-            setCheckingAuth(false);
+            setCheckingAuth(
+                false
+            );
 
-            router.replace("/login");
+            router.replace(
+                "/login"
+            );
 
 
         }
@@ -168,6 +210,126 @@ export default function ProtectedRoute({
 
 
     );
+
+
+}
+
+
+
+
+function clearSession(){
+
+
+    localStorage.removeItem(
+        "user"
+    );
+
+
+    localStorage.removeItem(
+        "token"
+    );
+
+
+    localStorage.removeItem(
+        "activeModule"
+    );
+
+
+}
+
+
+
+
+function isJwtExpired(
+    token:string
+){
+
+
+    try{
+
+
+        const parts =
+            token.split(
+                "."
+            );
+
+
+        if(parts.length !== 3){
+
+
+            return true;
+
+
+        }
+
+
+        const payload =
+            JSON.parse(
+
+                decodeURIComponent(
+
+                    atob(
+                        parts[1]
+                            .replace(
+                                /-/g,
+                                "+"
+                            )
+                            .replace(
+                                /_/g,
+                                "/"
+                            )
+                    )
+                    .split("")
+                    .map(
+                        char =>
+                            "%"
+                            +
+                            (
+                                "00"
+                                +
+                                char
+                                    .charCodeAt(0)
+                                    .toString(16)
+                            )
+                            .slice(-2)
+                    )
+                    .join("")
+
+                )
+
+            );
+
+
+        if(!payload.exp){
+
+
+            return true;
+
+
+        }
+
+
+        return (
+            payload.exp * 1000
+            <=
+            Date.now()
+        );
+
+
+    }
+    catch(error){
+
+
+        console.log(
+            "JWT validation error:",
+            error
+        );
+
+
+        return true;
+
+
+    }
 
 
 }

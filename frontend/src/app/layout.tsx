@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+
 import AppNavigation from "@/components/AppNavigation";
+
 import {
   Geist,
   Geist_Mono
@@ -13,6 +15,8 @@ import "leaflet/dist/leaflet.css";
 
 
 import ToastProvider from "@/components/ToastProvider";
+
+import ApiAuthBootstrap from "@/components/ApiAuthBootstrap";
 
 
 
@@ -84,11 +88,16 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
 
 
-   <ToastProvider />
+        <ApiAuthBootstrap />
 
-<AppNavigation />
 
-{children}
+        <ToastProvider />
+
+
+        <AppNavigation />
+
+
+        {children}
 
 
       </body>
