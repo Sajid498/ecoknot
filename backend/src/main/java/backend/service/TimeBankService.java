@@ -53,15 +53,21 @@ public class TimeBankService {
                 );
 
         if (title == null || title.trim().isEmpty()) {
-            throw new RuntimeException("Offer title is required");
+            throw new RuntimeException(
+                    "Offer title is required"
+            );
         }
 
         if (description == null || description.trim().isEmpty()) {
-            throw new RuntimeException("Offer description is required");
+            throw new RuntimeException(
+                    "Offer description is required"
+            );
         }
 
         if (skillCategory == null || skillCategory.trim().isEmpty()) {
-            throw new RuntimeException("Skill category is required");
+            throw new RuntimeException(
+                    "Skill category is required"
+            );
         }
 
         if (hours == null || hours <= 0) {
@@ -195,6 +201,8 @@ public class TimeBankService {
 
     // ==================================================
     // ACCEPT REQUEST
+    // Helper accepts another user's request
+    // Requester must have enough credits
     // ==================================================
     @Transactional
     public TimeRequest acceptRequest(
@@ -212,7 +220,7 @@ public class TimeBankService {
 
         if (!"OPEN".equals(request.getStatus())) {
             throw new RuntimeException(
-                    "Request already accepted"
+                    "Request is not available"
             );
         }
 
@@ -224,12 +232,24 @@ public class TimeBankService {
                         )
                 );
 
-        if (request.getRequester()
-                .getId()
-                .equals(helperId)) {
+        Long requesterId =
+                request.getRequester().getId();
 
+        if (requesterId.equals(helperId)) {
             throw new RuntimeException(
                     "You cannot accept your own request"
+            );
+        }
+
+        Integer requesterBalance =
+                getBalance(requesterId);
+
+        Integer requiredHours =
+                request.getRequiredHours();
+
+        if (requesterBalance < requiredHours) {
+            throw new RuntimeException(
+                    "Requester does not have enough time credits"
             );
         }
 
@@ -241,6 +261,15 @@ public class TimeBankService {
 
     // ==================================================
     // COMPLETE REQUEST
+    //
+    // One transaction represents a transfer:
+    //
+    // Helper:
+    // +hours
+    //
+    // Requester:
+    // -hours
+    //
     // ==================================================
     @Transactional
     public TimeTransaction completeRequest(
@@ -267,21 +296,48 @@ public class TimeBankService {
             );
         }
 
-        User helper = request.getHelper();
-        User requester = request.getRequester();
+        User helper =
+                request.getHelper();
 
-        request.setStatus("COMPLETED");
+        User requester =
+                request.getRequester();
 
-        timeRequestRepository.save(request);
+        Integer requiredHours =
+                request.getRequiredHours();
+
+        Integer requesterBalance =
+                getBalance(
+                        requester.getId()
+                );
+
+        // Recheck balance before completion
+        if (requesterBalance < requiredHours) {
+            throw new RuntimeException(
+                    "Requester does not have enough time credits to complete this transaction"
+            );
+        }
+
+        request.setStatus(
+                "COMPLETED"
+        );
+
+        timeRequestRepository.save(
+                request
+        );
 
         TimeTransaction transaction =
                 new TimeTransaction();
 
-        transaction.setProvider(helper);
-        transaction.setRequester(requester);
+        transaction.setProvider(
+                helper
+        );
+
+        transaction.setRequester(
+                requester
+        );
 
         transaction.setHours(
-                request.getRequiredHours()
+                requiredHours
         );
 
         transaction.setDescription(
@@ -290,7 +346,7 @@ public class TimeBankService {
         );
 
         transaction.setTransactionType(
-                "EARN"
+                "TRANSFER"
         );
 
         transaction.setCreatedAt(
@@ -303,7 +359,7 @@ public class TimeBankService {
 
     // ==================================================
     // GET TIME BANK HISTORY
-    // User can appear as helper or requester
+    // User may appear as provider or requester
     // ==================================================
     public List<TimeTransaction> getHistory(
             Long userId
@@ -324,8 +380,13 @@ public class TimeBankService {
 
     // ==================================================
     // GET BALANCE
-    // Current implementation = earned credits
-    // Spending logic will be added in next task
+    //
+    // Balance =
+    //
+    // total earned hours
+    // -
+    // total spent hours
+    //
     // ==================================================
     public Integer getBalance(
             Long userId
@@ -337,16 +398,32 @@ public class TimeBankService {
             );
         }
 
-        List<TimeTransaction> transactions =
+        List<TimeTransaction> earnedTransactions =
                 timeTransactionRepository
                         .findByProviderIdOrderByCreatedAtDesc(
                                 userId
                         );
 
-        return transactions.stream()
-                .mapToInt(
-                        TimeTransaction::getHours
-                )
-                .sum();
+        List<TimeTransaction> spentTransactions =
+                timeTransactionRepository
+                        .findByRequesterIdOrderByCreatedAtDesc(
+                                userId
+                        );
+
+        int earnedHours =
+                earnedTransactions.stream()
+                        .mapToInt(
+                                TimeTransaction::getHours
+                        )
+                        .sum();
+
+        int spentHours =
+                spentTransactions.stream()
+                        .mapToInt(
+                                TimeTransaction::getHours
+                        )
+                        .sum();
+
+        return earnedHours - spentHours;
     }
 }

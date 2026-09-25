@@ -1,15 +1,10 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 import Navbar from "@/components/Navbar";
 import ProtectedRoute from "@/components/ProtectedRoute";
-
-
-
-
 
 const API_URL =
 
@@ -17,207 +12,99 @@ const API_URL =
 
     "http://localhost:8080";
 
-
-
-
-
-
-
-
-
 type BloodRequest = {
 
-
     id:number;
-
 
     patientName:string;
 
-
     bloodGroup:string;
-
 
     hospital:string;
 
-
     location:string;
-
 
     contactNumber:string;
 
-
     requiredDate:string;
-
 
     unitsNeeded:number;
 
-
     urgency:string;
-
 
     description:string;
 
-
     status:string;
-
-
 
     donorId?:number;
 
-
     donorName?:string;
-
 
     donorBloodGroup?:string;
 
-
     donorLocation?:string;
-
 
     donationResponseId?:number;
 
-
 };
-
-
-
-
-
-
-
-
 
 type DonorProfile = {
 
-
     id:number;
-
 
     name:string;
 
-
     bloodGroup:string;
-
 
     location:string;
 
-
     availableForDonation:boolean;
-
 
     lastDonationDate:string;
 
-
     completedDonations:number;
-
 
     reliabilityScore:number;
 
-
     reliabilityLevel:string;
-
 
 };
 
-
-
-
-
-
-
-
-
-
-
-
 export default function RequestDetailsPage(){
-
-
 
     const params = useParams();
 
-
-
     const requestId =
 
-        String(params.id);
-
-
-
-
-
-
+        String(params.requestId);
 
     const [request,setRequest] =
 
         useState<BloodRequest | null>(null);
 
-
-
-
-
-
-
     const [donorProfile,setDonorProfile] =
 
         useState<DonorProfile | null>(null);
-
-
-
-
-
-
 
     const [loading,setLoading] =
 
         useState(true);
 
-
-
-
-
-
-
-
-
     useEffect(()=>{
-
 
         if(requestId){
 
-
             loadRequestDetails();
-
 
         }
 
-
     },[requestId]);
-
-
-
-
-
-
-
-
-
-
-
 
     async function loadRequestDetails(){
 
-
-
         try{
 
-
-
             setLoading(true);
-
-
-
-
 
             const response =
 
@@ -227,14 +114,7 @@ export default function RequestDetailsPage(){
 
                 );
 
-
-
-
-
-
-
             if(!response.ok){
-
 
                 throw new Error(
 
@@ -242,36 +122,15 @@ export default function RequestDetailsPage(){
 
                 );
 
-
             }
-
-
-
-
-
-
 
             const data =
 
                 await response.json();
 
-
-
-
-
-
-
             setRequest(data);
 
-
-
-
-
-
-
             if(data.donorId){
-
-
 
                 loadDonorProfile(
 
@@ -279,48 +138,23 @@ export default function RequestDetailsPage(){
 
                 );
 
-
             }
-
-
-
-
 
         }
 
         catch(error){
 
-
-
             console.log(error);
-
-
 
         }
 
         finally{
 
-
             setLoading(false);
-
 
         }
 
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     async function loadDonorProfile(
 
@@ -328,11 +162,7 @@ export default function RequestDetailsPage(){
 
     ){
 
-
-
         try{
-
-
 
             const response =
 
@@ -342,14 +172,7 @@ export default function RequestDetailsPage(){
 
                 );
 
-
-
-
-
-
-
             if(!response.ok){
-
 
                 throw new Error(
 
@@ -357,57 +180,23 @@ export default function RequestDetailsPage(){
 
                 );
 
-
             }
-
-
-
-
-
-
 
             const data =
 
                 await response.json();
 
-
-
-
-
-
-
             setDonorProfile(data);
-
-
-
-
 
         }
 
         catch(error){
 
-
-
             console.log(error);
-
-
 
         }
 
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
 
     function getStatusStyle(
 
@@ -415,82 +204,33 @@ export default function RequestDetailsPage(){
 
     ){
 
-
-
         if(status==="OPEN"){
-
-
 
             return "bg-green-100 text-green-700";
 
-
         }
-
-
-
-
-
 
         if(status==="DONOR_FOUND"){
 
-
-
             return "bg-blue-100 text-blue-700";
 
-
         }
-
-
-
-
-
-
 
         if(status==="FULFILLED"){
 
-
-
             return "bg-gray-100 text-gray-700";
 
-
         }
-
-
-
-
-
-
 
         if(status==="EXPIRED"){
 
-
-
             return "bg-red-100 text-red-700";
-
 
         }
 
-
-
-
-
-
         return "bg-gray-100 text-gray-700";
 
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     function showBloodGroup(
 
@@ -498,21 +238,11 @@ export default function RequestDetailsPage(){
 
     ){
 
-
-
         if(!value){
-
 
             return "N/A";
 
-
         }
-
-
-
-
-
-
 
         return value
 
@@ -532,37 +262,15 @@ export default function RequestDetailsPage(){
 
             );
 
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     function statusTimeline(){
 
-
-
         if(!request){
-
 
             return null;
 
-
         }
-
-
-
-
-
 
         return (
 
@@ -570,8 +278,6 @@ export default function RequestDetailsPage(){
             mt-6
             space-y-3
             ">
-
-
 
                 <p className="
 
@@ -584,11 +290,6 @@ export default function RequestDetailsPage(){
                     🟢 Request Created
 
                 </p>
-
-
-
-
-
 
                 {
 
@@ -622,12 +323,6 @@ export default function RequestDetailsPage(){
 
                 }
 
-
-
-
-
-
-
                 {
 
                 request.status === "FULFILLED"
@@ -655,12 +350,6 @@ export default function RequestDetailsPage(){
                 null
 
                 }
-
-
-
-
-
-
 
                 {
 
@@ -690,44 +379,22 @@ export default function RequestDetailsPage(){
 
                 }
 
-
-
-
-
             </div>
 
         );
 
-
     }
-    
-
-
 
     return(
 
-
-
     <ProtectedRoute>
-
 
         <main className="
         min-h-screen
         bg-slate-50
         ">
 
-
-
-
-
             <Navbar />
-
-
-
-
-
-
-
 
             <div className="
             mx-auto
@@ -735,14 +402,6 @@ export default function RequestDetailsPage(){
             px-6
             py-10
             ">
-
-
-
-
-
-
-
-
 
             {
 
@@ -759,7 +418,6 @@ export default function RequestDetailsPage(){
                 shadow
                 ">
 
-
                     <p className="
                     text-center
                     text-gray-500
@@ -769,37 +427,21 @@ export default function RequestDetailsPage(){
 
                     </p>
 
-
                 </div>
 
             )
 
             :
 
-
-
             request &&
 
-
-
             (
-
-
 
             <div className="
             space-y-6
             ">
 
-
-
-
-
-
-
-
-
                 {/* REQUEST HEADER */}
-
 
                 <div className="
                 rounded-3xl
@@ -807,10 +449,6 @@ export default function RequestDetailsPage(){
                 p-8
                 shadow
                 ">
-
-
-
-
 
                     <div className="
                     flex
@@ -820,12 +458,7 @@ export default function RequestDetailsPage(){
                     gap-4
                     ">
 
-
-
-
-
                         <div>
-
 
                             <h1 className="
                             text-3xl
@@ -836,10 +469,6 @@ export default function RequestDetailsPage(){
 
                             </h1>
 
-
-
-
-
                             <p className="
                             mt-2
                             text-gray-500
@@ -849,15 +478,7 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
                         </div>
-
-
-
-
-
-
-
 
                         <span
 
@@ -885,34 +506,11 @@ export default function RequestDetailsPage(){
 
                         </span>
 
-
-
-
-
                     </div>
-
-
-
-
-
 
                 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
                 {/* PATIENT INFORMATION */}
-
-
 
                 <div className="
                 rounded-3xl
@@ -920,9 +518,6 @@ export default function RequestDetailsPage(){
                 p-8
                 shadow
                 ">
-
-
-
 
                     <h2 className="
                     text-2xl
@@ -933,13 +528,6 @@ export default function RequestDetailsPage(){
 
                     </h2>
 
-
-
-
-
-
-
-
                     <div className="
                     mt-6
                     grid
@@ -947,18 +535,11 @@ export default function RequestDetailsPage(){
                     md:grid-cols-2
                     ">
 
-
-
-
-
-
-
                         <div className="
                         rounded-xl
                         bg-slate-50
                         p-5
                         ">
-
 
                             <p className="
                             text-sm
@@ -969,8 +550,6 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                             <p className="
                             mt-1
                             font-bold
@@ -980,24 +559,13 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                         </div>
-
-
-
-
-
-
-
-
 
                         <div className="
                         rounded-xl
                         bg-red-50
                         p-5
                         ">
-
 
                             <p className="
                             text-sm
@@ -1007,8 +575,6 @@ export default function RequestDetailsPage(){
                                 Blood Group
 
                             </p>
-
-
 
                             <p className="
                             mt-1
@@ -1030,26 +596,15 @@ export default function RequestDetailsPage(){
 
                                 }
 
-
                             </p>
 
-
-
                         </div>
-
-
-
-
-
-
-
 
                         <div className="
                         rounded-xl
                         bg-slate-50
                         p-5
                         ">
-
 
                             <p className="
                             text-sm
@@ -1060,8 +615,6 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                             <p className="
                             mt-1
                             font-bold
@@ -1071,24 +624,13 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                         </div>
-
-
-
-
-
-
-
-
 
                         <div className="
                         rounded-xl
                         bg-slate-50
                         p-5
                         ">
-
 
                             <p className="
                             text-sm
@@ -1099,8 +641,6 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                             <p className="
                             mt-1
                             font-bold
@@ -1110,24 +650,13 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                         </div>
-
-
-
-
-
-
-
-
 
                         <div className="
                         rounded-xl
                         bg-slate-50
                         p-5
                         ">
-
 
                             <p className="
                             text-sm
@@ -1138,8 +667,6 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                             <p className="
                             mt-1
                             font-bold
@@ -1149,24 +676,13 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                         </div>
-
-
-
-
-
-
-
-
 
                         <div className="
                         rounded-xl
                         bg-slate-50
                         p-5
                         ">
-
 
                             <p className="
                             text-sm
@@ -1177,8 +693,6 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                             <p className="
                             mt-1
                             font-bold
@@ -1188,24 +702,13 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                         </div>
-
-
-
-
-
-
-
-
 
                         <div className="
                         rounded-xl
                         bg-slate-50
                         p-5
                         ">
-
 
                             <p className="
                             text-sm
@@ -1216,8 +719,6 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                             <p className="
                             mt-1
                             font-bold
@@ -1227,24 +728,13 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                         </div>
-
-
-
-
-
-
-
-
 
                         <div className="
                         rounded-xl
                         bg-orange-50
                         p-5
                         ">
-
 
                             <p className="
                             text-sm
@@ -1254,8 +744,6 @@ export default function RequestDetailsPage(){
                                 Urgency
 
                             </p>
-
-
 
                             <p className="
                             mt-1
@@ -1267,36 +755,13 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                         </div>
-
-
-
-
 
                     </div>
 
-
-
-
-
                 </div>
 
-
-
-
-
-
-
-
-
-
-
-
                 {/* DESCRIPTION */}
-
-
 
                 <div className="
                 rounded-3xl
@@ -1304,8 +769,6 @@ export default function RequestDetailsPage(){
                 p-8
                 shadow
                 ">
-
-
 
                     <h2 className="
                     text-2xl
@@ -1315,10 +778,6 @@ export default function RequestDetailsPage(){
                         📝 Description
 
                     </h2>
-
-
-
-
 
                     <p className="
                     mt-4
@@ -1337,24 +796,9 @@ export default function RequestDetailsPage(){
 
                     </p>
 
-
-
                 </div>
 
-
-
-
-
-
-
-
-
-
-
-
                 {/* STATUS TIMELINE */}
-
-
 
                 <div className="
                 rounded-3xl
@@ -1362,9 +806,6 @@ export default function RequestDetailsPage(){
                 p-8
                 shadow
                 ">
-
-
-
 
                     <h2 className="
                     text-2xl
@@ -1375,32 +816,15 @@ export default function RequestDetailsPage(){
 
                     </h2>
 
-
-
-
-
                     {
 
                     statusTimeline()
 
                     }
 
-
-
-
-
                 </div>
-                
-
-
-
-
-
-
 
                 {/* ACCEPTED DONOR SECTION */}
-
-
 
                 {
 
@@ -1417,9 +841,6 @@ export default function RequestDetailsPage(){
                 shadow
                 ">
 
-
-
-
                     <h2 className="
                     text-2xl
                     font-bold
@@ -1429,12 +850,6 @@ export default function RequestDetailsPage(){
 
                     </h2>
 
-
-
-
-
-
-
                     <div className="
                     mt-6
                     grid
@@ -1442,19 +857,11 @@ export default function RequestDetailsPage(){
                     md:grid-cols-2
                     ">
 
-
-
-
-
-
-
-
                         <div className="
                         rounded-xl
                         bg-emerald-50
                         p-5
                         ">
-
 
                             <p className="
                             text-sm
@@ -1464,8 +871,6 @@ export default function RequestDetailsPage(){
                                 Donor Name
 
                             </p>
-
-
 
                             <p className="
                             mt-2
@@ -1483,24 +888,13 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                         </div>
-
-
-
-
-
-
-
-
 
                         <div className="
                         rounded-xl
                         bg-red-50
                         p-5
                         ">
-
 
                             <p className="
                             text-sm
@@ -1510,8 +904,6 @@ export default function RequestDetailsPage(){
                                 Blood Group
 
                             </p>
-
-
 
                             <p className="
                             mt-2
@@ -1535,24 +927,13 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                         </div>
-
-
-
-
-
-
-
-
 
                         <div className="
                         rounded-xl
                         bg-slate-50
                         p-5
                         ">
-
 
                             <p className="
                             text-sm
@@ -1562,8 +943,6 @@ export default function RequestDetailsPage(){
                                 Location
 
                             </p>
-
-
 
                             <p className="
                             mt-2
@@ -1580,23 +959,13 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                         </div>
-
-
-
-
-
-
-
 
                         <div className="
                         rounded-xl
                         bg-slate-50
                         p-5
                         ">
-
 
                             <p className="
                             text-sm
@@ -1606,8 +975,6 @@ export default function RequestDetailsPage(){
                                 Donation Response ID
 
                             </p>
-
-
 
                             <p className="
                             mt-2
@@ -1628,35 +995,17 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                         </div>
-
-
-
-
-
 
                     </div>
 
-
-
-
-
-
-
-
-
                     {/* RELIABILITY VIEW */}
-
-
 
                     {
 
                     donorProfile
 
                     &&
-
 
                     (
 
@@ -1669,10 +1018,6 @@ export default function RequestDetailsPage(){
                     p-6
                     ">
 
-
-
-
-
                         <h3 className="
                         text-xl
                         font-bold
@@ -1682,11 +1027,6 @@ export default function RequestDetailsPage(){
 
                         </h3>
 
-
-
-
-
-
                         <div className="
                         mt-5
                         grid
@@ -1694,17 +1034,11 @@ export default function RequestDetailsPage(){
                         md:grid-cols-3
                         ">
 
-
-
-
-
-
                             <div className="
                             rounded-xl
                             bg-white
                             p-4
                             ">
-
 
                                 <p className="
                                 text-sm
@@ -1714,8 +1048,6 @@ export default function RequestDetailsPage(){
                                     Completed Donations
 
                                 </p>
-
-
 
                                 <p className="
                                 mt-2
@@ -1732,23 +1064,13 @@ export default function RequestDetailsPage(){
 
                                 </p>
 
-
                             </div>
-
-
-
-
-
-
-
-
 
                             <div className="
                             rounded-xl
                             bg-white
                             p-4
                             ">
-
 
                                 <p className="
                                 text-sm
@@ -1758,8 +1080,6 @@ export default function RequestDetailsPage(){
                                     Reliability Score
 
                                 </p>
-
-
 
                                 <p className="
                                 mt-2
@@ -1778,23 +1098,13 @@ export default function RequestDetailsPage(){
 
                                 </p>
 
-
                             </div>
-
-
-
-
-
-
-
-
 
                             <div className="
                             rounded-xl
                             bg-white
                             p-4
                             ">
-
 
                                 <p className="
                                 text-sm
@@ -1805,14 +1115,11 @@ export default function RequestDetailsPage(){
 
                                 </p>
 
-
-
                                 <p className="
                                 mt-2
                                 font-bold
                                 text-emerald-700
                                 ">
-
 
                                     🏆
 
@@ -1822,28 +1129,11 @@ export default function RequestDetailsPage(){
 
                                     }
 
-
                                 </p>
-
 
                             </div>
 
-
-
-
-
-
-
-
                         </div>
-
-
-
-
-
-
-
-
 
                         <div className="
                         mt-5
@@ -1851,7 +1141,6 @@ export default function RequestDetailsPage(){
                         bg-white
                         p-4
                         ">
-
 
                             <p className="
                             text-sm
@@ -1862,13 +1151,10 @@ export default function RequestDetailsPage(){
 
                             </p>
 
-
-
                             <p className="
                             mt-2
                             font-bold
                             ">
-
 
                                 📅
 
@@ -1882,38 +1168,21 @@ export default function RequestDetailsPage(){
 
                                 }
 
-
                             </p>
-
 
                         </div>
 
-
-
-
-
-
                     </div>
-
 
                     )
 
                     }
 
-
-
-
-
                 </div>
-
 
                 )
 
-
-
                 :
-
-
 
                 (
 
@@ -1925,8 +1194,6 @@ export default function RequestDetailsPage(){
                 shadow
                 ">
 
-
-
                     <h2 className="
                     text-xl
                     font-bold
@@ -1935,10 +1202,6 @@ export default function RequestDetailsPage(){
                         🤍 Waiting for Donor
 
                     </h2>
-
-
-
-
 
                     <p className="
                     mt-2
@@ -1949,49 +1212,24 @@ export default function RequestDetailsPage(){
 
                     </p>
 
-
-
-
                 </div>
-
 
                 )
 
                 }
 
-
-
-
-
-
-
-
-
-
-
-
             </div>
-
-
 
             )
 
             }
 
-
-
             </div>
-
-
-
 
         </main>
 
-
     </ProtectedRoute>
 
-
     );
-
 
 }
