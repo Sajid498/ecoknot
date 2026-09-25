@@ -113,9 +113,50 @@ export default function Navbar() {
 
 
 
+        const token =
+
+            localStorage.getItem("token");
 
 
-        if(!savedUser){
+
+
+
+        if(
+
+            !savedUser
+
+            ||
+
+            !token
+
+        ){
+
+
+            localStorage.removeItem(
+
+                "user"
+
+            );
+
+
+
+            localStorage.removeItem(
+
+                "token"
+
+            );
+
+
+
+            localStorage.removeItem(
+
+                "activeModule"
+
+            );
+
+
+
+            setUser(null);
 
 
             return;
@@ -937,7 +978,28 @@ className={navClass(
 
 
 
-{/* PROFILE - NEW */}
+{/* RELIEF HUB */}
+
+
+<Link
+
+href="/rescue"
+
+onClick={closeProfileMenu}
+
+className={navClass(
+    "/rescue"
+)}
+
+>
+
+🌱 Relief Hub
+
+</Link>
+
+
+
+{/* PROFILE */}
 
 
 <Link
@@ -964,24 +1026,7 @@ className={navClass(
 
 
 
-{/* RELIEF HUB */}
 
-
-<Link
-
-href="/rescue"
-
-onClick={closeProfileMenu}
-
-className={navClass(
-    "/rescue"
-)}
-
->
-
-🌱 Relief Hub
-
-</Link>
 
 
 
