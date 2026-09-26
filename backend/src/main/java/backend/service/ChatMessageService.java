@@ -1,6 +1,5 @@
 package backend.service;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,15 +19,10 @@ public class ChatMessageService {
 
     public ChatMessageService(
             ChatMessageRepository chatMessageRepository
-    ){
-
+    ) {
         this.chatMessageRepository =
                 chatMessageRepository;
-
     }
-
-
-
 
 
     // =====================================
@@ -37,24 +31,16 @@ public class ChatMessageService {
 
     public ChatMessage sendMessage(
             ChatMessage message
-    ){
-
+    ) {
 
         message.setTimestamp(
                 LocalDateTime.now()
         );
 
-
         return chatMessageRepository.save(
                 message
         );
-
     }
-
-
-
-
-
 
 
     // =====================================
@@ -66,70 +52,28 @@ public class ChatMessageService {
             Long senderId,
             Long receiverId,
             Long requestId
-    ){
-
+    ) {
 
         return chatMessageRepository
-
-                .findByRequestIdAndSenderIdAndReceiverIdOrRequestIdAndReceiverIdAndSenderId(
-
+                .findConversation(
                         requestId,
                         senderId,
-                        receiverId,
-
-                        requestId,
-
-                        // Reverse direction:
-                        // receiver should be original sender
-                        senderId,
-
-                        // sender should be original receiver
                         receiverId
-
                 )
-
                 .stream()
-
-                .sorted(
-                        (
-                                first,
-                                second
-                        ) ->
-
-                                first.getTimestamp()
-                                        .compareTo(
-                                                second.getTimestamp()
-                                        )
-                )
-
                 .map(
                         message ->
-
                                 new ChatMessageDTO(
-
                                         message.getId(),
-
                                         message.getSenderId(),
-
                                         message.getReceiverId(),
-
                                         message.getRequestId(),
-
                                         message.getMessage(),
-
                                         message.getTimestamp()
-
                                 )
                 )
-
                 .toList();
-
     }
-
-
-
-
-
 
 
     // =====================================
@@ -138,17 +82,12 @@ public class ChatMessageService {
 
     public List<ChatMessage> getInbox(
             Long userId
-    ){
-
+    ) {
 
         return chatMessageRepository
-
                 .findByReceiverIdOrSenderId(
                         userId,
                         userId
                 );
-
     }
-
-
 }
