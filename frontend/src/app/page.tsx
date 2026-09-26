@@ -200,17 +200,12 @@ export default function Home() {
                   <>
 
 
-                    <Link href="/signup">
+                    <Link
+                      href="/login"
+                      className="rounded-xl bg-emerald-700 px-7 py-3.5 font-semibold text-white shadow-lg shadow-emerald-700/20 transition hover:-translate-y-0.5 hover:bg-emerald-800"
+                    >
 
-
-                      <button className="rounded-xl bg-emerald-700 px-7 py-3.5 font-semibold text-white shadow-lg shadow-emerald-700/20 transition hover:-translate-y-0.5 hover:bg-emerald-800">
-
-
-                        Join EcoKnot
-
-
-                      </button>
-
+                      Log In
 
                     </Link>
 
@@ -218,17 +213,25 @@ export default function Home() {
 
 
 
-                    <Link href="/rescue">
+                    <Link
+                      href="/signup"
+                      className="rounded-xl border border-emerald-700 bg-white px-7 py-3.5 font-semibold text-emerald-700 transition hover:-translate-y-0.5 hover:bg-emerald-50"
+                    >
+
+                      Sign Up
+
+                    </Link>
 
 
-                      <button className="rounded-xl border border-slate-300 bg-white px-7 py-3.5 font-semibold text-slate-800 transition hover:border-emerald-600 hover:text-emerald-700">
 
 
-                        Explore Community
 
+                    <Link
+                      href="/rescue"
+                      className="rounded-xl border border-slate-300 bg-white px-7 py-3.5 font-semibold text-slate-800 transition hover:border-emerald-600 hover:text-emerald-700"
+                    >
 
-                      </button>
-
+                      Explore Community
 
                     </Link>
 
@@ -536,6 +539,44 @@ export default function Home() {
 
 
                 </Link>
+
+
+
+                <Link href="/time-bank">
+
+
+                <div className="rounded-2xl border border-blue-100 bg-blue-50 p-5 transition hover:-translate-y-1 hover:shadow-lg">
+
+
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-xl">
+
+                    ⏳
+
+                  </div>
+
+
+                  <h3 className="font-bold text-slate-900">
+
+                    Time Bank
+
+                  </h3>
+
+
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+
+                    Exchange skills and volunteer hours using community time credits.
+
+                  </p>
+
+
+                </div>
+
+
+                </Link>
+
+
+
+
 
 
 

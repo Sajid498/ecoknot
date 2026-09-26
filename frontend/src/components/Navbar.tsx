@@ -674,6 +674,18 @@ export default function Navbar() {
 
 
     }
+    if(!user){
+
+
+        return null;
+
+
+    }
+
+
+
+
+
     return (
 
 <header
@@ -1365,70 +1377,6 @@ EcoKnot Member
 
 <Link
 
-href="/dashboard"
-
-onClick={closeProfileMenu}
-
-className="
-block
-rounded-xl
-px-4
-py-3
-text-sm
-font-medium
-text-slate-700
-hover:bg-emerald-50
-hover:text-emerald-700
-"
-
->
-
-📊 Dashboard
-
-</Link>
-
-
-
-
-
-
-
-
-
-<Link
-
-href="/profile"
-
-onClick={closeProfileMenu}
-
-className="
-block
-rounded-xl
-px-4
-py-3
-text-sm
-font-medium
-text-slate-700
-hover:bg-emerald-50
-hover:text-emerald-700
-"
-
->
-
-👤 Profile
-
-</Link>
-
-
-
-
-
-
-
-
-
-<Link
-
 href="/saved-resources"
 
 onClick={closeProfileMenu}
@@ -1448,106 +1396,6 @@ hover:text-emerald-700
 >
 
 ⭐ Saved Resources
-
-</Link>
-
-
-
-
-
-
-
-
-
-<Link
-
-href="/fundraising"
-
-onClick={closeProfileMenu}
-
-className="
-block
-rounded-xl
-px-4
-py-3
-text-sm
-font-medium
-text-slate-700
-hover:bg-emerald-50
-hover:text-emerald-700
-"
-
->
-
-📢 Campaigns
-
-</Link>
-
-
-
-
-
-
-
-
-
-<Link
-
-href="/notifications"
-
-onClick={closeProfileMenu}
-
-className="
-flex
-items-center
-justify-between
-rounded-xl
-px-4
-py-3
-text-sm
-font-medium
-text-slate-700
-hover:bg-emerald-50
-hover:text-emerald-700
-"
-
->
-
-
-<span>
-
-🔔 Notifications
-
-</span>
-
-
-
-{
-
-unreadCount > 0 &&
-
-
-<span
-
-className="
-rounded-full
-bg-red-100
-px-2
-py-0.5
-text-xs
-font-bold
-text-red-600
-"
-
->
-
-{unreadCount}
-
-</span>
-
-
-}
-
 
 </Link>
 
