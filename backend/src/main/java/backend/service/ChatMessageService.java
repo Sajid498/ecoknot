@@ -11,7 +11,6 @@ import backend.entity.ChatMessage;
 import backend.repository.ChatMessageRepository;
 
 
-
 @Service
 public class ChatMessageService {
 
@@ -23,7 +22,8 @@ public class ChatMessageService {
             ChatMessageRepository chatMessageRepository
     ){
 
-        this.chatMessageRepository = chatMessageRepository;
+        this.chatMessageRepository =
+                chatMessageRepository;
 
     }
 
@@ -31,18 +31,23 @@ public class ChatMessageService {
 
 
 
+    // =====================================
     // Send message
+    // =====================================
 
     public ChatMessage sendMessage(
             ChatMessage message
     ){
+
 
         message.setTimestamp(
                 LocalDateTime.now()
         );
 
 
-        return chatMessageRepository.save(message);
+        return chatMessageRepository.save(
+                message
+        );
 
     }
 
@@ -52,48 +57,74 @@ public class ChatMessageService {
 
 
 
+    // =====================================
     // Get conversation between two users
+    // for a specific request
+    // =====================================
 
-   public List<ChatMessageDTO> getConversation(
-        Long senderId,
-        Long receiverId,
-        Long requestId
-){
+    public List<ChatMessageDTO> getConversation(
+            Long senderId,
+            Long receiverId,
+            Long requestId
+    ){
 
 
-    return chatMessageRepository
-            .findByRequestIdAndSenderIdAndReceiverIdOrRequestIdAndReceiverIdAndSenderId(
-                    requestId,
-                    senderId,
-                    receiverId,
+        return chatMessageRepository
 
-                    requestId,
-                    receiverId,
-                    senderId
-            )
-            .stream()
-            .map(message ->
+                .findByRequestIdAndSenderIdAndReceiverIdOrRequestIdAndReceiverIdAndSenderId(
 
-                new ChatMessageDTO(
+                        requestId,
+                        senderId,
+                        receiverId,
 
-                    message.getId(),
+                        requestId,
 
-                    message.getSenderId(),
+                        // Reverse direction:
+                        // receiver should be original sender
+                        senderId,
 
-                    message.getReceiverId(),
-
-                    message.getRequestId(),
-
-                    message.getMessage(),
-
-                    message.getTimestamp()
+                        // sender should be original receiver
+                        receiverId
 
                 )
 
-            )
-            .toList();
+                .stream()
 
-}
+                .sorted(
+                        (
+                                first,
+                                second
+                        ) ->
+
+                                first.getTimestamp()
+                                        .compareTo(
+                                                second.getTimestamp()
+                                        )
+                )
+
+                .map(
+                        message ->
+
+                                new ChatMessageDTO(
+
+                                        message.getId(),
+
+                                        message.getSenderId(),
+
+                                        message.getReceiverId(),
+
+                                        message.getRequestId(),
+
+                                        message.getMessage(),
+
+                                        message.getTimestamp()
+
+                                )
+                )
+
+                .toList();
+
+    }
 
 
 
@@ -101,13 +132,17 @@ public class ChatMessageService {
 
 
 
+    // =====================================
     // Inbox messages
+    // =====================================
 
     public List<ChatMessage> getInbox(
             Long userId
     ){
 
+
         return chatMessageRepository
+
                 .findByReceiverIdOrSenderId(
                         userId,
                         userId

@@ -10,19 +10,16 @@ import backend.entity.Notification;
 import backend.entity.User;
 import backend.exception.ResourceNotFoundException;
 import backend.repository.NotificationRepository;
-
+import backend.repository.UserRepository;
 
 
 @Service
 public class NotificationService {
 
 
-
-
-
     private final NotificationRepository notificationRepository;
 
-
+    private final UserRepository userRepository;
 
 
 
@@ -30,16 +27,21 @@ public class NotificationService {
 
     public NotificationService(
 
-            NotificationRepository notificationRepository
+            NotificationRepository notificationRepository,
+
+            UserRepository userRepository
 
     ){
 
 
-        this.notificationRepository = notificationRepository;
+        this.notificationRepository =
+                notificationRepository;
 
+
+        this.userRepository =
+                userRepository;
 
     }
-
 
 
 
@@ -63,66 +65,38 @@ public class NotificationService {
     ){
 
 
-
-        Notification notification = new Notification();
-
-
+        Notification notification =
+                new Notification();
 
 
         notification.setUser(
-
                 user
-
         );
-
-
 
 
         notification.setMessage(
-
                 message
-
         );
-
-
 
 
         notification.setType(
-
                 type
-
         );
-
-
 
 
         notification.setCreatedAt(
-
                 LocalDateTime.now()
-
         );
-
-
 
 
         notification.setReadStatus(
-
                 false
-
         );
-
-
-
-
-
 
 
         return notificationRepository.save(
-
                 notification
-
         );
-
 
     }
 
@@ -133,13 +107,8 @@ public class NotificationService {
 
 
 
-
-
-
-
     // =====================================
-    // Backward compatible method
-    // Existing modules use Long userId
+    // Create notification using user ID
     // =====================================
 
     public Notification createNotification(
@@ -153,65 +122,41 @@ public class NotificationService {
     ){
 
 
+        User user =
 
-        Notification notification = new Notification();
+                userRepository
+
+                        .findById(
+                                userId
+                        )
+
+                        .orElseThrow(
+
+                                () ->
+
+                                        new ResourceNotFoundException(
+
+                                                "User not found with id: "
+                                                +
+                                                userId
+
+                                        )
+
+                        );
 
 
 
+        return createNotification(
 
+                user,
 
-        notification.setMessage(
-
-                message
-
-        );
-
-
-
-
-
-        notification.setType(
+                message,
 
                 type
 
         );
 
-
-
-
-
-        notification.setCreatedAt(
-
-                LocalDateTime.now()
-
-        );
-
-
-
-
-
-        notification.setReadStatus(
-
-                false
-
-        );
-
-
-
-
-
-        return notificationRepository.save(
-
-                notification
-
-        );
-
-
     }
-
-
-
-
 
 
 
@@ -231,21 +176,13 @@ public class NotificationService {
     ){
 
 
-
         return notificationRepository
 
                 .findByUserIdOrderByCreatedAtDesc(
-
                         userId
-
                 );
 
-
     }
-
-
-
-
 
 
 
@@ -265,21 +202,13 @@ public class NotificationService {
     ){
 
 
-
         return notificationRepository
 
                 .countByUserIdAndReadStatusFalse(
-
                         userId
-
                 );
 
-
     }
-
-
-
-
 
 
 
@@ -299,72 +228,45 @@ public class NotificationService {
     ){
 
 
-
         Notification notification =
 
                 notificationRepository
 
-                        .findById(id)
+                        .findById(
+                                id
+                        )
 
                         .orElseThrow(
 
                                 () ->
 
-                                new ResourceNotFoundException(
+                                        new ResourceNotFoundException(
 
-                                        "Notification not found with id: "
+                                                "Notification not found with id: "
+                                                +
+                                                id
 
-                                        + id
-
-                                )
+                                        )
 
                         );
 
 
 
-
-
-
-
-
         notification.setReadStatus(
-
                 true
-
         );
-
-
-
-
-
-
 
 
         notification.setReadAt(
-
                 LocalDateTime.now()
-
         );
-
-
-
-
-
-
 
 
         return notificationRepository.save(
-
                 notification
-
         );
 
-
-
     }
-
-
-
 
 
 }
