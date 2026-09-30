@@ -295,15 +295,15 @@ def login(user):
 
 def logout():
     go("/")
-
+    time.sleep(2)
     account_button = wait.until(
-        EC.element_to_be_clickable(
-            (
-                By.CSS_SELECTOR,
-                'button[aria-label="Open account menu"]',
-            )
+    EC.element_to_be_clickable(
+        (
+            By.XPATH,
+            "//button[contains(@aria-label,'account') or contains(@aria-label,'profile')]"
         )
     )
+)
 
     account_button.click()
     click_button("Logout")

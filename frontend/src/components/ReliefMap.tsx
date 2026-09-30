@@ -22,12 +22,6 @@ import {
 
 
 
-import "leaflet/dist/leaflet.css";
-
-
-
-
-
 
 interface Props{
 
@@ -162,16 +156,17 @@ export default function ReliefMap({
     return(
 
 
-        <div
-
-            className="
-                h-[450px]
-                w-full
-                rounded-3xl
-                overflow-hidden
-            "
-
-        >
+<div
+className="
+relative
+isolate
+z-0
+h-[450px]
+w-full
+rounded-3xl
+overflow-hidden
+"
+>
 
 
             <MapContainer
