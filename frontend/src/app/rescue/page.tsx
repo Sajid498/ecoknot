@@ -796,56 +796,60 @@ export default function ReliefHubPage(){
 
 
 
-return(
-
-
+return (
 
 <main className="
-min-h-screen
-bg-slate-50
-p-6
-md:p-10
+    min-h-screen
+    bg-slate-50
+    pt-8
 ">
-
-
-
-
-
 
 
 <div className="
-mx-auto
-max-w-6xl
+    max-w-7xl
+    mx-auto
+    px-6
+    py-10
 ">
 
 
 
+{/* HERO */}
 
+<section
 
+className="
+    rounded-3xl
+    bg-gradient-to-br
+    from-emerald-50
+    to-white
+    border
+    border-slate-200
+    p-8
+    md:p-12
+    flex
+    flex-col
+    md:flex-row
+    md:items-center
+    md:justify-between
+    gap-8
+"
 
-
-<div className="
-flex
-flex-col
-gap-5
-md:flex-row
-md:items-center
-md:justify-between
-">
-
-
-
+>
 
 
 <div>
 
 
+<h1
 
-<h1 className="
-text-3xl
+className="
+text-4xl
 font-bold
 text-slate-900
-">
+"
+
+>
 
 🌱 Relief Hub
 
@@ -853,12 +857,16 @@ text-slate-900
 
 
 
+<p
 
-
-<p className="
-mt-2
+className="
+mt-4
+max-w-xl
 text-slate-600
-">
+text-lg
+"
+
+>
 
 Connect surplus food and medicine with people who need them.
 
@@ -866,14 +874,16 @@ Connect surplus food and medicine with people who need them.
 
 
 
+<div
 
-</div>
+className="
+mt-6
+flex
+flex-wrap
+gap-3
+"
 
-
-
-
-
-
+>
 
 
 <Link
@@ -883,11 +893,12 @@ href="/rescue/create"
 className="
 rounded-xl
 bg-emerald-700
-px-5
+px-6
 py-3
 font-semibold
 text-white
 hover:bg-emerald-800
+transition
 "
 
 >
@@ -898,24 +909,11 @@ hover:bg-emerald-800
 
 
 
-
-
-</div>
-
-
-
-
-
-
-
-
-
 <button
 
 onClick={findNearbyRelief}
 
 className="
-mt-8
 rounded-xl
 bg-blue-600
 px-6
@@ -923,6 +921,7 @@ py-3
 font-semibold
 text-white
 hover:bg-blue-700
+transition
 "
 
 >
@@ -932,6 +931,37 @@ hover:bg-blue-700
 </button>
 
 
+</div>
+
+
+
+</div>
+
+
+
+<div
+
+className="
+hidden
+md:flex
+w-52
+h-52
+rounded-full
+bg-emerald-100
+items-center
+justify-center
+text-7xl
+"
+
+>
+
+🌱
+
+</div>
+
+
+
+</section>
 
 
 
@@ -939,22 +969,47 @@ hover:bg-blue-700
 
 
 
-<div className="
-mt-10
-">
+{/* MAP SECTION */}
 
-<h2 className="
-mb-4
+
+<section
+
+className="
+mt-12
+"
+
+>
+
+
+<h2
+
+className="
 text-2xl
 font-bold
-">
+text-slate-900
+mb-5
+"
 
-🗺️ Relief Locations
+>
+
+Relief Locations
 
 </h2>
 
 
 
+<div
+
+className="
+rounded-3xl
+overflow-hidden
+border
+border-slate-200
+shadow-sm
+bg-white
+"
+
+>
 
 
 <ReliefMap
@@ -964,26 +1019,31 @@ rescues={rescues}
 />
 
 
-
 </div>
 
 
 
+</section>
 
 
 
 
 
 
-<div className="
-mt-8
+
+{/* FILTERS */}
+
+
+<div
+
+className="
+mt-10
 flex
 flex-wrap
 gap-3
-">
+"
 
-
-
+>
 
 
 <button
@@ -1007,9 +1067,6 @@ All
 
 
 
-
-
-
 <button
 
 onClick={()=>setFilter("URGENT")}
@@ -1025,13 +1082,9 @@ text-white
 
 >
 
-🔥 Urgent
+Urgent
 
 </button>
-
-
-
-
 
 
 
@@ -1050,13 +1103,9 @@ text-white
 
 >
 
-🍱 Food
+Food
 
 </button>
-
-
-
-
 
 
 
@@ -1075,14 +1124,12 @@ text-white
 
 >
 
-💊 Medicine
+Medicine
 
 </button>
 
 
 
-
-
 </div>
 
 
@@ -1091,246 +1138,94 @@ text-white
 
 
 
+{/* EXISTING ERROR / LOADING / CARDS SECTION */}
 
-
-{
-
-error &&
-
-
-<div className="
-mt-8
-rounded-2xl
-bg-red-50
-p-8
-text-center
-">
-
-
-
-<div className="
-text-5xl
-">
-
-⚠️
-
-</div>
-
-
-
-
-<h2 className="
-mt-4
-text-xl
-font-bold
-text-red-700
-">
-
-Unable to load relief posts
-
-</h2>
-
-
-
-
-
-<p className="
-mt-2
-text-red-600
-">
-
-{error}
-
-</p>
-
-
-
-
-
-
-
-<button
-
-onClick={loadReliefPosts}
+<div
 
 className="
-mt-5
-rounded-xl
-bg-red-600
-px-5
-py-3
-font-semibold
-text-white
-hover:bg-red-700
+mt-10
+space-y-6
 "
 
 >
 
-Retry
-
-</button>
-
-
-
-</div>
-
-
-
-}
-
-
-
-
-
-
-
-
-
-<div className="
-mt-8
-space-y-6
-">
-
-
-
-
-
-
-
 {
-
 loading ?
-
-
-
-
 
 <>
 
+<LoadingCard/>
 
-<LoadingCard />
+<LoadingCard/>
 
-<LoadingCard />
-
-<LoadingCard />
-
+<LoadingCard/>
 
 </>
 
 
-
-
-
-
-
-
-
 :
-
-
 
 filteredReliefs.length===0 ?
 
 
+<div
 
-
-
-<div className="
-rounded-2xl
+className="
+rounded-3xl
 bg-white
-p-10
+border
+border-slate-200
+p-12
 text-center
-shadow
-">
+"
 
+>
 
-
-
-
-<div className="
-text-6xl
-">
+<div className="text-6xl">
 
 📦
 
 </div>
 
 
+<h2
 
-
-
-
-<h2 className="
+className="
 mt-5
 text-2xl
 font-bold
-text-slate-900
-">
+"
+
+>
 
 No Relief Available
 
 </h2>
 
 
+<p
 
-
-
-
-<p className="
+className="
 mt-2
 text-slate-600
-">
+"
+
+>
 
 There are currently no food or medicine support posts.
 
 </p>
 
 
-
-
-
-<Link
-
-href="/rescue/create"
-
-className="
-mt-5
-inline-block
-rounded-xl
-bg-emerald-700
-px-5
-py-3
-font-semibold
-text-white
-"
-
->
-
-+ Create Relief Post
-
-</Link>
-
-
-
-
-
-
 </div>
-
-
-
-
-
-
-
 
 
 :
 
 
+filteredReliefs.map(
 
-filteredReliefs.map((relief)=>(
-
+(relief)=>(
 
 <RescueCard
 
@@ -1340,36 +1235,24 @@ rescue={relief}
 
 />
 
+)
 
-))
-
-
+)
 
 }
 
 
 
-
-
-
-
 </div>
 
 
 
 
 
-
-
-
-
 </div>
-
 
 
 </main>
-
-
 
 );
 

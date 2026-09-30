@@ -9,10 +9,29 @@ import {
     useState
 } from "react";
 
+
 import {
     usePathname,
     useRouter
 } from "next/navigation";
+
+
+import {
+    Bell,
+    ChevronDown,
+    Clock,
+    Globe,
+    HandHeart,
+    HeartPulse,
+    LayoutDashboard,
+    Leaf,
+    LogOut,
+    Menu,
+    UserCircle,
+    X,
+    Bookmark
+} from "lucide-react";
+
 
 
 const API_URL =
@@ -21,7 +40,75 @@ const API_URL =
     "http://localhost:8080";
 
 
-export default function Navbar() {
+
+
+
+interface MenuItem {
+
+    name:string;
+
+    path:string;
+
+    icon:any;
+
+}
+
+
+
+
+
+const communityItems:MenuItem[] = [
+
+    {
+        name:"Blood Donation",
+        path:"/blood-donation",
+        icon:HeartPulse
+    },
+
+
+    {
+        name:"Relief Hub",
+        path:"/rescue",
+        icon:Leaf
+    },
+
+
+    {
+        name:"Resources",
+        path:"/resources",
+        icon:Globe
+    }
+
+];
+
+
+
+
+
+const supportItems:MenuItem[] = [
+
+    {
+        name:"Fundraising",
+        path:"/fundraising",
+        icon:HandHeart
+    },
+
+
+    {
+        name:"Time Bank",
+        path:"/time-bank",
+        icon:Clock
+    }
+
+];
+
+
+
+
+
+
+
+export default function Navbar(){
 
 
     const router =
@@ -32,33 +119,57 @@ export default function Navbar() {
         usePathname();
 
 
+
     const profileMenuRef =
-        useRef<HTMLDivElement | null>(null);
+        useRef<HTMLDivElement|null>(
+            null
+        );
+
 
 
     const [user,setUser] =
-        useState<any>(null);
+        useState<any>(
+            null
+        );
+
 
 
     const [unreadCount,setUnreadCount] =
-        useState(0);
-
-
-    const [showProfileMenu,setShowProfileMenu] =
-        useState(false);
-
-
-    const [showMobileMenu,setShowMobileMenu] =
-        useState(false);
+        useState(
+            0
+        );
 
 
 
+    const [communityOpen,setCommunityOpen] =
+        useState(
+            false
+        );
 
 
-    /*
-        Load authenticated user
-        and notification count
-    */
+
+    const [supportOpen,setSupportOpen] =
+        useState(
+            false
+        );
+
+
+
+    const [profileOpen,setProfileOpen] =
+        useState(
+            false
+        );
+
+
+
+    const [mobileOpen,setMobileOpen] =
+        useState(
+            false
+        );
+
+
+
+
 
     useEffect(()=>{
 
@@ -75,25 +186,23 @@ export default function Navbar() {
             );
 
 
+
         if(
             !savedUser
             ||
             !token
         ){
 
-
             clearSession();
-
 
             setUser(
                 null
             );
 
-
             return;
 
-
         }
+
 
 
         try{
@@ -105,25 +214,23 @@ export default function Navbar() {
                 );
 
 
+
             if(
                 !userData?.id
                 ||
                 !userData?.email
             ){
 
-
                 clearSession();
-
 
                 setUser(
                     null
                 );
 
-
                 return;
 
-
             }
+
 
 
             setUser(
@@ -136,48 +243,23 @@ export default function Navbar() {
             );
 
 
+
             const interval =
                 setInterval(()=>{
-
 
                     loadUnreadCount(
                         userData.id
                     );
 
-
                 },10000);
 
-
-            const refreshHandler = ()=>{
-
-
-                loadUnreadCount(
-                    userData.id
-                );
-
-
-            };
-
-
-            window.addEventListener(
-                "notificationUpdate",
-                refreshHandler
-            );
 
 
             return ()=>{
 
-
                 clearInterval(
                     interval
                 );
-
-
-                window.removeEventListener(
-                    "notificationUpdate",
-                    refreshHandler
-                );
-
 
             };
 
@@ -186,21 +268,14 @@ export default function Navbar() {
         catch(error){
 
 
-            console.log(
-                "Failed to load user:",
-                error
-            );
-
-
             clearSession();
-
 
             setUser(
                 null
             );
 
-
         }
+
 
 
     },[]);
@@ -209,19 +284,27 @@ export default function Navbar() {
 
 
 
-    /*
-        Close menus after route changes
-    */
+
 
     useEffect(()=>{
 
 
-        setShowProfileMenu(
+        setCommunityOpen(
             false
         );
 
 
-        setShowMobileMenu(
+        setSupportOpen(
+            false
+        );
+
+
+        setProfileOpen(
+            false
+        );
+
+
+        setMobileOpen(
             false
         );
 
@@ -232,10 +315,7 @@ export default function Navbar() {
 
 
 
-    /*
-        Close desktop profile dropdown
-        when clicking outside
-    */
+
 
     useEffect(()=>{
 
@@ -253,16 +333,15 @@ export default function Navbar() {
                 )
             ){
 
-
-                setShowProfileMenu(
+                setProfileOpen(
                     false
                 );
-
 
             }
 
 
         }
+
 
 
         document.addEventListener(
@@ -271,19 +350,19 @@ export default function Navbar() {
         );
 
 
-        return ()=>{
 
+        return ()=>{
 
             document.removeEventListener(
                 "mousedown",
                 handleOutsideClick
             );
 
-
         };
 
 
     },[]);
+
 
 
 
@@ -305,44 +384,43 @@ export default function Navbar() {
                 );
 
 
-            if(!response.ok){
-
+            if(
+                !response.ok
+            ){
 
                 return;
 
-
             }
+
 
 
             const data =
                 await response.json();
 
 
-            setUnreadCount(
 
+            setUnreadCount(
                 Number(
                     data.count
                 )
                 ||
                 0
-
             );
 
 
         }
         catch(error){
 
-
             console.log(
-                "Notification count error:",
+                "Notification error",
                 error
             );
 
-
         }
 
-
     }
+
+
 
 
 
@@ -364,16 +442,6 @@ export default function Navbar() {
         );
 
 
-        setShowProfileMenu(
-            false
-        );
-
-
-        setShowMobileMenu(
-            false
-        );
-
-
         router.push(
             "/login"
         );
@@ -385,23 +453,6 @@ export default function Navbar() {
 
 
 
-    function closeMenus(){
-
-
-        setShowProfileMenu(
-            false
-        );
-
-
-        setShowMobileMenu(
-            false
-        );
-
-
-    }
-
-
-
 
 
     function isActive(
@@ -409,11 +460,11 @@ export default function Navbar() {
     ){
 
 
-        if(path === "/"){
-
+        if(
+            path === "/"
+        ){
 
             return pathname === "/";
-
 
         }
 
@@ -422,6 +473,16 @@ export default function Navbar() {
             path
         );
 
+    }
+        function clearSession(){
+
+        localStorage.removeItem(
+            "user"
+        );
+
+        localStorage.removeItem(
+            "token"
+        );
 
     }
 
@@ -429,71 +490,100 @@ export default function Navbar() {
 
 
 
-    function navClass(
-        path:string
+    function renderDropdownItems(
+        items:MenuItem[]
     ){
 
+        return (
 
-        return `
-        whitespace-nowrap
-        rounded-lg
-        px-3
-        py-2
-        text-sm
-        font-medium
-        transition
+            <div
+                className="
+                    absolute
+                    top-12
+                    left-0
+                    w-64
+                    bg-white
+                    border
+                    border-slate-200
+                    rounded-2xl
+                    shadow-xl
+                    p-2
+                    z-50
+                "
+            >
 
-        ${
-            isActive(path)
+                {
+                    items.map(
+                        (item)=>{
 
-                ?
+                            const Icon =
+                                item.icon;
 
-                "bg-emerald-50 text-emerald-700"
 
-                :
+                            return (
 
-                "text-slate-600 hover:bg-slate-50 hover:text-emerald-700"
-        }
-        `;
+                                <Link
 
+                                    key={
+                                        item.path
+                                    }
+
+                                    href={
+                                        item.path
+                                    }
+
+                                    className={`
+                                        flex
+                                        items-center
+                                        gap-3
+                                        px-4
+                                        py-3
+                                        rounded-xl
+                                        transition
+
+                                        ${
+                                            isActive(item.path)
+                                            ?
+                                            "bg-green-50 text-green-700"
+                                            :
+                                            "text-slate-700 hover:bg-slate-50"
+                                        }
+                                    `}
+
+                                >
+
+                                    <Icon
+                                        size={18}
+                                    />
+
+                                    <span
+                                        className="
+                                            font-medium
+                                        "
+                                    >
+                                        {
+                                            item.name
+                                        }
+                                    </span>
+
+
+                                </Link>
+
+                            );
+
+
+                        }
+                    )
+                }
+
+
+            </div>
+
+        );
 
     }
 
 
-
-
-
-    function mobileNavClass(
-        path:string
-    ){
-
-
-        return `
-        flex
-        w-full
-        items-center
-        rounded-xl
-        px-4
-        py-3
-        text-sm
-        font-semibold
-        transition
-
-        ${
-            isActive(path)
-
-                ?
-
-                "bg-emerald-50 text-emerald-700"
-
-                :
-
-                "text-slate-700 hover:bg-slate-50 hover:text-emerald-700"
-        }
-        `;
-
-
-    }
 
 
 
@@ -501,9 +591,7 @@ export default function Navbar() {
 
     if(!user){
 
-
         return null;
-
 
     }
 
@@ -511,45 +599,36 @@ export default function Navbar() {
 
 
 
-    return(
+    return (
 
+       <nav
 
-        <header
+    className="
+        sticky
+        top-0
+        z-[100]
+        h-20
+        bg-white
+        backdrop-blur
+        border-b
+        border-slate-200
+    "
 
-            className="
-            sticky
-            top-0
-            z-50
-            border-b
-            border-slate-200
-            bg-white/95
-            shadow-sm
-            backdrop-blur-md
-            "
-
-        >
-
-
-
-
+>
 
             <div
 
                 className="
-                mx-auto
-                flex
-                max-w-7xl
-                items-center
-                justify-between
-                gap-4
-                px-4
-                py-3
-                sm:px-6
+                    max-w-7xl
+                    mx-auto
+                    px-6
+                    h-20
+                    flex
+                    items-center
+                    justify-between
                 "
 
             >
-
-
 
 
 
@@ -559,32 +638,27 @@ export default function Navbar() {
 
                     href="/"
 
-                    onClick={closeMenus}
-
                     className="
-                    flex
-                    shrink-0
-                    items-center
-                    gap-3
+                        flex
+                        items-center
+                        gap-2
                     "
 
                 >
 
-
                     <div
 
                         className="
-                        flex
-                        h-11
-                        w-11
-                        items-center
-                        justify-center
-                        rounded-2xl
-                        bg-emerald-700
-                        text-xl
-                        font-bold
-                        text-white
-                        shadow-sm
+                            w-10
+                            h-10
+                            rounded-xl
+                            bg-green-600
+                            text-white
+                            flex
+                            items-center
+                            justify-center
+                            font-bold
+                            text-xl
                         "
 
                     >
@@ -595,45 +669,19 @@ export default function Navbar() {
 
 
 
+                    <span
 
-
-                    <div>
-
-
-                        <h1
-
-                            className="
+                        className="
                             text-xl
                             font-bold
-                            leading-tight
                             text-slate-900
-                            "
+                        "
 
-                        >
+                    >
 
-                            EcoKnot
+                        EcoKnot
 
-                        </h1>
-
-
-
-                        <p
-
-                            className="
-                            hidden
-                            text-xs
-                            text-slate-500
-                            sm:block
-                            "
-
-                        >
-
-                            Community Connected
-
-                        </p>
-
-
-                    </div>
+                    </span>
 
 
                 </Link>
@@ -644,34 +692,40 @@ export default function Navbar() {
 
 
 
+                {/* DESKTOP MENU */}
 
-                {/* DESKTOP NAVIGATION */}
-
-                <nav
+                <div
 
                     className="
-                    hidden
-                    flex-1
-                    items-center
-                    justify-center
-                    gap-1
-                    lg:flex
+                        hidden
+                        lg:flex
+                        items-center
+                        gap-2
                     "
 
-                    aria-label="Main navigation"
-
                 >
+
 
 
                     <Link
 
                         href="/"
 
-                        onClick={closeMenus}
+                        className={`
+                            px-4
+                            py-2
+                            rounded-xl
+                            font-medium
 
-                        className={
-                            navClass("/")
-                        }
+                            ${
+                                isActive("/")
+                                ?
+                                "bg-green-50 text-green-700"
+                                :
+                                "text-slate-700 hover:bg-slate-50"
+                            }
+
+                        `}
 
                     >
 
@@ -683,67 +737,136 @@ export default function Navbar() {
 
 
 
-                    <Link
 
-                        href="/blood-donation"
 
-                        onClick={closeMenus}
+                    {/* COMMUNITY */}
 
-                        className={
-                            navClass(
-                                "/blood-donation"
-                            )
-                        }
+                    <div
+
+                        className="
+                            relative
+                        "
 
                     >
 
-                        🩸 Blood Donation
+                        <button
 
-                    </Link>
+                            onClick={()=>{
+
+                                setCommunityOpen(
+                                    !communityOpen
+                                );
+
+                                setSupportOpen(
+                                    false
+                                );
+
+                            }}
+
+                            className="
+                                flex
+                                items-center
+                                gap-2
+                                px-4
+                                py-2
+                                rounded-xl
+                                text-slate-700
+                                hover:bg-slate-50
+                                font-medium
+                            "
+
+                        >
+
+                            Community
+
+                            <ChevronDown
+                                size={16}
+                            />
+
+                        </button>
 
 
 
-
-
-                    <Link
-
-                        href="/resources"
-
-                        onClick={closeMenus}
-
-                        className={
-                            navClass(
-                                "/resources"
+                        {
+                            communityOpen
+                            &&
+                            renderDropdownItems(
+                                communityItems
                             )
                         }
 
+
+                    </div>
+
+
+
+
+
+
+
+
+                    {/* SUPPORT */}
+
+                    <div
+
+                        className="
+                            relative
+                        "
+
                     >
 
-                        🌎 Resources
+                        <button
 
-                    </Link>
+                            onClick={()=>{
+
+                                setSupportOpen(
+                                    !supportOpen
+                                );
+
+                                setCommunityOpen(
+                                    false
+                                );
+
+                            }}
+
+                            className="
+                                flex
+                                items-center
+                                gap-2
+                                px-4
+                                py-2
+                                rounded-xl
+                                text-slate-700
+                                hover:bg-slate-50
+                                font-medium
+                            "
+
+                        >
+
+                            Support
+
+                            <ChevronDown
+                                size={16}
+                            />
+
+                        </button>
 
 
 
 
-
-                    <Link
-
-                        href="/fundraising"
-
-                        onClick={closeMenus}
-
-                        className={
-                            navClass(
-                                "/fundraising"
+                        {
+                            supportOpen
+                            &&
+                            renderDropdownItems(
+                                supportItems
                             )
                         }
 
-                    >
 
-                        🤝 Campaigns
 
-                    </Link>
+                    </div>
+
+
 
 
 
@@ -753,74 +876,39 @@ export default function Navbar() {
 
                         href="/dashboard"
 
-                        onClick={closeMenus}
+                        className={`
+                            flex
+                            items-center
+                            gap-2
+                            px-4
+                            py-2
+                            rounded-xl
+                            font-medium
 
-                        className={
-                            navClass(
-                                "/dashboard"
-                            )
-                        }
+                            ${
+                                isActive("/dashboard")
+                                ?
+                                "bg-green-50 text-green-700"
+                                :
+                                "text-slate-700 hover:bg-slate-50"
+                            }
+
+                        `}
 
                     >
 
-                        📊 Dashboard
+                        <LayoutDashboard
+                            size={18}
+                        />
+
+                        Dashboard
+
 
                     </Link>
 
 
 
-
-
-                    <Link
-
-                        href="/time-bank"
-
-                        onClick={closeMenus}
-
-                        className={
-                            navClass(
-                                "/time-bank"
-                            )
-                        }
-
-                    >
-
-                        ⏳ Time Bank
-
-                    </Link>
-
-
-
-
-
-                    <Link
-
-                        href="/rescue"
-
-                        onClick={closeMenus}
-
-                        className={
-                            navClass(
-                                "/rescue"
-                            )
-                        }
-
-                    >
-
-                        🌱 Relief Hub
-
-                    </Link>
-
-
-
-
-
-                    {/* Profile is last */}
-
-                  
-
-
-                </nav>
+                </div>
 
 
 
@@ -834,104 +922,69 @@ export default function Navbar() {
                 <div
 
                     className="
-                    flex
-                    shrink-0
-                    items-center
-                    gap-2
+                        hidden
+                        lg:flex
+                        items-center
+                        gap-4
                     "
 
                 >
 
 
 
-
-
-                    {/* NOTIFICATIONS */}
-
                     <Link
 
                         href="/notifications"
 
-                        onClick={closeMenus}
-
                         className="
-                        relative
-                        flex
-                        h-10
-                        w-10
-                        items-center
-                        justify-center
-                        rounded-xl
-                        text-xl
-                        transition
-                        hover:bg-emerald-50
+                            relative
+                            w-10
+                            h-10
+                            rounded-xl
+                            hover:bg-slate-100
+                            flex
+                            items-center
+                            justify-center
                         "
-
-                        title="Notifications"
-
-                        aria-label={
-                            unreadCount > 0
-
-                                ?
-
-                                `${unreadCount} unread notifications`
-
-                                :
-
-                                "Notifications"
-                        }
 
                     >
 
-                        🔔
-
-
-
+                        <Bell
+                            size={20}
+                        />
 
 
                         {
-
                             unreadCount > 0
-
                             &&
+                            (
 
-                            <span
+                                <span
 
-                                className="
-                                absolute
-                                -right-1
-                                -top-1
-                                flex
-                                h-5
-                                min-w-5
-                                items-center
-                                justify-center
-                                rounded-full
-                                bg-red-600
-                                px-1
-                                text-xs
-                                font-bold
-                                text-white
-                                "
+                                    className="
+                                        absolute
+                                        -top-1
+                                        -right-1
+                                        bg-red-500
+                                        text-white
+                                        text-xs
+                                        rounded-full
+                                        w-5
+                                        h-5
+                                        flex
+                                        items-center
+                                        justify-center
+                                    "
 
-                            >
+                                >
 
-                                {
-
-                                    unreadCount > 9
-
-                                        ?
-
-                                        "9+"
-
-                                        :
-
+                                    {
                                         unreadCount
+                                    }
 
-                                }
+                                </span>
 
-                            </span>
-
+                            )
                         }
 
 
@@ -944,140 +997,67 @@ export default function Navbar() {
 
 
 
-                    {/* DESKTOP PROFILE MENU */}
+                    {/* PROFILE */}
 
                     <div
 
-                        ref={profileMenuRef}
+                        ref={
+                            profileMenuRef
+                        }
 
                         className="
-                        relative
-                        hidden
-                        lg:block
+                            relative
                         "
 
                     >
 
-
                         <button
-
-                            type="button"
 
                             onClick={()=>{
 
-
-                                setShowProfileMenu(
-
-                                    previous =>
-                                        !previous
-
+                                setProfileOpen(
+                                    !profileOpen
                                 );
-
 
                             }}
 
                             className="
-                            flex
-                            items-center
-                            gap-2
-                            rounded-xl
-                            px-2
-                            py-2
-                            transition
-                            hover:bg-slate-100
+                                flex
+                                items-center
+                                gap-2
+                                px-3
+                                py-2
+                                rounded-xl
+                                hover:bg-slate-50
                             "
-
-                            aria-label="Open account menu"
-
-                            aria-expanded={
-                                showProfileMenu
-                            }
 
                         >
 
+                            <UserCircle
+                                size={34}
+                                className="text-green-600"
+                            />
 
 
-
-
-                            <div
+                            <span
 
                                 className="
-                                flex
-                                h-9
-                                w-9
-                                items-center
-                                justify-center
-                                rounded-full
-                                bg-emerald-100
-                                font-bold
-                                text-emerald-700
+                                    font-medium
+                                    text-slate-800
                                 "
 
                             >
 
                                 {
-
-                                    user?.name
-                                        ?.charAt(0)
-                                        ?.toUpperCase()
-
-                                    ||
-
-                                    "U"
-
+                                    user.name
                                 }
-
-                            </div>
-
-
-
-
-
-                            <span
-
-                                className="
-                                max-w-28
-                                truncate
-                                text-sm
-                                font-semibold
-                                text-slate-700
-                                "
-
-                            >
-
-                                {user.name}
 
                             </span>
 
 
-
-
-
-                            <span
-
-                                className={`
-                                text-xs
-                                text-slate-500
-                                transition-transform
-
-                                ${
-                                    showProfileMenu
-
-                                        ?
-
-                                        "rotate-180"
-
-                                        :
-
-                                        ""
-                                }
-                                `}
-
-                            >
-
-                                ▼
-
-                            </span>
+                            <ChevronDown
+                                size={16}
+                            />
 
 
                         </button>
@@ -1087,246 +1067,183 @@ export default function Navbar() {
 
 
 
-
-
                         {
-
-                            showProfileMenu
-
+                            profileOpen
                             &&
-
-                            <div
-
-                                className="
-                                absolute
-                                right-0
-                                z-50
-                                mt-3
-                                w-64
-                                overflow-hidden
-                                rounded-2xl
-                                border
-                                border-slate-200
-                                bg-white
-                                p-2
-                                shadow-xl
-                                "
-
-                            >
-
-
-
-
+                            (
 
                                 <div
 
                                     className="
-                                    border-b
-                                    border-slate-100
-                                    px-4
-                                    py-3
+                                        absolute
+                                        right-0
+                                        top-14
+                                        w-64
+                                        bg-white
+                                        border
+                                        border-slate-200
+                                        rounded-2xl
+                                        shadow-xl
+                                        p-3
                                     "
 
                                 >
 
 
-                                    <p
+                                    <Link
+
+                                        href="/profile"
 
                                         className="
-                                        font-bold
-                                        text-slate-900
+                                            flex
+                                            items-center
+                                            gap-3
+                                            px-4
+                                            py-3
+                                            rounded-xl
+                                            hover:bg-slate-50
                                         "
 
                                     >
 
-                                        {user.name}
+                                        <UserCircle
+                                            size={18}
+                                        />
 
-                                    </p>
+                                        Profile
+
+
+                                    </Link>
 
 
 
-                                    <p
+
+
+                                    <Link
+
+                                        href="/saved-resources"
 
                                         className="
-                                        text-xs
-                                        text-slate-500
+                                            flex
+                                            items-center
+                                            gap-3
+                                            px-4
+                                            py-3
+                                            rounded-xl
+                                            hover:bg-slate-50
                                         "
 
                                     >
 
-                                        EcoKnot Member
+                                        <Bookmark
+                                            size={18}
+                                        />
 
-                                    </p>
+                                        Saved Resources
+
+
+                                    </Link>
+
+
+
+
+
+
+                                    <hr
+                                        className="
+                                            my-2
+                                        "
+                                    />
+
+
+
+
+
+                                    <button
+
+                                        onClick={
+                                            handleLogout
+                                        }
+
+                                        className="
+                                            w-full
+                                            flex
+                                            items-center
+                                            gap-3
+                                            px-4
+                                            py-3
+                                            rounded-xl
+                                            text-red-600
+                                            hover:bg-red-50
+                                        "
+
+                                    >
+
+                                        <LogOut
+                                            size={18}
+                                        />
+
+                                        Logout
+
+
+                                    </button>
+
 
 
                                 </div>
 
-
-
-
-
-                                <Link
-
-                                    href="/saved-resources"
-
-                                    onClick={closeMenus}
-
-                                    className="
-                                    block
-                                    rounded-xl
-                                    px-4
-                                    py-3
-                                    text-sm
-                                    font-medium
-                                    text-slate-700
-                                    hover:bg-emerald-50
-                                    hover:text-emerald-700
-                                    "
-
-                                >
-
-                                    ⭐ Saved Resources
-
-                                </Link>
-
-
-
-
-
-                                <div
-
-                                    className="
-                                    my-2
-                                    border-t
-                                    border-slate-100
-                                    "
-
-                                />
-
-
-
-
-
-                                <button
-
-                                    type="button"
-
-                                    onClick={handleLogout}
-
-                                    className="
-                                    w-full
-                                    rounded-xl
-                                    px-4
-                                    py-3
-                                    text-left
-                                    text-sm
-                                    font-semibold
-                                    text-red-600
-                                    hover:bg-red-50
-                                    "
-
-                                >
-
-                                    🚪 Logout
-
-                                </button>
-
-
-                            </div>
-
+                            )
                         }
 
 
                     </div>
 
 
+                </div>
 
 
 
 
 
 
-                    {/* MOBILE MENU BUTTON */}
-
-                    <button
-
-                        type="button"
-
-                        onClick={()=>{
 
 
-                            setShowMobileMenu(
+                {/* MOBILE BUTTON */}
 
-                                previous =>
-                                    !previous
+                <button
 
-                            );
+                    onClick={()=>{
 
+                        setMobileOpen(
+                            !mobileOpen
+                        );
 
-                            setShowProfileMenu(
-                                false
-                            );
+                    }}
 
-
-                        }}
-
-                        className="
-                        flex
-                        h-10
+                    className="
+                        lg:hidden
                         w-10
+                        h-10
+                        rounded-xl
+                        hover:bg-slate-100
+                        flex
                         items-center
                         justify-center
-                        rounded-xl
-                        border
-                        border-slate-200
-                        text-slate-700
-                        transition
-                        hover:bg-slate-50
-                        lg:hidden
-                        "
+                    "
 
-                        aria-label={
-                            showMobileMenu
+                >
 
-                                ?
-
-                                "Close navigation menu"
-
-                                :
-
-                                "Open navigation menu"
-                        }
-
-                        aria-expanded={
-                            showMobileMenu
-                        }
-
-                    >
+                    {
+                        mobileOpen
+                        ?
+                        <X/>
+                        :
+                        <Menu/>
+                    }
 
 
-                        {
+                </button>
 
-                            showMobileMenu
-
-                                ?
-
-                                <span className="text-xl">
-                                    ✕
-                                </span>
-
-                                :
-
-                                <span className="text-xl">
-                                    ☰
-                                </span>
-
-                        }
-
-
-                    </button>
-
-
-                </div>
 
 
             </div>
@@ -1338,128 +1255,132 @@ export default function Navbar() {
 
 
 
-            {/* MOBILE NAVIGATION */}
+
+            {/* MOBILE MENU */}
 
             {
-
-                showMobileMenu
-
+                mobileOpen
                 &&
+                (
 
-                <div
-
-                    className="
-                    border-t
-                    border-slate-200
-                    bg-white
-                    lg:hidden
-                    "
-
-                >
-
-
-                    <nav
+                    <div
 
                         className="
-                        mx-auto
-                        max-w-7xl
-                        space-y-1
-                        px-4
-                        py-4
-                        sm:px-6
+                            lg:hidden
+                            border-t
+                            border-slate-200
+                            bg-white
+                            px-6
+                            py-5
                         "
 
-                        aria-label="Mobile navigation"
-
                     >
-
-
-
 
 
                         <Link
 
                             href="/"
 
-                            onClick={closeMenus}
-
-                            className={
-                                mobileNavClass("/")
-                            }
+                            className="
+                                block
+                                py-3
+                                font-medium
+                            "
 
                         >
 
-                            🏠 Home
+                            Home
 
                         </Link>
 
 
 
+                        <p className="
+                            mt-3
+                            text-sm
+                            font-semibold
+                            text-slate-400
+                        ">
+
+                            Community
+
+                        </p>
 
 
-                        <Link
+                        {
+                            communityItems.map(
+                                item=>(
 
-                            href="/blood-donation"
+                                    <Link
 
-                            onClick={closeMenus}
+                                        key={
+                                            item.path
+                                        }
 
-                            className={
-                                mobileNavClass(
-                                    "/blood-donation"
+                                        href={
+                                            item.path
+                                        }
+
+                                        className="
+                                            block
+                                            py-3
+                                            text-slate-700
+                                        "
+
+                                    >
+
+                                        {item.name}
+
+                                    </Link>
+
                                 )
-                            }
-
-                        >
-
-                            🩸 Blood Donation
-
-                        </Link>
+                            )
+                        }
 
 
 
 
+                        <p className="
+                            mt-3
+                            text-sm
+                            font-semibold
+                            text-slate-400
+                        ">
 
-                        <Link
+                            Support
 
-                            href="/resources"
+                        </p>
 
-                            onClick={closeMenus}
 
-                            className={
-                                mobileNavClass(
-                                    "/resources"
+                        {
+                            supportItems.map(
+                                item=>(
+
+                                    <Link
+
+                                        key={
+                                            item.path
+                                        }
+
+                                        href={
+                                            item.path
+                                        }
+
+                                        className="
+                                            block
+                                            py-3
+                                            text-slate-700
+                                        "
+
+                                    >
+
+                                        {item.name}
+
+                                    </Link>
+
                                 )
-                            }
-
-                        >
-
-                            🌎 Resources
-
-                        </Link>
-
-
-
-
-
-                        <Link
-
-                            href="/fundraising"
-
-                            onClick={closeMenus}
-
-                            className={
-                                mobileNavClass(
-                                    "/fundraising"
-                                )
-                            }
-
-                        >
-
-                            🤝 Campaigns
-
-                        </Link>
-
-
+                            )
+                        }
 
 
 
@@ -1467,229 +1388,61 @@ export default function Navbar() {
 
                             href="/dashboard"
 
-                            onClick={closeMenus}
-
-                            className={
-                                mobileNavClass(
-                                    "/dashboard"
-                                )
-                            }
-
-                        >
-
-                            📊 Dashboard
-
-                        </Link>
-
-
-
-
-
-                        <Link
-
-                            href="/time-bank"
-
-                            onClick={closeMenus}
-
-                            className={
-                                mobileNavClass(
-                                    "/time-bank"
-                                )
-                            }
-
-                        >
-
-                            ⏳ Time Bank
-
-                        </Link>
-
-
-
-
-
-                        <Link
-
-                            href="/rescue"
-
-                            onClick={closeMenus}
-
-                            className={
-                                mobileNavClass(
-                                    "/rescue"
-                                )
-                            }
-
-                        >
-
-                            🌱 Relief Hub
-
-                        </Link>
-
-
-
-
-
-                        
-                    
-
-
-
-
-
-                        <div
-
                             className="
-                            my-3
-                            border-t
-                            border-slate-200
-                            "
-
-                        />
-
-
-
-
-
-                        <div
-
-                            className="
-                            px-4
-                            py-2
+                                block
+                                py-3
+                                font-medium
                             "
 
                         >
 
-
-                            <p
-
-                                className="
-                                text-sm
-                                font-bold
-                                text-slate-900
-                                "
-
-                            >
-
-                                {user.name}
-
-                            </p>
-
-
-
-                            <p
-
-                                className="
-                                text-xs
-                                text-slate-500
-                                "
-
-                            >
-
-                                EcoKnot Member
-
-                            </p>
-
-
-                        </div>
-
-
-
-
-
-                        <Link
-
-                            href="/saved-resources"
-
-                            onClick={closeMenus}
-
-                            className="
-                            flex
-                            w-full
-                            items-center
-                            rounded-xl
-                            px-4
-                            py-3
-                            text-sm
-                            font-semibold
-                            text-slate-700
-                            transition
-                            hover:bg-slate-50
-                            hover:text-emerald-700
-                            "
-
-                        >
-
-                            ⭐ Saved Resources
+                            Dashboard
 
                         </Link>
-
-
 
 
 
                         <button
 
-                            type="button"
-
-                            onClick={handleLogout}
+                            onClick={
+                                handleLogout
+                            }
 
                             className="
-                            flex
-                            w-full
-                            items-center
-                            rounded-xl
-                            px-4
-                            py-3
-                            text-left
-                            text-sm
-                            font-semibold
-                            text-red-600
-                            transition
-                            hover:bg-red-50
+                                mt-4
+                                w-full
+                                flex
+                                items-center
+                                justify-center
+                                gap-2
+                                py-3
+                                rounded-xl
+                                bg-red-50
+                                text-red-600
                             "
 
                         >
 
-                            🚪 Logout
+                            <LogOut
+                                size={18}
+                            />
+
+                            Logout
+
 
                         </button>
 
 
-                    </nav>
 
+                    </div>
 
-                </div>
-
+                )
             }
 
 
-        </header>
 
+        </nav>
 
-    );
-
-
-}
-
-
-
-
-
-function clearSession(){
-
-
-    localStorage.removeItem(
-        "user"
-    );
-
-
-    localStorage.removeItem(
-        "token"
-    );
-
-
-    localStorage.removeItem(
-        "activeModule"
     );
 
 
