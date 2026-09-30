@@ -11,7 +11,8 @@ import {
     MapContainer,
     TileLayer,
     Marker,
-    Popup
+    Popup,
+    useMap
 } from "react-leaflet";
 
 
@@ -21,6 +22,8 @@ import {
 
 
 
+import "leaflet/dist/leaflet.css";
+
 
 
 
@@ -28,9 +31,42 @@ import {
 
 interface Props{
 
+    rescues: RescueDonation[];
 
-    rescues:RescueDonation[];
+}
 
+
+
+
+
+
+
+
+function ResizeMap(){
+
+
+    const map = useMap();
+
+
+
+    useEffect(()=>{
+
+
+        setTimeout(()=>{
+
+
+            map.invalidateSize();
+
+
+        },300);
+
+
+
+    },[map]);
+
+
+
+    return null;
 
 }
 
@@ -65,67 +101,49 @@ export default function ReliefMap({
     useEffect(()=>{
 
 
-
         async function loadIcon(){
 
 
-            const leaflet =
-
-                await import("leaflet");
-
-
+            const leaflet = await import(
+                "leaflet"
+            );
 
 
 
             const icon =
-
                 new leaflet.Icon({
 
-
-
                     iconUrl:
-
                     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
 
 
-
-
                     iconRetinaUrl:
-
                     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
 
 
-
-
                     shadowUrl:
-
                     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 
 
+                    iconSize:[
+                        25,
+                        41
+                    ],
 
 
-                    iconSize:[25,41],
-
-
-
-
-                    iconAnchor:[12,41],
-
-
+                    iconAnchor:[
+                        12,
+                        41
+                    ]
 
                 });
-
-
 
 
 
             setMarkerIcon(icon);
 
 
-
         }
-
-
 
 
 
@@ -141,214 +159,204 @@ export default function ReliefMap({
 
 
 
-
-
-
-
-
     return(
 
 
+        <div
 
-<div className="
-h-[450px]
-w-full
-overflow-hidden
-rounded-3xl
-shadow-lg
-">
+            className="
+                h-[450px]
+                w-full
+                rounded-3xl
+                overflow-hidden
+            "
 
+        >
 
 
+            <MapContainer
 
 
+                center={[
+                    23.8103,
+                    90.4125
+                ]}
 
 
-<MapContainer
+                zoom={12}
 
 
-center={[
+                scrollWheelZoom={true}
 
-23.8103,
 
-90.4125
+                style={{
 
-]}
+                    height:"100%",
 
+                    width:"100%"
 
-zoom={12}
+                }}
 
 
-className="h-full w-full"
+            >
 
 
->
 
+                <ResizeMap />
 
 
 
+                <TileLayer
 
 
+                    attribution='&copy; OpenStreetMap contributors'
 
-<TileLayer
 
+                    url="
+                    https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+                    "
 
-url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
+                />
 
-/>
 
 
 
 
 
+                {
 
+                    markerIcon &&
 
+                    rescues.map(
+                        (rescue)=>(
 
 
-{
+                            rescue.latitude !== null &&
 
-markerIcon &&
+                            rescue.longitude !== null &&
 
-rescues.map((rescue)=>(
+                            <Marker
 
 
+                                key={
+                                    rescue.id
+                                }
 
-rescue.latitude !== null &&
 
-rescue.longitude !== null &&
+                                position={[
 
+                                    rescue.latitude,
 
+                                    rescue.longitude
 
+                                ]}
 
-<Marker
 
+                                icon={
+                                    markerIcon
+                                }
 
-key={rescue.id}
 
+                            >
 
-position={[
 
-rescue.latitude,
 
-rescue.longitude
+                                <Popup>
 
-]}
 
+                                    <div
 
-icon={markerIcon}
+                                        className="
+                                            space-y-2
+                                        "
 
+                                    >
 
->
 
 
+                                        <h2
 
+                                            className="
+                                                font-bold
+                                                text-lg
+                                            "
 
+                                        >
 
+                                            {
+                                                rescue.title
+                                            }
 
 
-<Popup>
+                                        </h2>
 
 
-<div className="space-y-2">
 
 
+                                        <p>
 
+                                            📦 Quantity:
 
+                                            {
+                                                rescue.quantity
+                                            }
 
-<h2 className="
-font-bold
-text-lg
-">
+                                        </p>
 
-{rescue.title}
 
-</h2>
 
+                                        <p>
 
+                                            📍 Location:
 
+                                            {
+                                                rescue.location
+                                            }
 
+                                        </p>
 
 
 
-<p>
+                                        <p>
 
-📦 Quantity:
+                                            🌱 Type:
 
-{rescue.quantity}
+                                            {
+                                                rescue.type
+                                            }
 
-</p>
+                                        </p>
 
 
 
 
+                                    </div>
 
 
 
-<p>
+                                </Popup>
 
-📍 Location:
 
-{rescue.location}
 
-</p>
+                            </Marker>
 
 
+                        )
 
+                    )
 
+                }
 
 
 
-<p>
 
-🌱 Type:
 
-{rescue.type}
+            </MapContainer>
 
-</p>
 
 
-
-
-
-
-
-</div>
-
-
-</Popup>
-
-
-
-
-
-
-
-</Marker>
-
-
-
-))
-
-
-}
-
-
-
-
-
-
-
-
-</MapContainer>
-
-
-
-
-
-
-</div>
-
+        </div>
 
 
     );
