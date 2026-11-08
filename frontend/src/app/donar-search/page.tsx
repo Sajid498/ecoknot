@@ -140,10 +140,7 @@ export default function DonorSearchPage(){
             if(data.length===0){
 
 
-                toast.info(
-                    "No donors found"
-                );
-
+            toast("No donors found");
 
             }
 
