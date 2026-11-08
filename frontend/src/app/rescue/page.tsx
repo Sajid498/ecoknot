@@ -1,1261 +1,715 @@
+
 "use client";
 
-
 import {
+    Suspense,
     useEffect,
     useRef,
     useState
 } from "react";
 
-
 import Link from "next/link";
-
 
 import {
     useSearchParams
 } from "next/navigation";
 
-
 import RescueCard from "@/components/RescueCard";
-
-
 import LoadingCard from "@/components/LoadingCard";
 
-
 import dynamic from "next/dynamic";
-
 
 import {
     RescueDonation
 } from "@/types/rescue";
 
-
-
-
-
-
-
-
 const ReliefMap = dynamic(
-
-    ()=>import("@/components/ReliefMap"),
-
+    () => import("@/components/ReliefMap"),
     {
-        ssr:false
+        ssr: false
     }
-
 );
 
-
-
-
-
-
-
-
 const API_URL =
-
     process.env.NEXT_PUBLIC_API_URL ||
-
     "http://localhost:8080";
 
 
+function ReliefHubContent() {
 
+    const searchParams = useSearchParams();
 
+    const nearbyInitialized = useRef(false);
 
-
-
-
-
-export default function ReliefHubPage(){
-
-
-
-    const searchParams =
-
-        useSearchParams();
-
-
-
-    const nearbyInitialized =
-
-        useRef(false);
-
-
-
-
-
-
-
-    const [rescues,setRescues] =
-
+    const [rescues, setRescues] =
         useState<RescueDonation[]>([]);
 
-
-
-
-
-
-
-    const [loading,setLoading] =
-
+    const [loading, setLoading] =
         useState(true);
 
-
-
-
-
-
-    const [error,setError] =
-
+    const [error, setError] =
         useState("");
 
-
-
-
-
-
-
-    const [filter,setFilter] =
-
+    const [filter, setFilter] =
         useState("ALL");
 
-
-
-
-
-
-
-    const [userLat,setUserLat] =
-
+    const [userLat, setUserLat] =
         useState<number | null>(null);
 
-
-
-
-
-
-    const [userLng,setUserLng] =
-
+    const [userLng, setUserLng] =
         useState<number | null>(null);
 
-
-
-
-
-
-
-    const [nearbyMode,setNearbyMode] =
-
+    const [nearbyMode, setNearbyMode] =
         useState(false);
 
 
-
-
-
-
-
-
-
-
-
-    useEffect(()=>{
-
-
+    useEffect(() => {
         loadReliefPosts();
+    }, []);
 
 
-    },[]);
+    useEffect(() => {
 
-
-
-
-
-
-
-    useEffect(()=>{
-
-
-        if(
-
+        if (
             searchParams.get("nearby") === "true"
-
             &&
-
             !nearbyInitialized.current
-
-        ){
-
+        ) {
 
             nearbyInitialized.current = true;
 
-
             findNearbyRelief();
-
-
         }
 
-
-    },[searchParams]);
-
+    }, [searchParams]);
 
 
+    async function loadReliefPosts() {
 
-
-
-
-
-
-
-
-
-    async function loadReliefPosts(){
-
-
-
-        try{
-
-
+        try {
 
             setLoading(true);
 
-
             setError("");
 
+            const response = await fetch(
+                `${API_URL}/api/rescues`
+            );
 
-
-
-
-
-
-            const response =
-
-                await fetch(
-
-                    `${API_URL}/api/rescues`
-
-                );
-
-
-
-
-
-
-
-
-            if(!response.ok){
-
-
+            if (!response.ok) {
 
                 throw new Error(
-
                     "Failed to load relief posts"
-
                 );
-
 
             }
 
-
-
-
-
-
-
-
-
-            const data =
-
-                await response.json();
-
-
-
-
-
-
+            const data = await response.json();
 
             setRescues(data);
 
-
-
-
-
-
         }
 
-        catch(error){
-
-
+        catch (error) {
 
             console.log(error);
 
-
-
-
             setError(
-
                 "Unable to load relief posts. Please try again."
-
             );
-
-
-
-
 
         }
 
-        finally{
-
-
+        finally {
 
             setLoading(false);
 
-
-
         }
 
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     function isUrgent(
+        relief: RescueDonation
+    ) {
 
-        relief:RescueDonation
+        const now = new Date().getTime();
 
-    ){
+        const expiry = new Date(
+            relief.expiryTime
+        ).getTime();
 
-
-
-        const now =
-
-            new Date().getTime();
-
-
-
-
-
-
-        const expiry =
-
-            new Date(
-
-                relief.expiryTime
-
-            ).getTime();
-
-
-
-
-
-
-
-        const remaining =
-
-            expiry-now;
-
-
-
-
-
-
+        const remaining = expiry - now;
 
         const oneDay =
-
             24 *
-
             60 *
-
             60 *
-
             1000;
 
-
-
-
-
-
-
-
-        return(
-
+        return (
             remaining > 0
-
             &&
-
             remaining <= oneDay
-
         );
-
-
 
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
     function calculateDistance(
-
-        lat1:number,
-
-        lng1:number,
-
-        lat2:number,
-
-        lng2:number
-
-    ){
-
-
+        lat1: number,
+        lng1: number,
+        lat2: number,
+        lng2: number
+    ) {
 
         const R = 6371;
 
-
-
         const dLat =
-
             (
-
-                (lat2-lat1)
-
+                (lat2 - lat1)
                 *
-
                 Math.PI
-
                 /
-
                 180
-
             );
-
-
-
-
 
         const dLng =
-
             (
-
-                (lng2-lng1)
-
+                (lng2 - lng1)
                 *
-
                 Math.PI
-
                 /
-
                 180
-
             );
-
-
-
-
-
 
         const a =
 
-
-            Math.sin(dLat/2)
-
+            Math.sin(dLat / 2)
             *
-
-            Math.sin(dLat/2)
+            Math.sin(dLat / 2)
 
             +
 
             Math.cos(
-
-                lat1*Math.PI/180
-
+                lat1 * Math.PI / 180
             )
 
             *
 
             Math.cos(
-
-                lat2*Math.PI/180
-
+                lat2 * Math.PI / 180
             )
 
             *
 
-            Math.sin(dLng/2)
-
+            Math.sin(dLng / 2)
             *
-
-            Math.sin(dLng/2);
-
-
-
-
-
+            Math.sin(dLng / 2);
 
         const c =
-
             2 *
-
             Math.atan2(
-
                 Math.sqrt(a),
-
-                Math.sqrt(1-a)
-
+                Math.sqrt(1 - a)
             );
 
-
-
-
-
         return Number(
-
-            (R*c).toFixed(2)
-
+            (R * c).toFixed(2)
         );
 
-
-
     }
-        function findNearbyRelief(){
 
 
+    function findNearbyRelief() {
 
-        if(!navigator.geolocation){
-
-
+        if (!navigator.geolocation) {
 
             alert(
                 "Location is not supported"
             );
 
-
             return;
-
 
         }
 
-
-
-
-
-
-
         navigator.geolocation.getCurrentPosition(
 
-
-            (position)=>{
-
+            (position) => {
 
                 const lat =
-
                     position.coords.latitude;
 
-
-
                 const lng =
-
                     position.coords.longitude;
-
-
-
-
 
                 setUserLat(lat);
 
-
                 setUserLng(lng);
-
 
                 setNearbyMode(true);
 
-
-
             },
 
-
-
-            ()=>{
-
+            () => {
 
                 alert(
-
                     "Please allow location access"
-
                 );
-
 
             }
 
-
-
         );
-
-
 
     }
 
 
-
-
-
-
-
-
-
-
-
-
     const filteredReliefs =
-
 
         rescues
 
-        .map((relief)=>{
+        .map((relief) => {
 
-
-
-
-
-            if(
-
+            if (
                 nearbyMode
-
                 &&
-
-                userLat
-
+                userLat !== null
                 &&
-
-                userLng
-
+                userLng !== null
                 &&
-
                 relief.latitude
-
                 &&
-
                 relief.longitude
+            ) {
 
-            ){
-
-
-
-                return{
-
+                return {
 
                     ...relief,
 
-
                     distance:
-
-                    calculateDistance(
-
-                        userLat,
-
-                        userLng,
-
-                        relief.latitude,
-
-                        relief.longitude
-
-                    )
-
-
+                        calculateDistance(
+                            userLat,
+                            userLng,
+                            relief.latitude,
+                            relief.longitude
+                        )
 
                 };
 
-
             }
-
-
-
-
-
 
             return relief;
 
-
-
         })
 
-        .filter((relief)=>{
+        .filter((relief) => {
 
-
-
-            if(filter==="URGENT"){
-
+            if (filter === "URGENT") {
 
                 return isUrgent(relief);
 
+            }
+
+            if (filter === "FOOD") {
+
+                return relief.type === "FOOD";
 
             }
 
+            if (filter === "MEDICINE") {
 
-
-
-
-            if(filter==="FOOD"){
-
-
-                return relief.type==="FOOD";
-
+                return relief.type === "MEDICINE";
 
             }
-
-
-
-
-
-
-            if(filter==="MEDICINE"){
-
-
-                return relief.type==="MEDICINE";
-
-
-            }
-
-
-
-
 
             return true;
 
-
-
         })
 
-        .sort((a,b)=>{
+        .sort((a, b) => {
 
-
-
-            if(
-
+            if (
                 nearbyMode
-
                 &&
-
-                a.distance
-
+                a.distance != null
                 &&
-
-                b.distance
-
-            ){
-
-
+                b.distance != null
+            ) {
 
                 return (
-
-                    a.distance
-
-                    -
-
+                    a.distance -
                     b.distance
-
                 );
-
 
             }
 
-
-
             return 0;
-
-
 
         });
 
 
+    return (
+
+        <main className="
+            min-h-screen
+            bg-slate-50
+            pt-8
+        ">
+
+            <div className="
+                max-w-7xl
+                mx-auto
+                px-6
+                py-10
+            ">
+
+                {/* HERO */}
+
+                <section className="
+                    rounded-3xl
+                    bg-gradient-to-br
+                    from-emerald-50
+                    to-white
+                    border
+                    border-slate-200
+                    p-8
+                    md:p-12
+                    flex
+                    flex-col
+                    md:flex-row
+                    md:items-center
+                    md:justify-between
+                    gap-8
+                ">
+
+                    <div>
+
+                        <h1 className="
+                            text-4xl
+                            font-bold
+                            text-slate-900
+                        ">
+
+                            🌱 Relief Hub
+
+                        </h1>
+
+                        <p className="
+                            mt-4
+                            max-w-xl
+                            text-slate-600
+                            text-lg
+                        ">
+
+                            Connect surplus food and medicine with people who need them.
+
+                        </p>
+
+                        <div className="
+                            mt-6
+                            flex
+                            flex-wrap
+                            gap-3
+                        ">
+
+                            <Link
+                                href="/rescue/create"
+                                className="
+                                    rounded-xl
+                                    bg-emerald-700
+                                    px-6
+                                    py-3
+                                    font-semibold
+                                    text-white
+                                    hover:bg-emerald-800
+                                    transition
+                                "
+                            >
+
+                                + Create Relief Post
+
+                            </Link>
+
+                            <button
+                                onClick={findNearbyRelief}
+                                className="
+                                    rounded-xl
+                                    bg-blue-600
+                                    px-6
+                                    py-3
+                                    font-semibold
+                                    text-white
+                                    hover:bg-blue-700
+                                    transition
+                                "
+                            >
+
+                                📍 Find Nearby Relief
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div className="
+                        hidden
+                        md:flex
+                        w-52
+                        h-52
+                        rounded-full
+                        bg-emerald-100
+                        items-center
+                        justify-center
+                        text-7xl
+                    ">
+
+                        🌱
+
+                    </div>
+
+                </section>
+
+
+                {/* MAP SECTION */}
+
+                <section className="mt-12">
+
+                    <h2 className="
+                        text-2xl
+                        font-bold
+                        text-slate-900
+                        mb-5
+                    ">
+
+                        Relief Locations
 
+                    </h2>
+
+                    <div className="
+                        rounded-3xl
+                        overflow-hidden
+                        border
+                        border-slate-200
+                        shadow-sm
+                        bg-white
+                    ">
+
+                        <ReliefMap
+                            rescues={rescues}
+                        />
+
+                    </div>
 
+                </section>
 
 
+                {/* FILTERS */}
 
+                <div className="
+                    mt-10
+                    flex
+                    flex-wrap
+                    gap-3
+                ">
 
+                    <button
+                        onClick={() => setFilter("ALL")}
+                        className="
+                            rounded-full
+                            bg-emerald-700
+                            px-5
+                            py-2
+                            font-semibold
+                            text-white
+                        "
+                    >
 
+                        All
 
+                    </button>
 
-return (
+                    <button
+                        onClick={() => setFilter("URGENT")}
+                        className="
+                            rounded-full
+                            bg-red-600
+                            px-5
+                            py-2
+                            font-semibold
+                            text-white
+                        "
+                    >
 
-<main className="
-    min-h-screen
-    bg-slate-50
-    pt-8
-">
+                        Urgent
 
+                    </button>
 
-<div className="
-    max-w-7xl
-    mx-auto
-    px-6
-    py-10
-">
+                    <button
+                        onClick={() => setFilter("FOOD")}
+                        className="
+                            rounded-full
+                            bg-orange-600
+                            px-5
+                            py-2
+                            font-semibold
+                            text-white
+                        "
+                    >
 
+                        Food
 
+                    </button>
 
-{/* HERO */}
+                    <button
+                        onClick={() => setFilter("MEDICINE")}
+                        className="
+                            rounded-full
+                            bg-blue-600
+                            px-5
+                            py-2
+                            font-semibold
+                            text-white
+                        "
+                    >
 
-<section
+                        Medicine
 
-className="
-    rounded-3xl
-    bg-gradient-to-br
-    from-emerald-50
-    to-white
-    border
-    border-slate-200
-    p-8
-    md:p-12
-    flex
-    flex-col
-    md:flex-row
-    md:items-center
-    md:justify-between
-    gap-8
-"
+                    </button>
 
->
+                </div>
 
 
-<div>
+                {/* ERROR / LOADING / CARDS SECTION */}
 
+                <div className="
+                    mt-10
+                    space-y-6
+                ">
 
-<h1
+                    {error && (
 
-className="
-text-4xl
-font-bold
-text-slate-900
-"
+                        <div className="
+                            rounded-xl
+                            border
+                            border-red-200
+                            bg-red-50
+                            p-4
+                            text-red-700
+                        ">
 
->
+                            {error}
 
-🌱 Relief Hub
+                        </div>
 
-</h1>
+                    )}
 
+                    {loading ? (
 
+                        <>
 
-<p
+                            <LoadingCard />
 
-className="
-mt-4
-max-w-xl
-text-slate-600
-text-lg
-"
+                            <LoadingCard />
 
->
+                            <LoadingCard />
 
-Connect surplus food and medicine with people who need them.
+                        </>
 
-</p>
+                    ) : filteredReliefs.length === 0 ? (
 
+                        <div className="
+                            rounded-3xl
+                            bg-white
+                            border
+                            border-slate-200
+                            p-12
+                            text-center
+                        ">
 
+                            <div className="text-6xl">
 
-<div
+                                📦
 
-className="
-mt-6
-flex
-flex-wrap
-gap-3
-"
+                            </div>
 
->
+                            <h2 className="
+                                mt-5
+                                text-2xl
+                                font-bold
+                            ">
 
+                                No Relief Available
 
-<Link
+                            </h2>
 
-href="/rescue/create"
+                            <p className="
+                                mt-2
+                                text-slate-600
+                            ">
 
-className="
-rounded-xl
-bg-emerald-700
-px-6
-py-3
-font-semibold
-text-white
-hover:bg-emerald-800
-transition
-"
+                                There are currently no food or medicine support posts.
 
->
+                            </p>
 
-+ Create Relief Post
+                        </div>
 
-</Link>
+                    ) : (
 
+                        filteredReliefs.map(
+                            (relief) => (
 
+                                <RescueCard
+                                    key={relief.id}
+                                    rescue={relief}
+                                />
 
-<button
+                            )
+                        )
 
-onClick={findNearbyRelief}
+                    )}
 
-className="
-rounded-xl
-bg-blue-600
-px-6
-py-3
-font-semibold
-text-white
-hover:bg-blue-700
-transition
-"
+                </div>
 
->
+            </div>
 
-📍 Find Nearby Relief
+        </main>
 
-</button>
-
-
-</div>
-
-
-
-</div>
-
-
-
-<div
-
-className="
-hidden
-md:flex
-w-52
-h-52
-rounded-full
-bg-emerald-100
-items-center
-justify-center
-text-7xl
-"
-
->
-
-🌱
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-{/* MAP SECTION */}
-
-
-<section
-
-className="
-mt-12
-"
-
->
-
-
-<h2
-
-className="
-text-2xl
-font-bold
-text-slate-900
-mb-5
-"
-
->
-
-Relief Locations
-
-</h2>
-
-
-
-<div
-
-className="
-rounded-3xl
-overflow-hidden
-border
-border-slate-200
-shadow-sm
-bg-white
-"
-
->
-
-
-<ReliefMap
-
-rescues={rescues}
-
-/>
-
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-{/* FILTERS */}
-
-
-<div
-
-className="
-mt-10
-flex
-flex-wrap
-gap-3
-"
-
->
-
-
-<button
-
-onClick={()=>setFilter("ALL")}
-
-className="
-rounded-full
-bg-emerald-700
-px-5
-py-2
-font-semibold
-text-white
-"
-
->
-
-All
-
-</button>
-
-
-
-<button
-
-onClick={()=>setFilter("URGENT")}
-
-className="
-rounded-full
-bg-red-600
-px-5
-py-2
-font-semibold
-text-white
-"
-
->
-
-Urgent
-
-</button>
-
-
-
-<button
-
-onClick={()=>setFilter("FOOD")}
-
-className="
-rounded-full
-bg-orange-600
-px-5
-py-2
-font-semibold
-text-white
-"
-
->
-
-Food
-
-</button>
-
-
-
-<button
-
-onClick={()=>setFilter("MEDICINE")}
-
-className="
-rounded-full
-bg-blue-600
-px-5
-py-2
-font-semibold
-text-white
-"
-
->
-
-Medicine
-
-</button>
-
-
-
-</div>
-
-
-
-
-
-
-
-{/* EXISTING ERROR / LOADING / CARDS SECTION */}
-
-<div
-
-className="
-mt-10
-space-y-6
-"
-
->
-
-{
-loading ?
-
-<>
-
-<LoadingCard/>
-
-<LoadingCard/>
-
-<LoadingCard/>
-
-</>
-
-
-:
-
-filteredReliefs.length===0 ?
-
-
-<div
-
-className="
-rounded-3xl
-bg-white
-border
-border-slate-200
-p-12
-text-center
-"
-
->
-
-<div className="text-6xl">
-
-📦
-
-</div>
-
-
-<h2
-
-className="
-mt-5
-text-2xl
-font-bold
-"
-
->
-
-No Relief Available
-
-</h2>
-
-
-<p
-
-className="
-mt-2
-text-slate-600
-"
-
->
-
-There are currently no food or medicine support posts.
-
-</p>
-
-
-</div>
-
-
-:
-
-
-filteredReliefs.map(
-
-(relief)=>(
-
-<RescueCard
-
-key={relief.id}
-
-rescue={relief}
-
-/>
-
-)
-
-)
+    );
 
 }
 
 
+export default function ReliefHubPage() {
 
-</div>
+    return (
 
+        <Suspense
+            fallback={
 
+                <main className="
+                    min-h-screen
+                    bg-slate-50
+                    flex
+                    items-center
+                    justify-center
+                ">
 
+                    <p className="text-slate-600">
 
+                        Loading Relief Hub...
 
-</div>
+                    </p>
 
+                </main>
 
-</main>
+            }
+        >
 
-);
+            <ReliefHubContent />
 
+        </Suspense>
 
+    );
 
 }
